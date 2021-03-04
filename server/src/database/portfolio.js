@@ -12,6 +12,7 @@ async function getAllPreviews() {
     )).rows;
 
     await client.query('commit');
+    client.release();
 
     return {
         isSuccess: true,
@@ -38,6 +39,7 @@ async function getWork(id) {
     }
 
     await client.query('commit');
+    client.release();
 
     return {
         isSuccess: true,
@@ -62,6 +64,7 @@ async function createWork(
     )).rows[0].id;
 
     await client.query('commit');
+    client.release();
 
     return {
         isSuccess: true,

@@ -45,9 +45,10 @@ async function createWork({ files, body }, res) {
         { type: 'previews', file: files.preview[0] },
         { type: 'works', file: files.image[0] }
     ];
-    
+
     for (const image of images) {
-        if (!['image/jpeg', 'image/pjpeg', 'image/png'].includes(image.file.mimetype)) {
+        console.log(image)
+        if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) && image.file.size >= 20971520) {
             res.sendStatus(422);
             return;
         }
@@ -66,7 +67,7 @@ async function createWork({ files, body }, res) {
         images[1].name
     )
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
         for (const image of images) {
             await writeFile(`static/${image.name}`, image.file.buffer);
         }

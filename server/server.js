@@ -22,7 +22,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
 server.use((req, res, next) => {
-    console.log(`[INFO] request to ${req.url}`);
+    // console.log(`[INFO] request to ${req.url}`);
     next();
 });
 
