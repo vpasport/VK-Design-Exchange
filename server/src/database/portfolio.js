@@ -25,7 +25,7 @@ async function getWork(id) {
     await client.query('begin');
 
     let work = (await client.query(
-        `select p.project_description, p.task_description, p.complited_work, p.work_image
+        `select p.project_description, p.task_description, p.completed_work, p.work_image
             from portfolio as p
         where p.id = $1`,
         [id]
@@ -49,18 +49,18 @@ async function getWork(id) {
 
 async function createWork(
     title, preview, description,
-    projectDescription, taskDescription, complitedWork, workImage
+    project_description, task_description, completed_work, work_image
 ) {
     const client = await pool.connect();
     await client.query('begin');
 
     let id = (await client.query(
         `insert into
-            portfolio (title, preview, description, project_description, task_description, complited_work, work_image)
+            portfolio (title, preview, description, project_description, task_description, completed_work, work_image)
         values 
             ($1, $2, $3, $4, $5, $6, $7)
         returning id`,
-        [title, preview, description, projectDescription, taskDescription, complitedWork, workImage ]
+        [title, preview, description, project_description, task_description, completed_work, work_image ]
     )).rows[0].id;
 
     await client.query('commit');

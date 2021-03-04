@@ -47,7 +47,6 @@ async function createWork({ files, body }, res) {
     ];
 
     for (const image of images) {
-        console.log(image)
         if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) && image.file.size >= 20971520) {
             res.sendStatus(422);
             return;
@@ -61,9 +60,9 @@ async function createWork({ files, body }, res) {
         body.title,
         images[0].name,
         body.description,
-        body.projectDescription,
-        body.taskDescription,
-        body.complitedWork,
+        body.project_description,
+        body.task_description,
+        body.completed_work,
         images[1].name
     )
 
