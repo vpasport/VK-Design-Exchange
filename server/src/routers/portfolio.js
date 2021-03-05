@@ -6,13 +6,13 @@ const { promises: { writeFile } } = require('fs');
 
 const { Router } = require('express');
 const {
-    getAllPreviews: getAllPreviews_,
+    getPreviews: getPreviews_,
     getWork: getWork_,
     createWork: createWork_
 } = require('../database/portfolio');
 
-async function getAllPreviews(req, res) {
-    let result = await getAllPreviews_();
+async function getPreviews({query: { from, to }}, res) {
+    let result = await getPreviews_(from, to);
 
     if (result.isSuccess) {
         res.json(result);
@@ -86,7 +86,7 @@ function index() {
 
     const router = new Router();
 
-    router.get('/previews', getAllPreviews);
+    router.get('/previews', getPreviews);
     router.get('/work/:id', getWork);
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
