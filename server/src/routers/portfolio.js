@@ -8,11 +8,14 @@ const { Router } = require('express');
 const {
     getPreviews: getPreviews_,
     getWork: getWork_,
-    createWork: createWork_
+    createWork: createWork_,
+    addTags: addTags_
 } = require('../database/portfolio');
 
-async function getPreviews({query: { from, to, from_id }}, res) {
-    let result = await getPreviews_(from, to, from_id);
+async function getPreviews({ query: { from, to, from_id, tags } }, res) {
+    if(tags !== undefined) tags = tags.split(',')
+
+    let result = await getPreviews_(from, to, from_id, tags);
 
     if (result.isSuccess) {
         res.json(result);
@@ -81,6 +84,19 @@ async function createWork({ files, body }, res) {
     res.sendStatus(500);
 }
 
+async function addTags({ body: { portfolio_id, tag_ids } }, res) {
+    let result = await addTags_(
+        portfolio_id, tag_ids
+    )
+
+    if (result.isSuccess) {
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(204);
+}
+
 function index() {
     const upload = multer();
 
@@ -90,6 +106,7 @@ function index() {
     router.get('/work/:id', getWork);
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
+    router.post('/tags', addTags);
 
     return router;
 }
