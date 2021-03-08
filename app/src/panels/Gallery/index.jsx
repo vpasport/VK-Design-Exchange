@@ -4,11 +4,9 @@ import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
 
 import PropTypes from 'prop-types';
-import { Group, PanelSpinner } from '@vkontakte/vkui';
+import { Group } from '@vkontakte/vkui';
 
-import GalleryClass from '../../utils/Gallery/Gallery';
-import GalleryList from '../../components/Gallery/GalleryList';
-import { useView } from '../../App';
+import GalleryListContainer from '../../components/Gallery/GalleryListContainer';
 
 const Gallery = ({ id, onDesignChange }) => {
 
@@ -16,7 +14,7 @@ const Gallery = ({ id, onDesignChange }) => {
         <Panel id={id}>
             <PanelHeader>Маркетплейс #ТаняДизайн</PanelHeader>
             <Group>
-                <GalleryList
+                <GalleryListContainer
                     onDesignChange={onDesignChange}
                 />
             </Group>

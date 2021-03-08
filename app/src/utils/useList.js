@@ -1,19 +1,23 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector, useStore } from 'react-redux';
+import { changeGallery, changeLength, changeFromId, changeSecondLength } from '../store/GalleryList/actions';
 
-const useList = (load, from, to, loadLength, useAlert) => {
+const useList = (list, changeList, load, from, to, loadLength, useAlert) => {
 
-    const [ list, setList ] = useState([]);
-    const [ listLength, setListLength ] = useState(0);
-    const [ secondLength, setSecondLength ] = useState(Number(from));
+    const { length, secondLength, fromId } = useSelector(state => state.galleryList);
+    const dispatch = useDispatch();
+
+    // const [ length, setlength ] = useState(0);
+    // const [ secondLength, setSecondLength ] = useState(Number(from));
     const [ isLoad, setIsLoad ] = useState(false);
-    const [ fromId, setFromId ] = useState(null);
+    // const [ fromId, setFromId ] = useState(null);
 
     const changeHasMore = () => {
         //check by to
         let isHasMore = Boolean(secondLength < to || to === null);
 
         //check by list length
-        isHasMore = Boolean(isHasMore && (!listLength || secondLength < listLength));
+        isHasMore = Boolean(isHasMore && (!length || secondLength < length));
 
         //check by loadLength
         isHasMore = Boolean(isHasMore && loadLength !== null);
@@ -24,7 +28,7 @@ const useList = (load, from, to, loadLength, useAlert) => {
         return isHasMore;
     }
 
-    const hasMore = useMemo(() => changeHasMore(), [secondLength, listLength]);
+    const hasMore = useMemo(() => changeHasMore(), [secondLength, length]);
 
     const loadList = async () => {
         try{
@@ -36,13 +40,15 @@ const useList = (load, from, to, loadLength, useAlert) => {
             
             const data = await load(secondLength, nextStep, fromId);
 
-            setList(prev => [...prev, ...data.list]);
+            console.log(data)
 
-            if(!listLength) setListLength(data.count);
-            setSecondLength(prev => prev + loadLength);
+            changeList([...list, ...data.list]);
+
+            if(!length) dispatch(changeLength(data.count));
+            dispatch(changeSecondLength(secondLength + loadLength));
 
             if(!isLoad) setIsLoad(true);
-            if(!fromId) setFromId(data.fromId);
+            if(!fromId) dispatch(changeFromId(data.fromId));
         }
         catch(error){
             useAlert.error('Ошибка', error.message);
@@ -51,15 +57,16 @@ const useList = (load, from, to, loadLength, useAlert) => {
 
 
     useEffect(() => {
-        loadList()
+        if(!list.length)
+            loadList()
     }, []);
 
 
     return {
         bind: {
-            list, listLength, secondLength, isLoad, hasMore
+            list, length, secondLength, isLoad, hasMore
         },
-        setList, setListLength, setSecondLength, loadList
+        changeList, loadList
     }
 
 }

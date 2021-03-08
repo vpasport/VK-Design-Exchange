@@ -11,6 +11,7 @@ import Gallery from './panels/Gallery';
 import Design from './panels/Design';
 import User from './utils/User';
 
+
 const ViewContext = React.createContext();
 
 const useView = () => useContext(ViewContext);
@@ -43,10 +44,10 @@ const App = () => {
 				else
 					throw new Error('Ошибка API');
 			}
-			catch(error){
+			catch (error) {
 				useAlert.error('Ошибка', error);
 			}
-			
+
 		}
 
 		fetchData();

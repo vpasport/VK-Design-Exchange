@@ -13,22 +13,16 @@ import { Icon16ArticleOutline } from '@vkontakte/icons';
 import GalleryClass from '../../utils/Gallery/Gallery';
 import { getCardHeightBySize } from '../../utils/helpers';
 
-const GalleryList = ({ size = 'm', onDesignChange, nullText = 'Работы отсутствуют', loadCount = 20, from = null, to = null }) => {
-
-    const [ size_, setSize ] = useState(size);
+const GalleryList = ({ size, changeListFormat, onDesignChange, nullText, loadCount = 20, from = null, to = null, gallery, changeGallery }) => {
 
     const galleryClass = useMemo(() => new GalleryClass(), []);
 
     const { useAlert } = useView();
-    const listHook = useList(galleryClass.getGallery, from, to, loadCount, useAlert);
-
-    const switchSlider = (e) => {
-        setSize(e)
-    }
+    const listHook = useList(gallery, changeGallery, galleryClass.getGallery, from, to, loadCount, useAlert);
 
     return (
         <>
-            {listHook.bind.isLoad ?
+            {gallery.length ?
                 <>
                 <Div>
                     <SliderSwitch options={[
@@ -41,8 +35,8 @@ const GalleryList = ({ size = 'm', onDesignChange, nullText = 'Работы от
                             value: 'l'
                         }
                     ]}
-                    activeValue={size_}
-                    onSwitch={switchSlider}
+                    activeValue={size}
+                    onSwitch={(e) => changeListFormat(e)}
                     style={{width: 100}}/>
                 </Div>
                 <ListBlock
@@ -50,13 +44,13 @@ const GalleryList = ({ size = 'm', onDesignChange, nullText = 'Работы от
                     hasMore={listHook.bind.hasMore}
                 >
                     {listHook.bind.list.length ?
-                        <CardGrid size={size_}>
+                        <CardGrid size={size}>
                             {listHook.bind.list.map((el, i) => (
                                 <GalleryItem
                                     designCard={el}
                                     key={i}
                                     onChange={onDesignChange}
-                                    height={getCardHeightBySize(size_)}
+                                    height={getCardHeightBySize(size)}
                                 />
                             ))}
                         </CardGrid>
@@ -73,10 +67,15 @@ const GalleryList = ({ size = 'm', onDesignChange, nullText = 'Работы от
 }
 
 GalleryList.propTypes = {
-    size: PropTypes.string,
-    galleryList: PropTypes.arrayOf(PropTypes.instanceOf(DesignCard)),
+    size: PropTypes.string.isRequired,
+    changeListFormat: PropTypes.func.isRequired,
     onDesignChange: PropTypes.func.isRequired,
     nullText: PropTypes.string,
+    loadCount: PropTypes.number,
+    from: PropTypes.number,
+    to: PropTypes.number,
+    gallery: PropTypes.arrayOf(PropTypes.instanceOf(GalleryClass)).isRequired,
+    changeGallery: PropTypes.func.isRequired
 }
 
 export default GalleryList;
