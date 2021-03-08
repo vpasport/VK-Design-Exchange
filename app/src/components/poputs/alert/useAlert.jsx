@@ -32,7 +32,7 @@ const useAlert = (setPoput) => {
         },
 
         error(header = 'Error header', text = 'Error text'){
-            this.showAlert(header, text, [{
+            this.show(header, text, [{
                 title: 'Выйти',
                 autoclose: false,
                 action: async () => {

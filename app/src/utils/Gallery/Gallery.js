@@ -7,12 +7,27 @@ class Gallery {
 
     constructor() { }
 
-    async getGallery() {
+    async getGallery(from, to) {
 
-        const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews`);
+        const url = new URLSearchParams();
 
-        if (data.isSuccess)
-            return data.previews.map(el => new DesignCard(el));
+        if(from !== null) url.append('from', from);
+        if(to !== null) url.append('to', to);
+
+        let allParams = url.toString()
+        if(allParams.length) allParams = `?${allParams}`
+
+
+        const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews${allParams}`);
+
+        if (data.isSuccess){
+            let designCards = data.previews.map(el => new DesignCard(el));
+
+            return {
+                list: designCards,
+                count: Number(data.count)
+            };
+        }
         else
             throw new Error('Ошибка при загрузке галереи')
 

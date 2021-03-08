@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Text } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div } from '@vkontakte/vkui';
+import PreText from '../../components/PreText';
 
 import DesignCard from '../../utils/Gallery/DesignCard';
 import { useView } from '../../App';
@@ -43,13 +44,13 @@ const Design = ({ id, activeDesign }) => {
                 <Group>
                     <Div>
                         <Title level='1'>Проект заказчика:</Title>
-                        <Text weight='medium' style={{marginTop: 12}}>{designInfo.getProjectDescription()}</Text>
+                        <PreText>{designInfo.getProjectDescription()}</PreText>
 
                         <Title level='1' style={{marginTop: 20}}>Задача заказчика:</Title>
-                        <Text weight='medium' style={{marginTop: 12}}>{designInfo.getTaskDescription()}</Text>
+                        <PreText style={{marginTop: 12}}>{designInfo.getTaskDescription()}</PreText>
 
                         <Title level='1' style={{marginTop: 20}}>Что было сделано:</Title>
-                        <Text weight='medium' style={{marginTop: 12}}>{designInfo.getCompletedWork()}</Text>
+                        <PreText style={{marginTop: 12}}>{designInfo.getCompletedWork()}</PreText>
 
                         <Title level='1' style={{marginTop: 48}}>Дизайн</Title>
                         <img src={designInfo.getWorkImage()} style={{marginTop: 20, width: '100%'}} alt="test" />
