@@ -2,13 +2,14 @@
 
 const pool = require('./pg/pool').getPool();
 
-async function getPreviews(from, to) {
+async function getPreviews(from, to, from_id) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
         let limit = '';
         let offset = '';
+        let where = '';
 
         if (from !== undefined) {
             offset = `offset ${from}`
@@ -19,10 +20,14 @@ async function getPreviews(from, to) {
                 limit = `limit ${Number(to) - Number(from)}`;
             }
         }
+        if (from_id !== undefined) {
+            where = `where p.id <= ${from_id}`
+        }
 
         let previews = (await client.query(
             `select p.id, p.title, p.preview, p.description
                 from portfolio as p
+                ${where}
             order by p.id desc
             ${limit}
             ${offset}`
@@ -39,6 +44,7 @@ async function getPreviews(from, to) {
         return {
             isSuccess: true,
             count,
+            from_id: from_id === undefined ? previews[0].id : Number(from_id),
             previews
         }
     } catch (e) {
@@ -56,29 +62,29 @@ async function getWork(id) {
     const client = await pool.connect();
     await client.query('begin');
 
-    try{
+    try {
         let work = (await client.query(
             `select p.project_description, p.task_description, p.completed_work, p.work_image
                 from portfolio as p
             where p.id = $1`,
             [id]
         )).rows[0];
-    
+
         if (work === undefined) {
             return {
                 isSuccess: false,
                 error: 'Work not found'
             }
         }
-    
+
         await client.query('commit');
         client.release();
-    
+
         return {
             isSuccess: true,
             work
         };
-    } catch (e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
 
@@ -95,7 +101,7 @@ async function createWork(
     const client = await pool.connect();
     await client.query('begin');
 
-    try{
+    try {
         let id = (await client.query(
             `insert into
                 portfolio (title, preview, description, project_description, task_description, completed_work, work_image)
@@ -104,15 +110,15 @@ async function createWork(
             returning id`,
             [title, preview, description, project_description, task_description, completed_work, work_image]
         )).rows[0].id;
-    
+
         await client.query('commit');
         client.release();
-    
+
         return {
             isSuccess: true,
             id
         }
-    } catch (e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
 

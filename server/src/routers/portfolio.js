@@ -11,8 +11,8 @@ const {
     createWork: createWork_
 } = require('../database/portfolio');
 
-async function getPreviews({query: { from, to }}, res) {
-    let result = await getPreviews_(from, to);
+async function getPreviews({query: { from, to, from_id }}, res) {
+    let result = await getPreviews_(from, to, from_id);
 
     if (result.isSuccess) {
         res.json(result);
