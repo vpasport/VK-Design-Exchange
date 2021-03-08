@@ -5,6 +5,9 @@ import PreText from '../../components/PreText';
 
 import DesignCard from '../../utils/Gallery/DesignCard';
 import { useView } from '../../App';
+import Info from './Info';
+
+import styles from './style.module.scss';
 
 const Design = ({ id, activeDesign }) => {
 
@@ -14,11 +17,11 @@ const Design = ({ id, activeDesign }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try{
+            try {
                 const designInfo = await activeDesign.getDesignInfo();
                 setDesignInfo(designInfo);
             }
-            catch(error){
+            catch (error) {
                 useAlert.show('Ошибка', error.message, [{
                     title: 'Назад',
                     autoclose: true,
@@ -36,27 +39,25 @@ const Design = ({ id, activeDesign }) => {
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={() => setActivePanel('gallery')}/>}
+                left={<PanelHeaderBack onClick={() => setActivePanel('gallery')} />}
             >
                 Карточка сайта
             </PanelHeader>
             {designInfo ?
                 <Group>
-                    <Div>
-                        <Title level='1'>Проект заказчика:</Title>
-                        <PreText>{designInfo.getProjectDescription()}</PreText>
+                    <Div className={styles.cardBlock}>
+                        <Info title='Проект заказчика:' text={designInfo.getProjectDescription()} />
+                        <Info title='Задача заказчика:' text={designInfo.getTaskDescription()} />
+                        <Info title='Что было сделано:' text={designInfo.getCompletedWork()} />
 
-                        <Title level='1' style={{marginTop: 20}}>Задача заказчика:</Title>
-                        <PreText style={{marginTop: 12}}>{designInfo.getTaskDescription()}</PreText>
+                        <div className={styles.cardBlock__group_image}>
+                            <Title level='1'>Дизайн</Title>
+                            <img src={designInfo.getWorkImage()} alt="test" />
+                        </div>
 
-                        <Title level='1' style={{marginTop: 20}}>Что было сделано:</Title>
-                        <PreText style={{marginTop: 12}}>{designInfo.getCompletedWork()}</PreText>
-
-                        <Title level='1' style={{marginTop: 48}}>Дизайн</Title>
-                        <img src={designInfo.getWorkImage()} style={{marginTop: 20, width: '100%'}} alt="test" />
                     </Div>
                 </Group>
-            :
+                :
                 <PanelSpinner size='large' />
             }
 

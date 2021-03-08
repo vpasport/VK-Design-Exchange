@@ -1,4 +1,24 @@
-.text{
-    margin-top: 12px;
-    font-family: var(--font-common);
+.cardBlock{
+
+    &__group{
+        margin-top: 20px;
+
+        &_image{
+            margin-top: 48px;
+
+            & > img{
+                margin-top: 20px;
+                width: 100%;
+            }
+        }
+
+        &:first-child, &_image:first-child{
+            margin-top: 0;
+        }
+    }
+
+    &__text{
+        margin-top: 12px;
+    }
+
 }

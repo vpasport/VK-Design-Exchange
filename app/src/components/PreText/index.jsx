@@ -19,7 +19,7 @@ const PreText = ({children, weight, style, className}) => {
 }
 
 PreText.propTypes = {
-    weight: PropTypes.oneOf('regular', 'medium', 'semibold'),
+    weight: PropTypes.oneOf(['regular', 'medium', 'semibold']),
     style: PropTypes.object,
     className: PropTypes.oneOfType([
         PropTypes.string,
