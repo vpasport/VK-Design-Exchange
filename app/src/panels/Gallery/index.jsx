@@ -14,7 +14,7 @@ const Gallery = ({ id, onDesignChange }) => {
 
     return (
         <Panel id={id}>
-            <PanelHeader>Design exchange</PanelHeader>
+            <PanelHeader>Маркетплейс #ТаняДизайн</PanelHeader>
             <Group>
                 <GalleryList
                     onDesignChange={onDesignChange}
