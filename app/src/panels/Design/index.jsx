@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div } from '@vkontakte/vkui';
-import PreText from '../../components/PreText';
 
 import DesignCard from '../../utils/Gallery/DesignCard';
 import { useView } from '../../App';

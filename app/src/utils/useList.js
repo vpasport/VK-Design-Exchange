@@ -6,6 +6,7 @@ const useList = (load, from, to, loadLength, useAlert) => {
     const [ listLength, setListLength ] = useState(0);
     const [ secondLength, setSecondLength ] = useState(Number(from));
     const [ isLoad, setIsLoad ] = useState(false);
+    const [ fromId, setFromId ] = useState(null);
 
     const changeHasMore = () => {
         //check by to
@@ -17,7 +18,7 @@ const useList = (load, from, to, loadLength, useAlert) => {
         //check by loadLength
         isHasMore = Boolean(isHasMore && loadLength !== null);
         if(to !== null)
-            isHasMore = isHasMore && loadLength < to;
+            isHasMore = Boolean(isHasMore && loadLength < to);
 
 
         return isHasMore;
@@ -33,7 +34,7 @@ const useList = (load, from, to, loadLength, useAlert) => {
             else if(loadLength === null || loadLength > to) nextStep = to;
             else nextStep = null;
             
-            const data = await load(secondLength, nextStep);
+            const data = await load(secondLength, nextStep, fromId);
 
             setList(prev => [...prev, ...data.list]);
 
@@ -41,6 +42,7 @@ const useList = (load, from, to, loadLength, useAlert) => {
             setSecondLength(prev => prev + loadLength);
 
             if(!isLoad) setIsLoad(true);
+            if(!fromId) setFromId(data.fromId);
         }
         catch(error){
             useAlert.error('Ошибка', error.message);
