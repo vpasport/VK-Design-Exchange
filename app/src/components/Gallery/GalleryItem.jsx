@@ -5,22 +5,25 @@ import { ContentCard } from '@vkontakte/vkui';
 
 import DesignCardClass from '../../utils/Gallery/DesignCard';
 
-const { REACT_APP_API_URL } = process.env;
+import styles from './style.module.scss';
 
-const GalleryItem = ({ designCard, onChange }) => {
+
+const GalleryItem = ({ designCard, onChange, height }) => {
     return (
         <ContentCard
             image={designCard.getPreview()}
+            className={styles.card}
             header={designCard.getTitle()}
-            text={designCard.getDescription()}
-            height={175}
+            height={height}
             onClick={() => onChange(designCard)}
+            
         />
     )
 }
 
 GalleryItem.propTypes = {
-    designCard: PropTypes.instanceOf(DesignCardClass)
+    designCard: PropTypes.instanceOf(DesignCardClass),
+    height: PropTypes.number.isRequired
 }
 
 export default GalleryItem;

@@ -1,0 +1,12 @@
+.card {
+    h3 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    img{
+        object-position: top;
+        object-fit: cover;
+    }
+}
