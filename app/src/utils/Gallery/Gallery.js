@@ -19,6 +19,9 @@ class Gallery {
         if(allParams.length) allParams = `?${allParams}`;
 
 
+        console.log(allParams)
+
+
         const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews${allParams}`);
         //const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews`);
 

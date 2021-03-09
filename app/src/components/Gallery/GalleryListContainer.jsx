@@ -1,16 +1,14 @@
 import React from 'react';
 import GalleryList from './GalleryList';
 import PropTypes from 'prop-types';
-import GalleryClass from '../../utils/Gallery/Gallery';
 
 import { connect } from 'react-redux';
 
-import { changeListFormat, changeGallery } from '../../store/GalleryList/actions';
+import { changeListFormat, changeList } from '../../store/GalleryList/actions';
 
 const GalleryListContainer = ({size, changeListFormat, onDesignChange, nullText = 'Работы отсутствуют', 
-                                loadCount = 10, from = null, to = null, gallery, changeGallery, dispatch}) => {
+                                loadCount = 10, from = 0, to = null}) => {
 
-    console.log(dispatch)
     return (
         <GalleryList 
             size={size} 
@@ -20,8 +18,6 @@ const GalleryListContainer = ({size, changeListFormat, onDesignChange, nullText 
             loadCount={loadCount}
             from={from}
             to={to}
-            gallery={gallery}
-            changeGallery={changeGallery}
         />
     )
 }
@@ -34,20 +30,17 @@ GalleryListContainer.propTypes = {
     loadCount: PropTypes.number,
     from: PropTypes.number,
     to: PropTypes.number,
-    gallery: PropTypes.arrayOf(PropTypes.instanceOf(GalleryClass)).isRequired,
-    changeGallery: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => {
     return {
         size: state.galleryList.listFormat,
-        gallery: state.galleryList.gallery
     }
 }
 
 const mapDispatchToProps = {
     changeListFormat,
-    changeGallery
+    changeList
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(GalleryListContainer)

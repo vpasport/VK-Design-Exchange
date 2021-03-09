@@ -1,5 +1,5 @@
 export const GALLERYLIST_CHANGE_LIST_FORMAT = 'GALLERYLIST_CHANGE_LIST_FORMAT';
-export const GALLERYLIST_CHANGE_GALLERY = 'GALLERYLIST_CHANGE_GALLERY';
+export const GALLERYLIST_CHANGE_LIST = 'GALLERYLIST_CHANGE_LIST';
 export const GALLERYLIST_CHANGE_LENGTH = 'GALLERYLIST_CHANGE_LENGTH';
 export const GALLERYLIST_CHANGE_SECOND_LENGTH = 'GALLERYLIST_CHANGE_SECOND_LENGTH';
 export const GALLERYLIST_CHANGE_FROM_ID = 'GALLERYLIST_CHANGE_FROM_ID';
@@ -9,9 +9,9 @@ export const changeListFormat = (listFormat) => ({
     payload: listFormat
 })
 
-export const changeGallery = (gallery) => ({
-    type: GALLERYLIST_CHANGE_GALLERY,
-    payload: gallery
+export const changeList = (list) => ({
+    type: GALLERYLIST_CHANGE_LIST,
+    payload: list
 })
 
 export const changeLength = (length) => ({
