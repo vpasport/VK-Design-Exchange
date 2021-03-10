@@ -12,6 +12,9 @@ const server = express();
 const initRouters = require('./src/routers/index');
 
 const pool = require('./src/database/pg/pool').getPool();
+const {
+    getUserInfo
+} = require('./src/helper/vk');
 
 server.use(
     cors()
@@ -26,8 +29,9 @@ server.use((req, res, next) => {
     next();
 });
 
-server.get('/', (req, res) => {
-    res.json({succsess : 'ok'})
+server.get('/', async (req, res) => {
+    let u = await getUserInfo('vpasport');
+    console.log(u)
 });
 
 initRouters(server);

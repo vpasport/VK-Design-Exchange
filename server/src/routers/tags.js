@@ -3,7 +3,8 @@
 const { Router } = require('express');
 const {
     getAll: getAll_,
-    create: create_
+    create: create_,
+    deleteTag: deleteTag_
 } = require('../database/tags');
 
 async function getAll(req, res) {
@@ -28,11 +29,25 @@ async function create({ body: { name } }, res) {
     res.sendStatus(205)
 }
 
+async function deleteTag({params: {id}}, res){
+    let result = await deleteTag_(id);
+
+    if(result.isSuccess){
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(204);
+}
+
 function index() {
     const router = new Router();
 
     router.get('/', getAll);
+
     router.post('/', create);
+
+    router.delete('/:id', deleteTag);
 
     return router;
 }

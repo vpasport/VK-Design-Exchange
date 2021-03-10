@@ -75,7 +75,33 @@ async function create(name) {
     }
 }
 
+async function deleteTag(id){
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `delete from tags
+            where
+                id = $1`,
+            [id]
+        )
+
+        return {
+            isSuccess: true
+        }
+    } catch (e){
+        await client.query('rollback');
+        client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getAll,
-    create
+    create,
+    deleteTag
 }

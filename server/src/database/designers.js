@@ -1,6 +1,9 @@
 "use strict";
 
 const pool = require('./pg/pool').getPool();
+const {
+    getUserInfo
+} = require('../helper/vk')
 
 async function getDesigners() {
     const client = await pool.connect();
@@ -102,8 +105,43 @@ async function getReviews(id){
     }
 }
 
+async function createDesigner(
+    vk_id, experience, specialization
+){
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try{
+        if (vk_id.includes('https')){
+            vk_id = vk_id.match(/https?:\/\/.*\/(.*)\/?/)[1];
+        }
+
+        let designer = (await client.query(
+            `select d.id
+                from designers as d
+            where
+                d.vk_id = $1`,
+            [vk_id]
+        )).rows[0];
+
+        if(designer !== undefined ) throw 'user with the same name alredy exists';
+
+        designer = await getUserInfo(vk_id);
+
+        console.log(designer)
+    } catch (e){
+        await client.query('rollback');
+        client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getDesigners,
     getDesigner,
-    getReviews
+    getReviews,
+    createDesigner
 }
