@@ -56,6 +56,8 @@ async function getPreviewsFromTo(from, to, from_id) {
         await client.query('rollback');
         client.release();
 
+        console.error(e);
+
         return {
             isSuccess: false
         }
