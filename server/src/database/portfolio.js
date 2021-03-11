@@ -2,41 +2,49 @@
 
 const pool = require('./pg/pool').getPool();
 
-async function getPreviews(from, to, from_id, tags) {
+const { SelectQueryBuilder } = require('./builder/SelectQueryBuilder');
+const { StringElement } = require('./builder/base/StringElement');
+const { query } = require('express');
+
+async function getPreviewsFromTo(from, to, from_id) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
-        let query = `select distinct p.id, p.title, p.preview, p.description 
-                        from portfolio as p`;
-        let params = [];
+        const params = [];
+        let filter = '';
+        let offset = '';
+        let limit = '';
 
-        if (tags !== undefined) {
-            query += `, tags_portfolios as tp 
-                        where p.id = tp.portfolio_id and tp.tag_id = any($1)`;
-            params.push(tags);
-            if (from_id !== undefined)
-                query += ` and p.id <= ${from_id}`;
-        } else if (from_id !== undefined) query += ` where p.id <= ${from_id}`
-        query += ` order by p.id desc`
-        if (from !== undefined) {
-            query += ` offset ${from}`;
+        if (from_id) {
+            params.push(from_id);
+            filter = `where p.id <= $${params.length}`;
         }
-        if (to !== undefined && from !== undefined) {
-            query += ` limit ${Number(to) - Number(from)}`;
-        } else if (to !== undefined) {
-            query += ` limit ${to}`;
+        if (from) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to) {
+            params.push(to);
+            limit = `limit $${params.length}`;
         }
 
-        let previews = (await client.query(
-            query,
+        let { rows: previews } = await client.query(
+            `with tmp as (
+                select id, title, preview, description, count( 1 ) over ()::int  
+                    from portfolio
+            )
+            select * 
+                from tmp as p
+            ${filter}
+            order by p.id desc
+            ${offset}
+            ${limit}`,
             params
-        )).rows;
+        );
 
-        let count = (await client.query(
-            `select count(*)
-                from portfolio`
-        )).rows[0].count;
+        let count = previews[0].count;
+        previews.forEach(element => delete element.count);
 
         await client.query('commit');
         client.release();
@@ -44,12 +52,83 @@ async function getPreviews(from, to, from_id, tags) {
         return {
             isSuccess: true,
             count,
-            from_id: from_id === undefined ? previews[0].id : Number(from_id),
+            from_id : from_id === undefined ? previews[0].id: Number(from_id),
             previews
         }
+
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function getPreviewsTags(from, to, from_id, tags) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        const params = [];
+        let filter = '';
+        let offset = '';
+        let limit = '';
+
+        if (from_id) {
+            params.push(from_id);
+            filter = `and p.id <= $${params.length}`;
+        }
+        if (from) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
+        params.push(tags);
+
+        let { rows: previews } = await client.query(
+            `select p.id, p.title, p.preview, p.description, count( 1 ) over ()::int  
+                from portfolio as p, tags_portfolios as tp
+            where p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
+            order by p.id desc
+            ${offset}
+            ${limit}`,
+            params
+        );
+
+        if(previews.length > 0){
+            let count = previews[0].count;
+            previews.forEach(element => delete element.count);
+    
+            await client.query('commit');
+            client.release();
+    
+            return {
+                isSuccess: true,
+                count,
+                from_id: from_id === undefined ? previews[0].id : Number(from_id),
+                previews
+            }
+        }
+
+        await client.query('rollback');
+        client.release();
+
+        return {
+            isSuccess: false,
+            error: 'Preveiws not found'
+        }
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false
@@ -169,7 +248,8 @@ async function addTags(portfolio_id, tag_ids) {
 }
 
 module.exports = {
-    getPreviews,
+    getPreviewsFromTo,
+    getPreviewsTags,
     getWork,
     createWork,
     addTags

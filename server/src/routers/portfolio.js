@@ -6,23 +6,30 @@ const { promises: { writeFile } } = require('fs');
 
 const { Router } = require('express');
 const {
-    getPreviews: getPreviews_,
+    getPreviewsFromTo: getPreviewsFromTo_,
+    getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
     createWork: createWork_,
     addTags: addTags_
 } = require('../database/portfolio');
 
-async function getPreviews({ query: { from, to, from_id, tags } }, res) {
+async function getPreviews({ query: { from = 0, to = 20, from_id, tags } }, res) {
     if(tags !== undefined) tags = tags.split(',')
 
-    let result = await getPreviews_(from, to, from_id, tags);
+    let result;
+
+    if(tags === undefined ){
+        result = await getPreviewsFromTo_(from, to, from_id);
+    }else{
+        result = await getPreviewsTags_(from, to, from_id, tags)
+    }
 
     if (result.isSuccess) {
         res.json(result);
         return;
     }
 
-    res.sendStatus(204);
+    res.status(500).json(result);
 }
 
 async function getWork({ params: { id } }, res) {
