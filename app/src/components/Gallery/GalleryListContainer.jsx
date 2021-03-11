@@ -6,14 +6,13 @@ import { connect } from 'react-redux';
 
 import { changeListFormat, changeList } from '../../store/GalleryList/actions';
 
-const GalleryListContainer = ({size, changeListFormat, onDesignChange, nullText = 'Работы отсутствуют', 
+const GalleryListContainer = ({size, changeListFormat, nullText = 'Работы отсутствуют', 
                                 loadCount = 10, from = 0, to = null}) => {
 
     return (
         <GalleryList 
             size={size} 
             changeListFormat={changeListFormat}
-            onDesignChange={onDesignChange}
             nullText={nullText}
             loadCount={loadCount}
             from={from}
@@ -25,7 +24,6 @@ const GalleryListContainer = ({size, changeListFormat, onDesignChange, nullText 
 GalleryListContainer.propTypes = {
     size: PropTypes.string.isRequired,
     changeListFormat: PropTypes.func.isRequired,
-    onDesignChange: PropTypes.func.isRequired,
     nullText: PropTypes.string,
     loadCount: PropTypes.number,
     from: PropTypes.number,

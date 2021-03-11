@@ -18,7 +18,7 @@ const useAlert = (setPoput) => {
             this.isAlertShow = false;
         },
 
-        show(header = 'header', text = 'text', actions = defaultActions){
+        show(header = 'header', text = 'text', actions = defaultActions ){
             const parentContext = this;
             setPoput(
                 <Alert
@@ -26,6 +26,7 @@ const useAlert = (setPoput) => {
                     text={text}
                     onClose={this.hide.bind(parentContext)}
                     actions={actions}
+                    
                 />
             )
             this.isAlertShow = true;

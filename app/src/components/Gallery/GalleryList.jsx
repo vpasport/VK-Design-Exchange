@@ -5,19 +5,31 @@ import PropTypes from 'prop-types';
 import GalleryItem from './GalleryItem';
 import ListBlock from '../ListBlock';
 import FiltersList from '../FiltersList';
-import { useView } from '../../App';
+import { useView } from '../../Navigation';
 import useList from '../../utils/useList';
 
 import GalleryClass from '../../utils/Gallery/Gallery';
 import { getCardHeightBySize } from '../../utils/helpers';
+import { alertContext, viewContext } from '../../App';
+import { useDispatch } from 'react-redux';
+import { changeActiveDesign } from '../../store/Design/actions';
 
-const GalleryList = ({ size, changeListFormat, onDesignChange, nullText, loadCount, from, to }) => {
+const GalleryList = ({ size, changeListFormat, nullText, loadCount, from, to }) => {
 
     const galleryClass = useMemo(() => new GalleryClass(), []);
 
+    const { useAlert } = alertContext();
+    const { setActivePanel } = viewContext();
 
-    const { useAlert } = useView();
+    const dispatch = useDispatch();
+
     const listHook = useList(galleryClass.getGallery, galleryClass.getFilters, from, to, loadCount, useAlert, 'galleryList');
+
+    const handleDesignChange = (activeDesign) => {
+        
+        dispatch(changeActiveDesign(activeDesign));
+        setActivePanel('design');
+    }
 
     return (
         <>
@@ -45,7 +57,7 @@ const GalleryList = ({ size, changeListFormat, onDesignChange, nullText, loadCou
                                     <GalleryItem
                                         designCard={el}
                                         key={i}
-                                        onChange={onDesignChange}
+                                        onChange={handleDesignChange}
                                         height={getCardHeightBySize(size)}
                                     />
                                 ))}
@@ -65,7 +77,6 @@ const GalleryList = ({ size, changeListFormat, onDesignChange, nullText, loadCou
 GalleryList.propTypes = {
     size: PropTypes.string.isRequired,
     changeListFormat: PropTypes.func.isRequired,
-    onDesignChange: PropTypes.func.isRequired,
     nullText: PropTypes.string,
     loadCount: PropTypes.number,
     from: PropTypes.number,

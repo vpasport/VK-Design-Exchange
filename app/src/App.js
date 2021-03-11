@@ -1,26 +1,32 @@
-import React, { useState, useEffect, useContext } from 'react';
-import bridge from '@vkontakte/vk-bridge';
-import View from '@vkontakte/vkui/dist/components/View/View';
-import { AdaptivityProvider, AppRoot } from '@vkontakte/vkui';
+import React, { useContext, useState, useEffect } from 'react';
+
+import { AdaptivityProvider } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
+import './styles/global.scss';
+import bridge from '@vkontakte/vk-bridge';
 
 import useAlertHook from './components/poputs/alert/useAlert';
 import useSpinnerHook from './components/poputs/spinner/useSpinner';
 
-import Gallery from './panels/Gallery';
-import Design from './panels/Design';
+import Panels from './Navigation';
 import User from './utils/User';
-import axios from 'axios'
 
 const ViewContext = React.createContext();
+const AlertContext = React.createContext();
+const SessionContext = React.createContext();
 
-const useView = () => useContext(ViewContext);
+const viewContext = () => useContext(ViewContext);
+const alertContext = () => useContext(AlertContext);
+const sessionContext = () => useContext(SessionContext);
+
 
 const App = () => {
-	const [activePanel, setActivePanel] = useState('gallery');
-	const [activeDesign, setActiveDesign] = useState(null);
+
 	const [userInfo, setUserInfo] = useState(null);
 	const [poput, setPoput] = useState(null);
+	const [activeStory, setActiveStory] = useState('gallery');
+	const [activePanel, setActivePanel] = useState('gallery');
+	const [isDesktop, setIsDesktop] = useState(false) 
 
 	const useAlert = useAlertHook(setPoput);
 	const useSpinner = useSpinnerHook(setPoput);
@@ -53,35 +59,27 @@ const App = () => {
 		fetchData();
 	}, []);
 
+	const setActiveStoryAndPanel = (story, panel) => {
+		setActiveStory(story);
+		setActivePanel(panel);
+	}
 
-	useEffect(() => {
-
-		if (activeDesign)
-			setActivePanel('design');
-
-	}, [activeDesign])
-
-	const context = { setActivePanel, useAlert, useSpinner }
+	const viewContextValue = { setActivePanel, setActiveStory, activePanel, activeStory, setActiveStoryAndPanel }
+	const alertContextValue = { useAlert, useSpinner, poput }
+	const sessionContextValue = { isDesktop, setIsDesktop, userInfo }
 
 	return (
-		<ViewContext.Provider value={context}>
-			<AdaptivityProvider>
-				<AppRoot>
-					<View activePanel={activePanel} popout={poput}>
-						<Gallery
-							onDesignChange={(designCard) => setActiveDesign(designCard)}
-							id='gallery'
-						/>
-						<Design
-							id='design'
-							activeDesign={activeDesign}
-						/>
-					</View>
-				</AppRoot>
-			</AdaptivityProvider>
-		</ViewContext.Provider>
+		<AdaptivityProvider>
+			<ViewContext.Provider value={viewContextValue}>
+				<AlertContext.Provider value={alertContextValue}>
+					<SessionContext.Provider value={sessionContextValue}>
+						<Panels />
+					</SessionContext.Provider>
+				</AlertContext.Provider>
+			</ViewContext.Provider>
+		</AdaptivityProvider>
 	);
-}
+};
 
+export { viewContext, alertContext, sessionContext }
 export default App;
-export { useView }
