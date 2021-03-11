@@ -114,14 +114,7 @@ async function getPreviewsTags(from, to, from_id, tags) {
             }
         }
 
-        await client.query('rollback');
-        client.release();
-
-        return {
-            isSuccess: false,
-            error: 'Preveiws not found'
-        }
-
+        throw 'Preveiws not found';
     } catch (e) {
         await client.query('rollback');
         client.release();
@@ -147,20 +140,17 @@ async function getWork(id) {
             [id]
         )).rows[0];
 
-        if (work === undefined) {
+        if (work !== undefined) {
+            await client.query('commit');
+            client.release();
+    
             return {
-                isSuccess: false,
-                error: 'Work not found'
-            }
+                isSuccess: true,
+                work
+            };
         }
 
-        await client.query('commit');
-        client.release();
-
-        return {
-            isSuccess: true,
-            work
-        };
+        throw 'Work not found';
     } catch (e) {
         await client.query('rollback');
         client.release();
@@ -229,12 +219,7 @@ async function addTags(portfolio_id, tag_ids) {
             }
         }
 
-        await client.query('rollback');
-        client.release;
-
-        return {
-            isSuccess: false
-        }
+        throw 'Previews no found';
     } catch (e) {
         await client.query('rollback');
         client.release();

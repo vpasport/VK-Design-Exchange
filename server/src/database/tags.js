@@ -12,6 +12,9 @@ async function getAll() {
                 from tags`
         )).rows;
 
+        await client.query('commit');
+        client.release();
+
         return {
             isSuccess: true,
             tags
@@ -39,15 +42,7 @@ async function create(name) {
             [name]
         )).rows[0];
 
-        if (tag !== undefined) {
-            await client.query('rollback');
-            client.release();
-
-            return {
-                isSuccess: false,
-                error: 'An tag with the same name already exists'
-            };
-        }
+        if (tag !== undefined) throw 'An tag with the same name already exists';
 
         tag = (await client.query(
             `insert into
@@ -87,6 +82,9 @@ async function deleteTag(id){
             [id]
         )
 
+        await client.query('commit');
+        client.release();
+        
         return {
             isSuccess: true
         }

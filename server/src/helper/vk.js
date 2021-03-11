@@ -3,7 +3,7 @@
 const {API} = require('vk-io');
 
 const api = new API({
-    token : process.env.VK_TOKEN
+    token : process.env.APP_TOKEN
 })
 
 async function getUserInfo(vk_id){

@@ -1,7 +1,14 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import {useEffect} from 'react';
 
 export default function Home() {
+  // useEffect( async () => {
+  //   await fetch('http://localhost:3001/', {
+  //     credentials: 'include'
+  //   });
+  // }, [])
+
   return (
     <div className={styles.container}>
       <Head>
@@ -62,4 +69,17 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export async function getServerSideProps({ req: { headers: { cookie } } }) {
+  let response = await fetch(`http://localhost:3001/`, {
+      headers: {
+          cookie
+      }
+  });
+
+  return {
+      props: {
+      }
+  }
 }
