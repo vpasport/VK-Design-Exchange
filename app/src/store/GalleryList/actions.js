@@ -3,6 +3,8 @@ export const GALLERYLIST_CHANGE_LIST = 'GALLERYLIST_CHANGE_LIST';
 export const GALLERYLIST_CHANGE_LENGTH = 'GALLERYLIST_CHANGE_LENGTH';
 export const GALLERYLIST_CHANGE_SECOND_LENGTH = 'GALLERYLIST_CHANGE_SECOND_LENGTH';
 export const GALLERYLIST_CHANGE_FROM_ID = 'GALLERYLIST_CHANGE_FROM_ID';
+export const GALLERYLIST_CHANGE_FILTERS = 'GALLERYLIST_CHANGE_FILTERS';
+export const GALLERYLIST_CHANGE_ACTIVE_FILTERS = 'GALLERYLIST_CHANGE_ACTIVE_FILTERS';
 
 export const changeListFormat = (listFormat) => ({
     type: GALLERYLIST_CHANGE_LIST_FORMAT,
@@ -27,4 +29,14 @@ export const changeSecondLength = (secondLength) => ({
 export const changeFromId = (fromId) => ({
     type: GALLERYLIST_CHANGE_FROM_ID,
     payload: fromId
+})
+
+export const changeFilters = (filters) => ({
+    type: GALLERYLIST_CHANGE_FILTERS,
+    payload: filters
+})
+
+export const changeActiveFilters = (activeFilters) => ({
+    type: GALLERYLIST_CHANGE_ACTIVE_FILTERS,
+    payload: activeFilters
 })

@@ -1,13 +1,12 @@
-import { CardGrid, Div, PanelSpinner, SliderSwitch, Title, PullToRefresh } from '@vkontakte/vkui';
+import { CardGrid, Div, PanelSpinner, Title, PullToRefresh } from '@vkontakte/vkui';
 import React, { useMemo, useState } from 'react';
 
 import PropTypes from 'prop-types';
 import GalleryItem from './GalleryItem';
 import ListBlock from '../ListBlock';
+import FiltersList from '../FiltersList';
 import { useView } from '../../App';
 import useList from '../../utils/useList';
-import { Icon16GridOfFour } from '@vkontakte/icons';
-import { Icon16ArticleOutline } from '@vkontakte/icons';
 
 import GalleryClass from '../../utils/Gallery/Gallery';
 import { getCardHeightBySize } from '../../utils/helpers';
@@ -15,19 +14,10 @@ import { getCardHeightBySize } from '../../utils/helpers';
 const GalleryList = ({ size, changeListFormat, onDesignChange, nullText, loadCount, from, to }) => {
 
     const galleryClass = useMemo(() => new GalleryClass(), []);
-    const sliderSwitchOptions = 
-            [{
-                name: <Icon16GridOfFour />,
-                value: 'm'
-            },
-            {
-                name: <Icon16ArticleOutline />,
-                value: 'l'
-            }]
 
 
     const { useAlert } = useView();
-    const listHook = useList(galleryClass.getGallery, from, to, loadCount, useAlert, 'galleryList');
+    const listHook = useList(galleryClass.getGallery, galleryClass.getFilters, from, to, loadCount, useAlert, 'galleryList');
 
     return (
         <>
@@ -37,13 +27,16 @@ const GalleryList = ({ size, changeListFormat, onDesignChange, nullText, loadCou
                     isFetching={listHook.bind.isFetching}
                 >
                     <Div>
-                        <SliderSwitch options={sliderSwitchOptions}
-                            activeValue={size}
-                            onSwitch={(e) => changeListFormat(e)}
-                            style={{ width: 100 }} />
+                        <FiltersList 
+                            filters={listHook.bind.filters}
+                            size={size}
+                            changeListFormat={changeListFormat}
+                            activeFilters={listHook.bind.activeFilters}
+                            changeActiveFilter={listHook.changeActiveFilter}
+                        />
                     </Div>
                     <ListBlock
-                        loadMore={listHook.loadList}
+                        loadMore={listHook.getList}
                         hasMore={listHook.bind.hasMore}
                     >
                         {listHook.bind.list.length ?

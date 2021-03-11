@@ -1,12 +1,21 @@
+import axios from 'axios';
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import getActionsByType from './getActionsByType';
 
-const useList = (load, from, to, loadLength, useAlert, type) => {
+const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) => {
 
     const dispatch = useDispatch();
-    const { changeList, changeLength, changeFromId, changeSecondLength } = useMemo(() => getActionsByType(type, dispatch), []);
-    const { length, secondLength, fromId, list } = useSelector(state => state[type]);
+
+    const { changeList, 
+            changeLength, 
+            changeFromId, 
+            changeSecondLength, 
+            changeFilters, 
+            changeActiveFilters
+        } = useMemo(() => getActionsByType(type, dispatch), []);
+
+    const { length, secondLength, fromId, list, filters, activeFilters } = useSelector(state => state[type]);
 
     const [ isFetching, setIsFetching ] = useState(false);
 
@@ -28,8 +37,7 @@ const useList = (load, from, to, loadLength, useAlert, type) => {
 
     const hasMore = useMemo(() => changeHasMore(), [secondLength, length]);
 
-    const loadList = async () => {
-        console.log(secondLength, from)
+    const getList = async () => {
         try{
             let nextStep;
             
@@ -37,7 +45,7 @@ const useList = (load, from, to, loadLength, useAlert, type) => {
             else if(loadLength === null || loadLength > to) nextStep = to;
             else nextStep = null;
             
-            const data = await load(from, nextStep, fromId);
+            const data = await loadList(from, nextStep, fromId, activeFilters);
 
             changeList(data.list);
 
@@ -51,6 +59,18 @@ const useList = (load, from, to, loadLength, useAlert, type) => {
         }
     }
 
+    const getFilters = async () => {
+        try{
+            const data = await loadFilters();
+            changeFilters(data.tags);
+        }
+        catch(error){
+            useAlert.error('Ошибка', error.message);
+        }
+    }
+
+    
+
     const updateList = () => {
         changeLength(null);
         changeFromId(null);
@@ -59,11 +79,19 @@ const useList = (load, from, to, loadLength, useAlert, type) => {
         setIsFetching(true);
     }
 
+    const changeActiveFilter = (filter) => {
+        changeActiveFilters(filter);
+        updateList();
+    }
+    // useEffect(() => {
+    //     console.log(filters)
+    // }, [filters])
+
 
     useEffect(() => {
 
         const fetchData = async () => {
-            await loadList();
+            await getList();
             setIsFetching(false);
         }
 
@@ -73,15 +101,16 @@ const useList = (load, from, to, loadLength, useAlert, type) => {
 
 
     useEffect(() => {
-        if(!list.length) loadList()
+        if(!filters.length) getFilters();
+        if(!list.length) getList();
     }, []);
 
 
     return {
         bind: {
-            list, length, secondLength, hasMore, isFetching
+            list, length, secondLength, hasMore, isFetching, filters, activeFilters
         },
-        loadList, updateList
+        getList, updateList, changeActiveFilter
     }
 
 }

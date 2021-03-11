@@ -1,0 +1,13 @@
+$gap: 10px;
+$drobGap: $gap / 2;
+
+.list{
+    display: grid;
+    justify-content: space-between;
+    grid-template-columns: repeat(3, calc(100% / 3 - 10px / 2));
+    grid-gap: 10px;
+}
+
+.bottom{
+    margin-top: $gap;
+}

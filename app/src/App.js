@@ -10,7 +10,7 @@ import useSpinnerHook from './components/poputs/spinner/useSpinner';
 import Gallery from './panels/Gallery';
 import Design from './panels/Design';
 import User from './utils/User';
-
+import axios from 'axios'
 
 const ViewContext = React.createContext();
 

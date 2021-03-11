@@ -10,6 +10,8 @@ export default (type, dispatch) => {
         changeList: (list) => dispatch(actions[type].changeList(list)),
         changeLength: (length) => dispatch(actions[type].changeLength(length)),
         changeFromId: (fromId) => dispatch(actions[type].changeFromId(fromId)),
-        changeSecondLength: (secondLength) => dispatch(actions[type].changeSecondLength(secondLength))
+        changeSecondLength: (secondLength) => dispatch(actions[type].changeSecondLength(secondLength)),
+        changeFilters: (filters) => dispatch(actions[type].changeFilters(filters)),
+        changeActiveFilters: (activeFilters) => dispatch(actions[type].changeActiveFilters(activeFilters))
     }
 }
