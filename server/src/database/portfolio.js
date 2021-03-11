@@ -28,7 +28,6 @@ async function getPreviews(from, to, from_id, tags) {
             query += ` limit ${to}`;
         }
 
-
         let previews = (await client.query(
             query,
             params

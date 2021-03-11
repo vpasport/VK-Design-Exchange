@@ -30,8 +30,7 @@ server.use((req, res, next) => {
 });
 
 server.get('/', async (req, res) => {
-    let u = await getUserInfo('vpasport');
-    console.log(u)
+    res.status(301).redirect(`https://${process.env.HOST}`);
 });
 
 initRouters(server);
