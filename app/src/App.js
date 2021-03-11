@@ -24,8 +24,8 @@ const App = () => {
 
 	const [userInfo, setUserInfo] = useState(null);
 	const [poput, setPoput] = useState(null);
-	const [activeStory, setActiveStory] = useState('gallery');
-	const [activePanel, setActivePanel] = useState('gallery');
+	const [activeStory, setActiveStory] = useState('table');
+	const [activePanel, setActivePanel] = useState('table');
 	const [isDesktop, setIsDesktop] = useState(false) 
 
 	const useAlert = useAlertHook(setPoput);

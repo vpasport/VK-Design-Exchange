@@ -15,6 +15,7 @@ import DesctopSideBar from './components/DesctopSideBar';
 import MobileSideBar from './components/MobileSideBar';
 
 import GalleryView from './views/GalleryView';
+import AboutTableView from './views/AboutTableView';
 import { sessionContext, viewContext } from './App';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
@@ -24,16 +25,16 @@ const Panels = withAdaptivity(({ viewWidth }) => {
 
     const params = [
         {
-            story: 'gallery',
-            name: 'Галерея',
-            icon: <Icon24Gallery />,
-            defaultPanel: 'gallery'
-        },
-        {
             story: 'table',
             name: 'О доске',
             icon: <Icon24InfoCircleOutline />,
             defaultPanel: 'table'
+        },
+        {
+            story: 'gallery',
+            name: 'Галерея',
+            icon: <Icon24Gallery />,
+            defaultPanel: 'gallery'
         }
     ]
 
@@ -68,6 +69,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                     />
                 }>
                     <GalleryView id='gallery' />
+                    <AboutTableView id='table' />
                 </Epic>
             </SplitCol>
         </SplitLayout>

@@ -26,7 +26,6 @@ const Gallery = ({ id, onDesignChange }) => {
 
 Gallery.propTypes = {
     id: PropTypes.string.isRequired,
-    onDesignChange: PropTypes.func.isRequired
 }
 
 export default Gallery;
