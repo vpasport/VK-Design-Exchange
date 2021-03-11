@@ -2,10 +2,6 @@
 
 const pool = require('./pg/pool').getPool();
 
-const { SelectQueryBuilder } = require('./builder/SelectQueryBuilder');
-const { StringElement } = require('./builder/base/StringElement');
-const { query } = require('express');
-
 async function getPreviewsFromTo(from, to, from_id) {
     const client = await pool.connect();
     await client.query('begin');
