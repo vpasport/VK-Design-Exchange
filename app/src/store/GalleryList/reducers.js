@@ -14,8 +14,8 @@ const defaultState = {
     length: null,
     secondLength: 0,
     fromId: null,
-    filters: [],
-    activeFilters: []
+    filters: {},
+    activeFilters: {}
 }
 
 export const galleryListReducer = (state = defaultState, action) => {

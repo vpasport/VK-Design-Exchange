@@ -1,0 +1,51 @@
+import { Card, Cell, Avatar } from '@vkontakte/vkui';
+import React from 'react';
+import PropTypes from 'prop-types';
+import StarRatings from 'react-star-ratings';
+
+import DesignerCardClass from '../../utils/Raiting/DesignerCard';
+import { useDispatch } from 'react-redux';
+import { viewContext } from '../../App';
+import { changeActiveDesigner } from '../../store/Designer/actions';
+
+const DesignerItem = ({ designerCard }) => {
+
+    const dispatch = useDispatch();
+    const { setActivePanel } = viewContext();
+
+    const handleDesignerChange = () => {
+        
+        dispatch(changeActiveDesigner(designerCard)); 
+        setActivePanel('designer');
+    }
+
+    return (
+        <Card onClick={handleDesignerChange}>
+            <Cell
+                description={
+                    <div>
+                        <StarRatings
+                            rating={designerCard.getRaiting()}
+                            starRatedColor='#FEDA5B'
+                            numberOfStars={5}
+                            starDimension='15px'
+                            starSpacing='2px'
+                        />
+                        <span style={{marginLeft: 10}}>{designerCard.getRaiting() || 0}</span>
+                    </div>
+                }
+                before={
+                    <Avatar src={designerCard.getPhoto()} />
+                }
+            >
+                {`${designerCard.getFirstName()} ${designerCard.getLastName()}`}
+            </Cell>
+        </Card>
+    )
+}
+
+DesignerItem.propTypes = {
+    designerCard: PropTypes.instanceOf(DesignerCardClass).isRequired,
+}
+
+export default DesignerItem;

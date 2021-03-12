@@ -12,12 +12,14 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
             changeFromId, 
             changeSecondLength, 
             changeFilters, 
-            changeActiveFilters
+            changeActiveFilters,
+            changeListFormat
         } = useMemo(() => getActionsByType(type, dispatch), []);
 
-    const { length, secondLength, fromId, list, filters, activeFilters } = useSelector(state => state[type]);
+    const { length, secondLength, fromId, list, filters, activeFilters, listFormat } = useSelector(state => state[type]);
 
     const [ isFetching, setIsFetching ] = useState(false);
+    const [ isLoad, setIsLoad ] = useState(false);
 
     const changeHasMore = () => {
         //check by to
@@ -45,7 +47,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
             else if(loadLength === null || loadLength > to) nextStep = to;
             else nextStep = null;
             
-            const data = await loadList({from, nextStep, fromId, activeFilters});
+            const data = await loadList({from, to: nextStep, fromId, activeFilters});
 
             changeList(data.list);
 
@@ -53,6 +55,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
             if(!fromId) changeFromId(data.fromId);
             
             changeSecondLength(secondLength + loadLength);
+            setIsLoad(true)
         }
         catch(error){
             useAlert.error('Ошибка', error.message);
@@ -83,9 +86,6 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
         changeActiveFilters(filter);
         updateList();
     }
-    // useEffect(() => {
-    //     console.log(filters)
-    // }, [filters])
 
 
     useEffect(() => {
@@ -101,16 +101,17 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
 
 
     useEffect(() => {
-        if(!filters.length) getFilters();
+        if(!filters.length && loadFilters) getFilters();
         if(!list.length) getList();
+        else setIsLoad(true);
     }, []);
 
 
     return {
         bind: {
-            list, length, secondLength, hasMore, isFetching, filters, activeFilters
+            list, length, secondLength, hasMore, isFetching, filters, activeFilters, listFormat, isLoad
         },
-        getList, updateList, changeActiveFilter
+        getList, updateList, changeActiveFilter, changeListFormat
     }
 
 }

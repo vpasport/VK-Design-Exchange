@@ -13,13 +13,10 @@ class Gallery {
         const allParams = getUrlByJson(params);
 
         const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews${allParams}`);
-        //const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews`);
 
 
         if (data.isSuccess){
             let designCards = data.previews.map(el => new DesignCard(el));
-
-            console.log(data)
 
             const { from_id: fromId } = data;
 

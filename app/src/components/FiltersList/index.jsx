@@ -6,7 +6,7 @@ import { Icon16ArticleOutline } from '@vkontakte/icons';
 
 import styles from './style.module.scss';
 
-const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeActiveFilter }) => {
+const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeActiveFilter, isChangeSize }) => {
 
     const sliderSwitchOptions =
         [{
@@ -34,7 +34,7 @@ const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeAct
             {filters && 
                 <div className={styles.list}>
                     {'tags' in filters && filters.tags.map((el) => {
-                            const isActive = activeFilters.tags.some(activeEl => el.id === activeEl);
+                            const isActive = activeFilters.tags && activeFilters.tags.some(activeEl => el.id === activeEl);
 
                             return (
                                 <Button
@@ -49,7 +49,7 @@ const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeAct
                     }
                 </div>
             }
-            {size &&
+            {isChangeSize &&
                 <div className={styles.bottom}>
                     <SliderSwitch options={sliderSwitchOptions}
                         activeValue={size}
@@ -62,10 +62,10 @@ const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeAct
 }
 
 FiltersList.propTypes = {
-    filters: PropTypes.array.isRequired,
+    filters: PropTypes.object,
     size: PropTypes.string,
     changeListFormat: PropTypes.func,
-    activeFilters: PropTypes.array.isRequired,
+    activeFilters: PropTypes.object,
     changeActiveFilter: PropTypes.func.isRequired
 }
 
