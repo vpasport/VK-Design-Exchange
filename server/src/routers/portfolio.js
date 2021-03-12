@@ -42,7 +42,7 @@ async function getPreviews({ query: { from, to, from_id, tags } }, res) {
 async function getWork({ params: { id }, session }, res) {
     let result;
 
-    if (session.role.indexOf('adimn') !== -1) {
+    if ( session.role !== undefined && session.role.indexOf('adimn') !== -1) {
         result = await getWork_(
             id, true
         );
