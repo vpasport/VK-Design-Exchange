@@ -19,35 +19,34 @@ const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeAct
         }]
 
     const changeTag = (id) => {
-        const newFilter = [...activeFilters];
+        const newFilter = [...(activeFilters.tags || [])];
         const findedActiveFilter = newFilter.indexOf(id);
 
-        if(findedActiveFilter == -1) newFilter.push(id);
+        if (findedActiveFilter == -1) newFilter.push(id);
         else newFilter.splice(findedActiveFilter, 1);
 
-        console.log(newFilter)
-
-        changeActiveFilter(newFilter);
+        changeActiveFilter({...activeFilters, tags: newFilter});
     }
 
 
     return (
         <>
-            {filters.length &&
+            {filters && 
                 <div className={styles.list}>
-                    {filters.map((el) => {
-                        const isActive = activeFilters.some(activeEl => el.id === activeEl);
+                    {'tags' in filters && filters.tags.map((el) => {
+                            const isActive = activeFilters.tags.some(activeEl => el.id === activeEl);
 
-                        return (
-                            <Button
-                                mode={isActive ? 'primary' : 'secondary'}
-                                key={el.id}
-                                onClick={() => changeTag(el.id)}
-                            >
-                                {el.name}
-                            </Button>
-                        )
-                    })}
+                            return (
+                                <Button
+                                    mode={isActive ? 'primary' : 'secondary'}
+                                    key={el.id}
+                                    onClick={() => changeTag(el.id)}
+                                >
+                                    {el.name}
+                                </Button>
+                            )
+                        })
+                    }
                 </div>
             }
             {size &&

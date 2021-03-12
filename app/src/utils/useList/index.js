@@ -45,7 +45,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
             else if(loadLength === null || loadLength > to) nextStep = to;
             else nextStep = null;
             
-            const data = await loadList(from, nextStep, fromId, activeFilters);
+            const data = await loadList({from, nextStep, fromId, activeFilters});
 
             changeList(data.list);
 
@@ -62,7 +62,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
     const getFilters = async () => {
         try{
             const data = await loadFilters();
-            changeFilters(data.tags);
+            changeFilters(data);
         }
         catch(error){
             useAlert.error('Ошибка', error.message);
