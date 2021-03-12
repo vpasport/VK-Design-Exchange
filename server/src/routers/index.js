@@ -4,6 +4,12 @@ const portfolio = require('./portfolio');
 const designers = require('./designers');
 const tags = require('./tags');
 const reviews = require('./reviews');
+const users = require('./users');
+
+const {
+    getRoles
+} = require('../database/users');
+
 const fetch = require('node-fetch');
 
 const {
@@ -18,9 +24,23 @@ const {
 
 const { oauth } = require('../helper/oauth');
 
-function auth(response, req, res) {
-    req.session.vk_id = response.user_id;
-    res.redirect(req.query.state);
+async function auth(response, req, res) {
+    if(response.error !== undefined){
+        res.redirect(`${process.env.CLIENT}/login/error`);
+    }
+
+    let roles = await getRoles(response.user_id);
+
+    if (roles.isSuccess) {
+        req.session.vk_id = response.user_id;
+        req.session.role = roles.roles;
+
+        res.redirect(req.query.state);
+
+        return;
+    }
+
+    res.redirect(`${process.env.CLIENT}/login/error`);
 }
 
 function addState(params, req, res) {
@@ -28,6 +48,16 @@ function addState(params, req, res) {
         ...params,
         state: req.query.redirect_uri
     }
+}
+
+async function logout(req, res) {
+    req.session.destroy(err => {
+        if (err) {
+            res.sendStatus(503);
+            return;
+        }
+        res.sendStatus(204);
+    })
 }
 
 function index(server) {
@@ -38,6 +68,10 @@ function index(server) {
     server.use('/tags', tags);
 
     server.use('/reviews', reviews);
+
+    server.use('/users', users);
+
+    server.get('/logout', logout);
 
     oauth({
         app: server,

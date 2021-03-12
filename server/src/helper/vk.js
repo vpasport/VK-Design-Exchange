@@ -18,7 +18,7 @@ async function getUserInfo(vk_id){
         
         return {
             isSuccess: true,
-            user
+            user: user[0]
         }
     } catch (e){
         return {

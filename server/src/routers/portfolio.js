@@ -6,6 +6,7 @@ const { promises: { writeFile } } = require('fs');
 
 const { Router } = require('express');
 const {
+    getAllPreviews: getAllPreviews_,
     getPreviewsFromTo: getPreviewsFromTo_,
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
@@ -13,14 +14,20 @@ const {
     addTags: addTags_
 } = require('../database/portfolio');
 
-async function getPreviews({ query: { from = 0, to = 20, from_id, tags } }, res) {
-    if(tags !== undefined) tags = tags.split(',')
+async function getPreviews({ query: { from, to, from_id, tags } }, res) {
+    if (tags !== undefined) tags = tags.split(',')
 
     let result;
 
-    if(tags === undefined ){
+    if (from === undefined && to === undefined) {
+        result = await getAllPreviews_();
+        from = 0;
+        to = 20
+    }
+
+    if (tags === undefined) {
         result = await getPreviewsFromTo_(from, to, from_id);
-    }else{
+    } else {
         result = await getPreviewsTags_(from, to, from_id, tags)
     }
 
@@ -32,10 +39,18 @@ async function getPreviews({ query: { from = 0, to = 20, from_id, tags } }, res)
     res.status(500).json(result);
 }
 
-async function getWork({ params: { id } }, res) {
-    let result = await getWork_(
-        id
-    );
+async function getWork({ params: { id }, session }, res) {
+    let result;
+
+    if (session.role.indexOf('adimn') !== -1) {
+        result = await getWork_(
+            id, true
+        );
+    } else {
+        result = await getWork_(
+            id, false
+        );
+    }
 
     if (result.isSuccess) {
         res.json(result);

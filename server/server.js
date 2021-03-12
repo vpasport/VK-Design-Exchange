@@ -50,7 +50,7 @@ server.use(
 
 server.use((req, res, next) => {
     // console.log(`[INFO] request to ${req.url}`);
-    // console.log(req.session.rnd);
+    // console.log(req.session.role);
     next();
 });
 

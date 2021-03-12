@@ -2,6 +2,35 @@
 
 const pool = require('./pg/pool').getPool();
 
+async function getAllPreviews(){
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try{
+        let previews = (await client.query(
+            `select id, title, preview, description 
+                from portfolio
+            order by id desc`
+        )).rows;
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            previews
+        }
+
+    } catch (e){
+        await client.query('rollback');
+        client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function getPreviewsFromTo(from, to, from_id) {
     const client = await pool.connect();
     await client.query('begin');
@@ -128,22 +157,41 @@ async function getPreviewsTags(from, to, from_id, tags) {
 
 }
 
-async function getWork(id) {
+async function getWork(id, full) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
         let work = (await client.query(
-            `select p.project_description, p.task_description, p.completed_work, p.work_image
+            `${full !== true ? 'select *' : 'select p.project_description, p.task_description, p.completed_work, p.work_image' }
                 from portfolio as p
             where p.id = $1`,
+            [id]
+        )).rows[0];
+
+        let tags = (await client.query(
+            `select * 
+                from tags as t, tags_portfolios as tp
+            where 
+                tp.portfolio_id = $1 and t.id = tp.tag_id`,
+            [id]
+        )).rows;
+
+        let user = (await client.query(
+            `select d.vk_id, d.first_name, d.last_name, d.id, d.photo, d.rating
+                from designers as d, designers_portfolios as dp
+            where 
+                dp.portfolio_id = $1 and d.id = dp.designer_id`,
             [id]
         )).rows[0];
 
         if (work !== undefined) {
             await client.query('commit');
             client.release();
-    
+
+            if(tags.length > 0) work.tags = tags;
+            if(user !== undefined) work.author = user;
+
             return {
                 isSuccess: true,
                 work
@@ -231,6 +279,7 @@ async function addTags(portfolio_id, tag_ids) {
 }
 
 module.exports = {
+    getAllPreviews,
     getPreviewsFromTo,
     getPreviewsTags,
     getWork,
