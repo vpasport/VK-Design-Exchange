@@ -1,9 +1,10 @@
 import { Button } from 'primereact/button';
 import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
+import { InputText } from "primereact/inputtext";
 
-const WorkCard = ({ work }) => {
-    console.log(work)
+const WorkCard = ({ work, edit }) => {
+    console.log(edit)
     return (
         <>
             <div style={{ width: '40vw', margin: 'auto' }} className='p-mt-6'>
@@ -23,7 +24,20 @@ const WorkCard = ({ work }) => {
                 </div>
                 <div>
                     <h3>Название:</h3>
-                    <p><b>{work?.title}.</b> {work?.description}</p>
+                    {edit ?
+                        <>
+                            <div className="p-inputgroup p-m-1">
+                                <p>Название:</p>
+                                <InputText className='p-ml-3' placeholder={work?.title || 'Название'} />
+                            </div>
+                            <div className="p-inputgroup p-m-1">
+                                <p>Описание:</p>
+                                <InputText className='p-ml-3' placeholder={work?.description || 'Описание'} />
+                            </div>
+                        </>
+                        :
+                        <p><b>{work?.title}.</b> {work?.description}</p>
+                    }
                 </div>
             </div>
             <div style={{ textAlign: 'center' }} className='p-mt-6 p-mb-6'>

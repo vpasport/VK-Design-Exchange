@@ -11,7 +11,7 @@ async function getDesigners() {
 
     try {
         let designers = (await client.query(
-            `select d.id, d.vk_id, d.rating
+            `select d.id, d.vk_id, d.rating, d.first_name, d.last_name, d.photo
                 from designers as d`
         )).rows;
 
@@ -38,7 +38,7 @@ async function getDesigner(id) {
 
     try {
         let designer = (await client.query(
-            `select d.id, d.vk_id, d.rating, d.experience, d.specialization
+            `select d.id, d.vk_id, d.rating, d.experience, d.specialization, d.photo, d.first_name, d.last_name
                 from designers as d
             where id = $1`,
             [id]
@@ -54,8 +54,7 @@ async function getDesigner(id) {
             }
         }
 
-        await client.query('rollback');
-        client.release();
+        throw 'Designer not found';
     } catch (e) {
         await client.query('rollback');
         client.release();
@@ -105,6 +104,38 @@ async function getReviews(id){
     }
 }
 
+async function getDesignerPreviews(id){
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try{
+        let previews = (await client.query(
+            `select p.id, p.title, p.preview, p.description
+                from portfolio as p, designers_portfolios as dp
+            where 
+                p.id = dp.portfolio_id and dp.designer_id = $1`,
+            [id]
+        )).rows;
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            previews
+        }
+    } catch(e){
+        await client.query('rollback');
+        client.release();
+
+        console.error(e)
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function createDesigner(
     vk_id, experience, specialization
 ){
@@ -128,7 +159,10 @@ async function createDesigner(
 
         designer = await getUserInfo(vk_id);
 
-        console.log(designer)
+        designer = (await client.query(
+            `insert into designers
+                ()`
+        ))
     } catch (e){
         await client.query('rollback');
         client.release();
@@ -143,5 +177,6 @@ module.exports = {
     getDesigners,
     getDesigner,
     getReviews,
+    getDesignerPreviews,
     createDesigner
 }

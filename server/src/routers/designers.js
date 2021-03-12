@@ -5,13 +5,14 @@ const {
     getDesigners: getDesigners_,
     getDesigner: getDesigner_,
     getReviews: getReviews_,
+    getDesignerPreviews: getDesignerPreviews_,
     createDesigner: createDesigner_
 } = require('../database/designers');
 
-async function getDesigners(req, res){
+async function getDesigners(req, res) {
     let result = await getDesigners_();
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
         res.json(result);
         return;
     }
@@ -19,10 +20,10 @@ async function getDesigners(req, res){
     res.sendStatus(204);
 }
 
-async function getDesigner({params: {id}}, res){
+async function getDesigner({ params: { id } }, res) {
     let result = await getDesigner_(id);
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
         res.json(result);
         return;
     }
@@ -30,10 +31,10 @@ async function getDesigner({params: {id}}, res){
     res.sendStatus(204);
 }
 
-async function getReviews({params: {id}}, res){
+async function getReviews({ params: { id } }, res) {
     let result = await getReviews_(id);
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
         res.json(result);
         return;
     }
@@ -41,22 +42,34 @@ async function getReviews({params: {id}}, res){
     res.sendStatus(204);
 }
 
-async function createDesigner({body: {vk_id}}, res){
+async function getDesignerPreviews({ params: { id } }, res) {
+    let result = await getDesignerPreviews_(id);
+
+    if (result.isSuccess) {
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(520);
+}
+
+async function createDesigner({ body: { vk_id } }, res) {
     let result = await createDesigner_(
         vk_id,
-        undefined, 
+        undefined,
         undefined
     )
 
     res.sendStatus(204);
 }
 
-function index(){
+function index() {
     const router = new Router();
 
     router.get('/', getDesigners);
     router.get('/:id', getDesigner);
     router.get('/:id/reviews', getReviews);
+    router.get('/:id/previews', getDesignerPreviews);
 
     router.post('/', createDesigner);
 

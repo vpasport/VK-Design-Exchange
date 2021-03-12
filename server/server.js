@@ -54,6 +54,14 @@ server.use((req, res, next) => {
     next();
 });
 
+// const {
+//     updaetInfo
+// } = require('./src/helper/vk');
+
+// server.get('/', (req, res) => {
+//     updaetInfo()
+// })
+
 initRouters(server);
 
 http.createServer(server).listen(process.env.PORT, () => {

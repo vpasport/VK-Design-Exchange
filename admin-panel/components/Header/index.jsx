@@ -7,9 +7,9 @@ const Header = ({ url, user }) => {
     const router = useRouter();
 
     const items = [
-        {label: 'Главная', url: '/admin'},
+        { label: 'Главная', url: '/admin' },
         { label: 'Все работы', icon: 'pi pi-fw pi-desktop', url: '/admin/portfolios' },
-        { label: 'Calendar', icon: 'pi pi-fw pi-calendar' },
+        { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: '/admin/designers' },
         { label: 'Edit', icon: 'pi pi-fw pi-pencil' },
         { label: 'Documentation', icon: 'pi pi-fw pi-file' },
         { label: 'Settings', icon: 'pi pi-fw pi-cog' }

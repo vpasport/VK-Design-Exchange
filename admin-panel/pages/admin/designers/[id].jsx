@@ -1,39 +1,38 @@
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import WorkCard from '../../../components/WorkCard';
-import Link from 'next/link';
 import { Button } from 'primereact/button';
+import { useEffect, useState } from 'react';
+import DesignerCard from '../../../components/DesignerCard';
+import { useRouter } from 'next/router';
 
-const Work = ({ user }) => {
+const Designer = ({user}) => {
     const router = useRouter();
-    const id = router.query.id
+    const id = router.query.id;
 
-    const [work, setWork] = useState(null);
+    const [designer, setDesigner] = useState(null);
     const [edit, setEdit] = useState(false);
 
-    useEffect(async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}`, {
+    useEffect( async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
             credentials: 'include'
         });
         const json = await response.json()
 
-        setWork(json?.work);
-    }, [])
+        setDesigner(json?.designer);
+    }, [] )
 
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/portfolios'
+                url='/admin/designers'
             />
             <div style={{ width: '40%', margin: 'auto' }} className='p-mt-6'>
                 <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={()=>setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={()=>setEdit(false)}/>}
                 <Button label='Удалить' className='p-m-2 p-button-danger'></Button>
             </div>
-            <WorkCard work={work} edit={edit} />
+            <DesignerCard designer={designer} edit={edit} />
 
         </Container>
     )
@@ -70,4 +69,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Work;
+export default Designer;

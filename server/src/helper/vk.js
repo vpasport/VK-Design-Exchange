@@ -1,6 +1,7 @@
 "use strict";
 
 const {API} = require('vk-io');
+const pool = require('../database/pg/pool').getPool();
 
 const api = new API({
     token : process.env.APP_TOKEN
@@ -27,6 +28,35 @@ async function getUserInfo(vk_id){
     }
 }
 
+async function updaetInfo(){
+    const client = await pool.connect();
+    await client.query('begin');
+
+    let designers = (await client.query(
+        `select vk_id, id
+            from designers`
+    )).rows;
+
+    await designers.map(async el => {
+        let designer = await getUserInfo(el.vk_id);
+
+        await client.query(
+            `update designers
+            set
+                first_name = $1,
+                last_name = $2,
+                photo = $3
+            where
+                id = $4`,
+            [designer.user.first_name, designer.user.last_name, designer.user.photo_max, el.id]
+        )
+    })
+
+    await client.query('commit');
+    client.release();
+}
+
 module.exports = {
-    getUserInfo
+    getUserInfo,
+    // updaetInfo
 }
