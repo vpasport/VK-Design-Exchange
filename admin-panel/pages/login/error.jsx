@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from 'primereact/button';
+import styles from '../../styles/Home.module.css';
 
 const LoginError = () => {
     const uri = encodeURIComponent(`${process.env.NEXT_PUBLIC_SELF_URL}/admin`);
@@ -9,16 +10,13 @@ const LoginError = () => {
             <div className={styles.container}>
                 <main className={styles.main}>
                     <h1 className={styles.title}>
-                        Доска почёта #ТаняДизайн
+                        Ошибка авторизации
                     </h1>
 
                     <Button className='p-mt-6'>
-                        <Link href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/vk?redirect_uri=${uri}`}>Войти через ВКонтакте</Link>
+                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}`}>На главную</Link>
                     </Button>
                 </main>
-                <Button>
-                    <Link href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/vk?redirect_uri=${uri}`}>Войти через ВКонтакте</Link>
-                </Button>
             </div>
         </>
     )
