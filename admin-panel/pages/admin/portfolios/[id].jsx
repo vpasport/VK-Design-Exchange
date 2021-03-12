@@ -8,7 +8,7 @@ import { Button } from 'primereact/button';
 
 const Work = ({ user }) => {
     const router = useRouter();
-    const id = router.query.id
+    const id = router.query.id;
 
     const [work, setWork] = useState(null);
     const [edit, setEdit] = useState(false);
@@ -29,8 +29,8 @@ const Work = ({ user }) => {
                 url='/admin/portfolios'
             />
             <div style={{ width: '40%', margin: 'auto' }} className='p-mt-6'>
-                <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={()=>setEdit(true)}></Button>
-                {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={()=>setEdit(false)}/>}
+                <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
+                {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
                 <Button label='Удалить' className='p-m-2 p-button-danger'></Button>
             </div>
             <WorkCard work={work} edit={edit} />

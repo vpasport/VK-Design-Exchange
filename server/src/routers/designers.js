@@ -6,7 +6,8 @@ const {
     getDesigner: getDesigner_,
     getReviews: getReviews_,
     getDesignerPreviews: getDesignerPreviews_,
-    createDesigner: createDesigner_
+    createDesigner: createDesigner_,
+    deleteDesigner: deleteDesigner_
 } = require('../database/designers');
 
 async function getDesigners(req, res) {
@@ -53,13 +54,29 @@ async function getDesignerPreviews({ params: { id } }, res) {
     res.sendStatus(520);
 }
 
-async function createDesigner({ body: { vk_id } }, res) {
-    let result = await createDesigner_(
-        vk_id,
-        undefined,
-        undefined
-    )
+async function createDesigner({ body: { vk_id }, session }, res) {
+    if(session.role !== undefined && session.role.indexOf('admin') !== -1){
+        let result = await createDesigner_(
+            vk_id
+        )
 
+        if(result.isSuccess){
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(403);
+}
+
+async function deleteDesigner({body: {id}, session}, res){
+    if(session.role !== undefined && session.role.indexOf('admin') !== -1){
+        let result = await deleteDesigner_(id);
+    }
+    
     res.sendStatus(204);
 }
 
@@ -72,6 +89,8 @@ function index() {
     router.get('/:id/previews', getDesignerPreviews);
 
     router.post('/', createDesigner);
+
+    router.delete('/', deleteDesigner);
 
     return router;
 }

@@ -44,7 +44,7 @@ async function getDesigner(id) {
             [id]
         )).rows[0];
 
-        if( designer !== undefined ){
+        if (designer !== undefined) {
             await client.query('commit');
             client.release();
 
@@ -65,11 +65,11 @@ async function getDesigner(id) {
     }
 }
 
-async function getReviews(id){
+async function getReviews(id) {
     const client = await pool.connect();
     await client.query('begin');
 
-    try{
+    try {
         let reviews = (await client.query(
             `select * 
                 from reviews
@@ -83,10 +83,10 @@ async function getReviews(id){
             [id]
         )).rows;
 
-        if(reviews !== undefined ){
+        if (reviews !== undefined) {
             await client.query('commit');
             client.release();
-    
+
             return {
                 isSuccess: true,
                 reviews
@@ -94,7 +94,7 @@ async function getReviews(id){
         }
 
         throw 'reviews not found';
-    } catch (e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
 
@@ -104,11 +104,11 @@ async function getReviews(id){
     }
 }
 
-async function getDesignerPreviews(id){
+async function getDesignerPreviews(id) {
     const client = await pool.connect();
     await client.query('begin');
 
-    try{
+    try {
         let previews = (await client.query(
             `select p.id, p.title, p.preview, p.description
                 from portfolio as p, designers_portfolios as dp
@@ -124,7 +124,7 @@ async function getDesignerPreviews(id){
             isSuccess: true,
             previews
         }
-    } catch(e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
 
@@ -136,36 +136,85 @@ async function getDesignerPreviews(id){
     }
 }
 
-async function createDesigner(
-    vk_id, experience, specialization
-){
+async function createDesigner(vk_id) {
     const client = await pool.connect();
     await client.query('begin');
 
-    try{
-        if (vk_id.includes('https')){
+    try {
+        if (vk_id.includes('https')) {
             vk_id = vk_id.match(/https?:\/\/.*\/(.*)\/?/)[1];
         }
 
-        let designer = (await client.query(
+        let designer = await getUserInfo(vk_id);
+
+        if (!designer.isSuccess) throw 'vk user not found';
+
+        let designer_ = (await client.query(
             `select d.id
                 from designers as d
             where
                 d.vk_id = $1`,
-            [vk_id]
+            [designer.user.id]
         )).rows[0];
 
-        if(designer !== undefined ) throw 'user with the same name alredy exists';
+        if (designer_ !== undefined) throw 'user with the same name alredy exists';
 
-        designer = await getUserInfo(vk_id);
 
         designer = (await client.query(
             `insert into designers
-                ()`
-        ))
-    } catch (e){
+                (vk_id, first_name, last_name, photo)
+            values
+                ($1, $2, $3, $4)
+            returning id`,
+            [designer.user.id, designer.user.first_name, designer.user.last_name, designer.user.photo_max]
+        )).rows[0].id;
+
+        if (designer !== undefined) {
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                id: designer
+            }
+        }
+
+        throw 'Failed to create designer';
+    } catch (e) {
         await client.query('rollback');
         client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function deleteDesigner(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `delete from designers
+            where
+                id = $1`,
+            [id]
+        );
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false
@@ -178,5 +227,6 @@ module.exports = {
     getDesigner,
     getReviews,
     getDesignerPreviews,
-    createDesigner
+    createDesigner,
+    deleteDesigner
 }

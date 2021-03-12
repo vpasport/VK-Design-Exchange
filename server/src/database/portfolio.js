@@ -119,7 +119,7 @@ async function getPreviewsTags(from, to, from_id, tags) {
         params.push(tags);
 
         let { rows: previews } = await client.query(
-            `select p.id, p.title, p.preview, p.description, count( 1 ) over ()::int  
+            `select distinct p.id, p.title, p.preview, p.description, count( 1 ) over ()::int  
                 from portfolio as p, tags_portfolios as tp
             where p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
             order by p.id desc

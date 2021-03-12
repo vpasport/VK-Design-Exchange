@@ -13,12 +13,19 @@ const Designer = ({user}) => {
     const [edit, setEdit] = useState(false);
 
     useEffect( async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
             credentials: 'include'
         });
-        const json = await response.json()
+        const {designer} = await response.json()
 
-        setDesigner(json?.designer);
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}/previews`, {
+            credentials: 'include'
+        });
+        const {previews} = await response.json();
+
+        designer.previews = previews;
+
+        setDesigner(designer);
     }, [] )
 
     return (

@@ -3,6 +3,8 @@ import Header from '../../../components/Header';
 import { useEffect, useState } from 'react';
 
 import dynamic from 'next/dynamic';
+import { Button } from 'primereact/button';
+import Link from 'next/link';
 
 const DesignersTable = dynamic(
     () => import('../../../components/DesignersTable'),
@@ -19,14 +21,39 @@ const Designers = ({ user }) => {
         setDesigners(designers);
     }, [])
 
+    const deleteDesigner = async (id) => {
+        console.log(id)
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id
+            })
+        })
+
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/`);
+        const { designers } = await response.json();
+
+        setDesigners(designers);
+    }
+
     return (
         <Container>
             <Header
                 user={user}
                 url='/admin/designers'
             />
+            <div className='p-m-6'>
+                <Button>
+                    <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/designers/create`}>Создать</Link>
+                </Button>
+            </div>
             <DesignersTable
                 designers={designers}
+                deleteDesigner={deleteDesigner}
             />
         </Container>
     )

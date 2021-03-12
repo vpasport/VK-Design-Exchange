@@ -5,8 +5,7 @@ import { Rating } from 'primereact/rating';
 import { Button } from 'primereact/button';
 import Link from 'next/link';
 
-const DesignersTable = ({ designers }) => {
-    console.log(designers);
+const DesignersTable = ({ designers, deleteDesigner }) => {
 
     const photo = (designer) => {
         return (
@@ -28,10 +27,11 @@ const DesignersTable = ({ designers }) => {
 
     const buttons = (designer) => {
         return (
-            <div className="p-multiselect-representative-option">
+            <div style={{display: 'inline-block'}}>
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/designers/${designer.id}`}>Редактировать</Link>
                 </Button>
+                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => deleteDesigner(designer.id)}/>
             </div>
         )
     }
@@ -54,7 +54,7 @@ const DesignersTable = ({ designers }) => {
                     <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Search" />
                     <Column field='last_name' header='Фамилия' sortable filter filterPlaceholder="Search" />
                     <Column field="rating" header="Рейтинг" body={rating} />
-                    <Column body={buttons} headerStyle={{ width: '20%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
+                    <Column body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
                 </DataTable>
             </div>
         </>
