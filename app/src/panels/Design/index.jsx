@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div } from '@vkontakte/vkui';
 
-import DesignCard from '../../utils/Gallery/DesignCard';
 import Info from './Info';
 
 import styles from './style.module.scss';
-import { alertContext, viewContext } from '../../App';
+import { alertContext } from '../../App';
 import { getDesignInfoById } from '../../utils/helpers';
 import { connect } from 'react-redux';
 import { changeActiveDesignId } from '../../store/Design/actions';
+import useRouter from '../../utils/useRouter';
 
 const Design = ({ id, activeDesignId }) => {
     
-    const { setActivePanel } = viewContext();
     const { useAlert } = alertContext();
+    const router = useRouter();
 
     const [designInfo, setDesignInfo] = useState(null);
 
@@ -42,7 +42,7 @@ const Design = ({ id, activeDesignId }) => {
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={() => setActivePanel('gallery')} />}
+                left={<PanelHeaderBack onClick={() => router.back()} />}
             >
                 Карточка сайта
             </PanelHeader>

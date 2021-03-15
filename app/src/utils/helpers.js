@@ -49,7 +49,6 @@ const getDesignInfoById = async (id) => {
 }
 
 const getDesignerInfoById = async (id) => {
-    console.log(id)
     const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${id}`);
 
     if(data.isSuccess){

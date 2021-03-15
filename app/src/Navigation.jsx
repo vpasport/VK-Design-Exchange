@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     Epic,
     SplitCol,
@@ -19,11 +19,13 @@ import GalleryView from './views/GalleryView';
 import AboutTableView from './views/AboutTableView';
 import { sessionContext, viewContext } from './App';
 import RaitingView from './views/RaitingView';
+import useRouter from './utils/useRouter';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
 
     const { isDesktop, setIsDesktop } = sessionContext();
-    const { activeStory, setActiveStoryAndPanel } = viewContext();
+    
+    const router = useRouter();
 
     const params = [
         {
@@ -57,8 +59,8 @@ const Panels = withAdaptivity(({ viewWidth }) => {
         >
             {isDesktop && (
                 <DesctopSideBar
-                    activeStory={activeStory}
-                    onStoryChange={(story, panel) => setActiveStoryAndPanel(story, panel)}
+                    activeStory={router.bind.activeStory}
+                    onStoryChange={(story, panel) => router.setActiveStoryAndPanel(story, panel)}
                     isDesktop={isDesktop}
                     params={params}
                 />
@@ -69,10 +71,10 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                 width={isDesktop ? '560px' : '100%'}
                 maxWidth={isDesktop ? '560px' : '100%'}
             >
-                <Epic activeStory={activeStory} tabbar={!isDesktop &&
+                <Epic activeStory={router.bind.activeStory} tabbar={!isDesktop &&
                     <MobileSideBar
-                        activeStory={activeStory}
-                        onStoryChange={(story, panel) => setActiveStoryAndPanel(story, panel)}
+                        activeStory={router.bind.activeStory}
+                        onStoryChange={(story, panel) => router.setActiveStoryAndPanel(story, panel)}
                         params={params}
                     />
                 }>

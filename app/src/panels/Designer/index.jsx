@@ -1,16 +1,17 @@
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { alertContext, viewContext } from '../../App';
+import { alertContext } from '../../App';
 import { connect } from 'react-redux';
 
 import { changeActiveDesignerId } from '../../store/Designer/actions';
 import { getDesignerInfoById } from '../../utils/helpers';
+import useRouter from '../../utils/useRouter';
 
 const Designer = ({id, activeDesignerId}) => {
 
-    const { setActivePanel } = viewContext();
     const { useAlert } = alertContext();
+    const router = useRouter();
 
     const [ designerInfo, setDesignerInfo ] = useState(null);
 
@@ -37,7 +38,7 @@ const Designer = ({id, activeDesignerId}) => {
     return (
         <Panel id={id}>
             <PanelHeader left={
-                <PanelHeaderBack onClick={() => setActivePanel('raiting')}/>}
+                <PanelHeaderBack onClick={() => router.back()}/>}
             >
                 Дизайнер
             </PanelHeader>

@@ -12,7 +12,7 @@ import GalleryItem from '../../components/Gallery/GalleryItem';
 
 const Gallery = ({ id }) => {
 
-    const galleryList = useMemo(() => new GalleryClass(), [])
+    const galleryList = useMemo(() => new GalleryClass(), []);
 
     return (
         <Panel id={id}>

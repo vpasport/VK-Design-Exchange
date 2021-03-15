@@ -1,19 +1,19 @@
-import React, {useState, useEffect} from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { View } from '@vkontakte/vkui';
 
 import Gallery from '../../panels/Gallery';
 import Design from '../../panels/Design';
-import { alertContext, viewContext } from '../../App';
+import { alertContext } from '../../App';
+import useRouter from '../../utils/useRouter';
 
 const GalleryView = ({ id }) => {
 
     const { poput } = alertContext();
-    const { activePanel } = viewContext();
-
+    const router = useRouter();
 
     return (
-        <View id={id} activePanel={activePanel} popout={poput}>
+        <View id={id} activePanel={router.bind.activePanel} popout={poput}>
             <Gallery id='gallery' />
             <Design id='design' />
         </View>

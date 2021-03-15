@@ -11,11 +11,9 @@ import useSpinnerHook from './components/poputs/spinner/useSpinner';
 import Panels from './Navigation';
 import User from './utils/User';
 
-const ViewContext = React.createContext();
 const AlertContext = React.createContext();
 const SessionContext = React.createContext();
 
-const viewContext = () => useContext(ViewContext);
 const alertContext = () => useContext(AlertContext);
 const sessionContext = () => useContext(SessionContext);
 
@@ -24,9 +22,7 @@ const App = () => {
 
 	const [userInfo, setUserInfo] = useState(null);
 	const [poput, setPoput] = useState(null);
-	const [activeStory, setActiveStory] = useState('gallery');
-	const [activePanel, setActivePanel] = useState('gallery');
-	const [isDesktop, setIsDesktop] = useState(false) 
+	const [isDesktop, setIsDesktop] = useState(false);
 
 	const useAlert = useAlertHook(setPoput);
 	const useSpinner = useSpinnerHook(setPoput);
@@ -59,27 +55,19 @@ const App = () => {
 		fetchData();
 	}, []);
 
-	const setActiveStoryAndPanel = (story, panel) => {
-		setActiveStory(story);
-		setActivePanel(panel);
-	}
-
-	const viewContextValue = { setActivePanel, setActiveStory, activePanel, activeStory, setActiveStoryAndPanel }
 	const alertContextValue = { useAlert, useSpinner, poput }
 	const sessionContextValue = { isDesktop, setIsDesktop, userInfo }
 
 	return (
 		<AdaptivityProvider>
-			<ViewContext.Provider value={viewContextValue}>
-				<AlertContext.Provider value={alertContextValue}>
-					<SessionContext.Provider value={sessionContextValue}>
-						<Panels />
-					</SessionContext.Provider>
-				</AlertContext.Provider>
-			</ViewContext.Provider>
+			<AlertContext.Provider value={alertContextValue}>
+				<SessionContext.Provider value={sessionContextValue}>
+					<Panels />
+				</SessionContext.Provider>
+			</AlertContext.Provider>
 		</AdaptivityProvider>
 	);
 };
 
-export { viewContext, alertContext, sessionContext }
+export { alertContext, sessionContext }
 export default App;

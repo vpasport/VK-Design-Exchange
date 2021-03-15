@@ -5,11 +5,11 @@ import { Icon24Gallery } from '@vkontakte/icons';
 import { Icon16StarCircle } from '@vkontakte/icons';
 
 import styles from './style.module.scss';
-import { viewContext } from '../../App';
+import useRouter from '../../utils/useRouter';
 
 const AboutTable = ({id}) => {
 
-    const { setActiveStoryAndPanel } = viewContext();
+    const router = useRouter();
 
     return (
         <Panel id={id}>
@@ -35,7 +35,7 @@ const AboutTable = ({id}) => {
                         size='l' 
                         className={styles.button}
                         before={<Icon16StarCircle />}
-                        onClick={() => setActiveStoryAndPanel('raiting', 'raiting')}
+                        onClick={() => router.setActiveStoryAndPanel('raiting', 'raiting')}
                         
                     >
                         Рейтинг дизайнеров
@@ -45,7 +45,7 @@ const AboutTable = ({id}) => {
                         size='l' 
                         className={styles.button}
                         before={<Icon24Gallery />}
-                        onClick={() => setActiveStoryAndPanel('gallery', 'gallery')}
+                        onClick={() => router.setActiveStoryAndPanel('gallery', 'gallery')}
                     >
                         Галерея работ
                     </Button>

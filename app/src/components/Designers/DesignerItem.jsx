@@ -1,22 +1,22 @@
 import { Card, Cell, Avatar } from '@vkontakte/vkui';
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import StarRatings from 'react-star-ratings';
 
 import DesignerCardClass from '../../utils/Raiting/DesignerCard';
 import { useDispatch } from 'react-redux';
-import { viewContext } from '../../App';
 import { changeActiveDesignerId } from '../../store/Designer/actions';
+import useRouter from '../../utils/useRouter';
 
 const DesignerItem = ({ designerCard }) => {
 
     const dispatch = useDispatch();
-    const { setActivePanel } = viewContext();
+    const router = useRouter();
 
     const handleDesignerChange = () => {
         
         dispatch(changeActiveDesignerId(designerCard.getId())); 
-        setActivePanel('designer');
+        router.setActivePanel('designer');
     }
 
     return (
