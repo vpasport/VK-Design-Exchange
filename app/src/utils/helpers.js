@@ -1,3 +1,9 @@
+import axios from 'axios';
+import Design from './Gallery/Design';
+import Designer from './Raiting/Designer';
+
+const { REACT_APP_API_URL } = process.env;
+
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
@@ -13,27 +19,49 @@ const getUrlByJson = (obj) => {
     const url = new URLSearchParams();
 
     const generateUrl = (obj) => {
-        for (let [ key, value ] of Object.entries(obj)) {
-            if(typeof value === 'object' && value !== null && !Array.isArray(value)) generateUrl(value)
-            else if (value !== null){
-                if(Array.isArray(value) && value.length) url.append(key, value);
-                else if(typeof value === 'number') url.append(key, value);
-            } 
+        for (let [key, value] of Object.entries(obj)) {
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) generateUrl(value)
+            else if (value !== null) {
+                if (Array.isArray(value) && value.length) url.append(key, value);
+                else if (typeof value === 'number') url.append(key, value);
+            }
         }
     }
 
     generateUrl(obj);
-    
+
     let allParams = url.toString();
-    if(allParams.length) allParams = `?${allParams}`;
+    if (allParams.length) allParams = `?${allParams}`;
 
     allParams = decodeURIComponent(allParams);
 
     return allParams;
 }
 
+const getDesignInfoById = async (id) => {
+    const { data } = await axios(`${REACT_APP_API_URL}/portfolio/work/${id}`);
+
+
+    if (data.isSuccess)
+        return new Design(data.work);
+    else
+        throw new Error('Ошибка при загрузке дизайна')
+}
+
+const getDesignerInfoById = async (id) => {
+    console.log(id)
+    const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${id}`);
+
+    if(data.isSuccess){
+        return new Designer(data.designer);
+    }
+    else throw new Error('Не удалось получать данные дизайнера')
+}
+
 export {
     sleep,
     getCardHeightBySize,
-    getUrlByJson
+    getUrlByJson,
+    getDesignInfoById,
+    getDesignerInfoById
 }

@@ -19,7 +19,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
     const { length, secondLength, fromId, list, filters, activeFilters, listFormat } = useSelector(state => state[type]);
 
     const [ isFetching, setIsFetching ] = useState(false);
-    const [ isLoad, setIsLoad ] = useState(false);
+    const [ isLoad, setIsLoad ] = useState(Boolean(list));
 
     const changeHasMore = () => {
         //check by to

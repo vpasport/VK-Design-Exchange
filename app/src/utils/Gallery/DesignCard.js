@@ -15,17 +15,6 @@ class DesignCard extends DesignDefaultProps {
 
     getPreview() { return this._preview }
 
-    async getDesignInfo() {
-        const { data } = await axios(`${REACT_APP_API_URL}/portfolio/work/${this.getId()}`);
-
-
-        if (data.isSuccess)
-            return new Design(data.work);
-        else
-            throw new Error('Ошибка при загрузке дизайна')
-
-    }
-
 }
 
 export default DesignCard;

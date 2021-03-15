@@ -1,6 +1,6 @@
-export const DESIGN_CHANGE_ACTIVE_DESIGN = 'DESIGN_CHANGE_ACTIVE_DESIGN';
+export const DESIGN_CHANGE_ACTIVE_DESIGN_ID = 'DESIGN_CHANGE_ACTIVE_DESIGN_ID';
 
-export const changeActiveDesign = (design) => ({
-    type: DESIGN_CHANGE_ACTIVE_DESIGN,
-    payload: design
+export const changeActiveDesignId = (designId) => ({
+    type: DESIGN_CHANGE_ACTIVE_DESIGN_ID,
+    payload: designId
 })

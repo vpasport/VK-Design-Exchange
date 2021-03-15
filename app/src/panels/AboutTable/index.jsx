@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Group, Panel, PanelHeader, Text, Div, Title, Button } from '@vkontakte/vkui';
 import { Icon24Gallery } from '@vkontakte/icons';
-//import { Icon16StarCircle } from '@vkontakte/icons';
+import { Icon16StarCircle } from '@vkontakte/icons';
 
 import styles from './style.module.scss';
 import { viewContext } from '../../App';
@@ -30,15 +30,16 @@ const AboutTable = ({id}) => {
             <Group>
                 <Div>
                     <Title level='1' weight='bold'>Мои ученики</Title>
-                    {/* <Button 
+                    <Button 
                         stretched 
                         size='l' 
                         className={styles.button}
                         before={<Icon16StarCircle />}
+                        onClick={() => setActiveStoryAndPanel('raiting', 'raiting')}
                         
                     >
                         Рейтинг дизайнеров
-                    </Button> */}
+                    </Button>
                     <Button 
                         stretched 
                         size='l' 

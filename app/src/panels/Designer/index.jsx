@@ -1,10 +1,13 @@
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import DesignerCard from '../../utils/Raiting/DesignerCard';
 import { alertContext, viewContext } from '../../App';
+import { connect } from 'react-redux';
 
-const Designer = ({id, activeDesigner}) => {
+import { changeActiveDesignerId } from '../../store/Designer/actions';
+import { getDesignerInfoById } from '../../utils/helpers';
+
+const Designer = ({id, activeDesignerId}) => {
 
     const { setActivePanel } = viewContext();
     const { useAlert } = alertContext();
@@ -15,7 +18,7 @@ const Designer = ({id, activeDesigner}) => {
         
         const fetchData = async () => {
             try{
-                const designerInfo = await activeDesigner.getDesignerInfo();
+                const designerInfo = await getDesignerInfoById(activeDesignerId)
                 setDesignerInfo(designerInfo);
             }
             catch(error){
@@ -44,7 +47,17 @@ const Designer = ({id, activeDesigner}) => {
 
 Designer.propTypes = {
     id: PropTypes.string.isRequired,
-    activeDesigner: PropTypes.instanceOf(DesignerCard).isRequired
+    activeDesignerId: PropTypes.number.isRequired
 }
 
-export default Designer;
+const mapStateToProps = (state) => {
+    return {
+        activeDesignerId: state.designer.activeDesignerId
+    }
+}
+
+const mapDispatchToProps = {
+    changeActiveDesignerId
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Designer);

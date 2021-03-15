@@ -2,9 +2,8 @@ import { View } from '@vkontakte/vkui';
 import React from 'react';
 import { alertContext, viewContext } from '../../App';
 import Raiting from '../../panels/Raiting';
-import Designer from '../../panels/Designer/DesignerContainer';
+import Designer from '../../panels/Designer';
 import PropTypes from 'prop-types';
-import DesignerContainer from '../../panels/Designer/DesignerContainer';
 
 const RaitingView = ({id}) => {
 
@@ -14,7 +13,7 @@ const RaitingView = ({id}) => {
     return (
         <View id={id} activePanel={activePanel} popout={poput}>
             <Raiting id='raiting' />
-            <DesignerContainer id='designer' />
+            <Designer id='designer' />
         </View>
     )
 }

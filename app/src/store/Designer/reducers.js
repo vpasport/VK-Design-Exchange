@@ -1,12 +1,12 @@
-import { DESIGNER_CHANGE_ACTIVE_DESIGNER } from './actions';
+import { DESIGNER_CHANGE_ACTIVE_DESIGNER_ID } from './actions';
 
 const defaultState = {
-    activeDesigner: null
+    activeDesignerId: null
 }
 
 export const designerReducer = (state = defaultState, action) => {
     switch (action.type){
-        case DESIGNER_CHANGE_ACTIVE_DESIGNER: return { ...state, activeDesigner: action.payload }
+        case DESIGNER_CHANGE_ACTIVE_DESIGNER_ID: return { ...state, activeDesignerId: action.payload }
     }
 
     return state;

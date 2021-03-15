@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { View } from '@vkontakte/vkui';
 
 import Gallery from '../../panels/Gallery';
-import Design from '../../panels/Design/DesignContainer';
+import Design from '../../panels/Design';
 import { alertContext, viewContext } from '../../App';
 
 const GalleryView = ({ id }) => {

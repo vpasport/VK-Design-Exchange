@@ -7,8 +7,11 @@ import Info from './Info';
 
 import styles from './style.module.scss';
 import { alertContext, viewContext } from '../../App';
+import { getDesignInfoById } from '../../utils/helpers';
+import { connect } from 'react-redux';
+import { changeActiveDesignId } from '../../store/Design/actions';
 
-const Design = ({ id, activeDesign }) => {
+const Design = ({ id, activeDesignId }) => {
     
     const { setActivePanel } = viewContext();
     const { useAlert } = alertContext();
@@ -18,7 +21,7 @@ const Design = ({ id, activeDesign }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const designInfo = await activeDesign.getDesignInfo();
+                const designInfo = await getDesignInfoById(activeDesignId);
                 setDesignInfo(designInfo);
             }
             catch (error) {
@@ -31,10 +34,10 @@ const Design = ({ id, activeDesign }) => {
         }
 
         setDesignInfo(null);
-        if (activeDesign)
+        if (activeDesignId)
             fetchData();
 
-    }, [activeDesign])
+    }, [])
 
     return (
         <Panel id={id}>
@@ -67,7 +70,17 @@ const Design = ({ id, activeDesign }) => {
 
 Design.propTypes = {
     id: PropTypes.string.isRequired,
-    activeDesign: PropTypes.instanceOf(DesignCard)
+    activeDesignId: PropTypes.number.isRequired
 }
 
-export default Design;
+const mapStateToProps = (state) => {
+    return {
+        activeDesignId: state.design.activeDesignId
+    }
+}
+
+const mapDispatchToProps = {
+    changeActiveDesignId
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Design);

@@ -6,7 +6,7 @@ import StarRatings from 'react-star-ratings';
 import DesignerCardClass from '../../utils/Raiting/DesignerCard';
 import { useDispatch } from 'react-redux';
 import { viewContext } from '../../App';
-import { changeActiveDesigner } from '../../store/Designer/actions';
+import { changeActiveDesignerId } from '../../store/Designer/actions';
 
 const DesignerItem = ({ designerCard }) => {
 
@@ -15,7 +15,7 @@ const DesignerItem = ({ designerCard }) => {
 
     const handleDesignerChange = () => {
         
-        dispatch(changeActiveDesigner(designerCard)); 
+        dispatch(changeActiveDesignerId(designerCard.getId())); 
         setActivePanel('designer');
     }
 

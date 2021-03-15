@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { ContentCard } from '@vkontakte/vkui';
 import { useDispatch, useSelector } from 'react-redux';
 import { viewContext } from '../../App';
-import { changeActiveDesign } from '../../store/Design/actions';
+import { changeActiveDesignId } from '../../store/Design/actions';
 
 import DesignCardClass from '../../utils/Gallery/DesignCard';
 
@@ -19,9 +19,9 @@ const GalleryItem = ({ designCard }) => {
 
     const { listFormat } = useSelector((state) => state.galleryList);
 
-    const handleDesignChange = (activeDesign) => {
+    const handleDesignChange = () => {
         
-        dispatch(changeActiveDesign(activeDesign)); 
+        dispatch(changeActiveDesignId(designCard.getId())); 
         setActivePanel('design');
     }
 
@@ -31,7 +31,7 @@ const GalleryItem = ({ designCard }) => {
             className={styles.card}
             header={designCard.getTitle()}
             height={getCardHeightBySize(listFormat)}
-            onClick={() => handleDesignChange(designCard)}
+            onClick={() => handleDesignChange()}
         />
     )
 }
