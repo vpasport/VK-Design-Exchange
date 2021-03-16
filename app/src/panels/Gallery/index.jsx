@@ -9,8 +9,9 @@ import { Group } from '@vkontakte/vkui';
 import ListBlock from '../../components/ListBlock';
 import GalleryClass from '../../utils/Gallery/Gallery';
 import GalleryItem from '../../components/Gallery/GalleryItem';
+import { connect } from 'react-redux';
 
-const Gallery = ({ id }) => {
+const Gallery = ({ id, listFormat }) => {
 
     const galleryList = useMemo(() => new GalleryClass(), []);
 
@@ -29,6 +30,7 @@ const Gallery = ({ id }) => {
                     <GalleryItem
                         designCard={el}
                         key={el.getId()}
+                        listFormat={listFormat}
                         //height={getCardHeightBySize(size)}
                     />
                 )}
@@ -43,4 +45,10 @@ Gallery.propTypes = {
     id: PropTypes.string.isRequired
 }
 
-export default Gallery;
+const mapStateToProps = state => {
+    return {
+        listFormat: state.galleryList.listFormat
+    }
+}
+
+export default connect(mapStateToProps)(Gallery);

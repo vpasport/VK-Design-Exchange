@@ -5,6 +5,7 @@ import Raiting from '../../panels/Raiting';
 import Designer from '../../panels/Designer';
 import PropTypes from 'prop-types';
 import useRouter from '../../utils/useRouter';
+import Portfolio from '../../panels/Portfolio';
 
 const RaitingView = ({id}) => {
 
@@ -15,6 +16,7 @@ const RaitingView = ({id}) => {
         <View id={id} activePanel={router.bind.activePanel} popout={poput}>
             <Raiting id='raiting' />
             <Designer id='designer' />
+            <Portfolio id='portfolio' />
         </View>
     )
 }

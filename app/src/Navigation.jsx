@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import {
     Epic,
     SplitCol,
@@ -10,14 +10,14 @@ import {
 import { Icon24Gallery } from '@vkontakte/icons';
 import { Icon24InfoCircleOutline } from '@vkontakte/icons';
 import { Icon16StarCircle } from '@vkontakte/icons';
-import '@vkontakte/vkui/dist/vkui.css';
+//import '@vkontakte/vkui/dist/vkui.css';
 
 import DesctopSideBar from './components/DesctopSideBar';
 import MobileSideBar from './components/MobileSideBar';
 
 import GalleryView from './views/GalleryView';
 import AboutTableView from './views/AboutTableView';
-import { sessionContext, viewContext } from './App';
+import { sessionContext } from './App';
 import RaitingView from './views/RaitingView';
 import useRouter from './utils/useRouter';
 

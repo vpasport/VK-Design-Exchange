@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import getActionsByType from './getActionsByType';
 
-const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) => {
+const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, loadingCondition = () => {}) => {
 
     const dispatch = useDispatch();
 
@@ -19,7 +19,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
     const { length, secondLength, fromId, list, filters, activeFilters, listFormat } = useSelector(state => state[type]);
 
     const [ isFetching, setIsFetching ] = useState(false);
-    const [ isLoad, setIsLoad ] = useState(Boolean(list));
+    const [ isLoad, setIsLoad ] = useState(Boolean(list && list.length));
 
     const changeHasMore = () => {
         //check by to
@@ -102,7 +102,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type ) =
 
     useEffect(() => {
         if(!filters.length && loadFilters) getFilters();
-        if(!list.length) getList();
+        if( loadingCondition() || !list.length) getList();
         else setIsLoad(true);
     }, []);
 

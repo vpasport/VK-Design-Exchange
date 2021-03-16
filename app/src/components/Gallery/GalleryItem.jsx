@@ -12,17 +12,15 @@ import { getCardHeightBySize } from '../../utils/helpers';
 import useRouter from '../../utils/useRouter';
 
 
-const GalleryItem = ({ designCard }) => {
+const GalleryItem = ({ designCard, listFormat }) => {
 
     const dispatch = useDispatch();
     const router = useRouter()
 
-    const { listFormat } = useSelector((state) => state.galleryList);
-
     const handleDesignChange = () => {
         
         dispatch(changeActiveDesignId(designCard.getId())); 
-        router.setActivePanel('design');
+        router.setActiveStoryAndPanel('gallery', 'design');
     }
 
     return (

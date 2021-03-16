@@ -11,12 +11,14 @@ class Design extends DesignDefaultProps {
         this._taskDescription = item.task_description;
         this._completedWork = item.completed_work;
         this._workImage = `${REACT_APP_API_URL}/${item.work_image}`;
+        this._designerId = item.author?.id;
     }
 
     getProjectDescription(){ return this._projectDescription }
     getTaskDescription(){ return this._taskDescription }
     getCompletedWork(){ return this._completedWork }
     getWorkImage(){ return this._workImage }
+    getDesignerId() { return this._designerId }
 
 }
 

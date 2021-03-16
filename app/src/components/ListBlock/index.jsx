@@ -8,11 +8,12 @@ import { alertContext } from '../../App';
 import useList from '../../utils/useList';
 import FiltersList from '../../components/FiltersList';
 
-const ListBlock = ({ children, loadList, loadFilters, from = null, to = null, loadCount = null, actionType, size, isChangeSize = false }) => {
+const ListBlock = ({ children, loadList, loadFilters, from = null, to = null, 
+    loadCount = null, actionType, size, isChangeSize = false, loadingCondition, nullText = 'Список пустой' }) => {
 
     const { useAlert } = alertContext();
 
-    const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType);
+    const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition );
 
     return (
         <>
@@ -21,7 +22,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null, lo
                     onRefresh={listHook.updateList}
                     isFetching={listHook.bind.isFetching}
                 >
-                    {loadFilters &&
+                    {Boolean((loadFilters || isChangeSize) && listHook.bind.list.length) &&
                         <Div>
                             <FiltersList
                                 filters={listHook.bind.filters}
@@ -47,7 +48,9 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null, lo
                             </CardGrid>
                         </InfiniteScroll>
                         :
-                        <Text weight='semibold'>Список пустой</Text>
+                        <Div>
+                            <Text weight='semibold' style={{textAlign: 'center'}}>{nullText}</Text>
+                        </Div>
                     }
                 </PullToRefresh>
                 :
@@ -63,9 +66,11 @@ ListBlock.propTypes = {
     from: PropTypes.number,
     to: PropTypes.number,
     loadCount: PropTypes.number,
-    actionType: PropTypes.oneOf(['galleryList', 'designerList']).isRequired,
+    actionType: PropTypes.oneOf(['galleryList', 'designerList', 'portfolio']).isRequired,
     size: PropTypes.oneOf(['s', 'm', 'l']),
-    isChangeSize: PropTypes.bool
+    isChangeSize: PropTypes.bool,
+    loadingCondition: PropTypes.func,
+    nullText: PropTypes.string
 }
 
 export default ListBlock;

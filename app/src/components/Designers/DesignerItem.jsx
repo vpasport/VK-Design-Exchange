@@ -1,7 +1,7 @@
 import { Card, Cell, Avatar } from '@vkontakte/vkui';
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import StarRatings from 'react-star-ratings';
+import StarRatings from '../StarRatings';
 
 import DesignerCardClass from '../../utils/Raiting/DesignerCard';
 import { useDispatch } from 'react-redux';
@@ -23,16 +23,7 @@ const DesignerItem = ({ designerCard }) => {
         <Card onClick={handleDesignerChange}>
             <Cell
                 description={
-                    <div>
-                        <StarRatings
-                            rating={designerCard.getRaiting()}
-                            starRatedColor='#FEDA5B'
-                            numberOfStars={5}
-                            starDimension='15px'
-                            starSpacing='2px'
-                        />
-                        <span style={{marginLeft: 10}}>{designerCard.getRaiting() || 0}</span>
-                    </div>
+                    <StarRatings raiting={designerCard.getRaiting()} />
                 }
                 before={
                     <Avatar src={designerCard.getPhoto()} />

@@ -1,7 +1,7 @@
 import { ROUTER_CHANGE_PATH } from './actions';
 
 const defaultState = {
-    path: [['gallery', 'gallery']]
+    path: [['raiting', 'raiting']]
 }
 
 export const pathReducer = (state = defaultState, action) => {

@@ -29,9 +29,16 @@ const useRouter = () => {
         dispatch(changeRouterPath(newPath));
     }
 
+    const getPrevRoute = () => {
+        return {
+            panel: path[path.length - 2][1],
+            story: path[path.length - 2][0]
+        }
+    }
+
     return {
         bind: { activePanel, activeStory },
-        back, setActivePanel, setActiveStoryAndPanel
+        back, setActivePanel, setActiveStoryAndPanel, getPrevRoute
     }
 
 }

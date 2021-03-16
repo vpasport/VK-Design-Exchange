@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button } from '@vkontakte/vkui';
 
 import Info from './Info';
 
@@ -9,9 +9,10 @@ import { alertContext } from '../../App';
 import { getDesignInfoById } from '../../utils/helpers';
 import { connect } from 'react-redux';
 import { changeActiveDesignId } from '../../store/Design/actions';
+import { changeActiveDesignerId } from '../../store/Designer/actions';
 import useRouter from '../../utils/useRouter';
 
-const Design = ({ id, activeDesignId }) => {
+const Design = ({ id, activeDesignId, changeActiveDesignerId }) => {
     
     const { useAlert } = alertContext();
     const router = useRouter();
@@ -39,6 +40,11 @@ const Design = ({ id, activeDesignId }) => {
 
     }, [])
 
+    const changeAuthor = () => {
+        changeActiveDesignerId(designInfo.getDesignerId());
+        router.setActiveStoryAndPanel('raiting', 'designer');
+    }
+
     return (
         <Panel id={id}>
             <PanelHeader
@@ -58,6 +64,17 @@ const Design = ({ id, activeDesignId }) => {
                             <img src={designInfo.getWorkImage()} alt="test" />
                         </div>
 
+                        {Boolean(designInfo.getDesignerId() && router.getPrevRoute().story !== 'raiting') && 
+                            <Button 
+                                mode='outline' 
+                                stretched 
+                                size='l' 
+                                className={styles.cardBlock__button}
+                                onClick={changeAuthor}
+                            >
+                                В карточку автора
+                            </Button>
+                        }
                     </Div>
                 </Group>
                 :
@@ -80,7 +97,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
-    changeActiveDesignId
+    changeActiveDesignId,
+    changeActiveDesignerId
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Design);

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 
-import { AdaptivityProvider } from '@vkontakte/vkui';
+import { AdaptivityProvider, ConfigProvider } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import './styles/global.scss';
 import bridge from '@vkontakte/vk-bridge';
@@ -59,13 +59,15 @@ const App = () => {
 	const sessionContextValue = { isDesktop, setIsDesktop, userInfo }
 
 	return (
-		<AdaptivityProvider>
-			<AlertContext.Provider value={alertContextValue}>
-				<SessionContext.Provider value={sessionContextValue}>
-					<Panels />
-				</SessionContext.Provider>
-			</AlertContext.Provider>
-		</AdaptivityProvider>
+		<ConfigProvider>
+			<AdaptivityProvider>
+				<AlertContext.Provider value={alertContextValue}>
+					<SessionContext.Provider value={sessionContextValue}>
+						<Panels />
+					</SessionContext.Provider>
+				</AlertContext.Provider>
+			</AdaptivityProvider>
+		</ConfigProvider>
 	);
 };
 
