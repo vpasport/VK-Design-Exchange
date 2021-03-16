@@ -1,49 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import bridge from '@vkontakte/vk-bridge';
-import View from '@vkontakte/vkui/dist/components/View/View';
-import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
-import { AdaptivityProvider, AppRoot } from '@vkontakte/vkui';
-import '@vkontakte/vkui/dist/vkui.css';
+import React, { useContext, useState, useEffect } from 'react';
 
-import Home from './panels/Home';
-import Persik from './panels/Persik';
+import { AdaptivityProvider, ConfigProvider } from '@vkontakte/vkui';
+import '@vkontakte/vkui/dist/vkui.css';
+import './styles/global.scss';
+import bridge from '@vkontakte/vk-bridge';
+
+import useAlertHook from './components/poputs/alert/useAlert';
+import useSpinnerHook from './components/poputs/spinner/useSpinner';
+
+import Panels from './Navigation';
+import User from './utils/User';
+
+const AlertContext = React.createContext();
+const SessionContext = React.createContext();
+
+const alertContext = () => useContext(AlertContext);
+const sessionContext = () => useContext(SessionContext);
+
 
 const App = () => {
-	const [activePanel, setActivePanel] = useState('home');
-	const [fetchedUser, setUser] = useState(null);
-	const [popout, setPopout] = useState(<ScreenSpinner size='large' />);
+
+	const [userInfo, setUserInfo] = useState(null);
+	const [poput, setPoput] = useState(null);
+	const [isDesktop, setIsDesktop] = useState(false);
+
+	const useAlert = useAlertHook(setPoput);
+	const useSpinner = useSpinnerHook(setPoput);
 
 	useEffect(() => {
-		bridge.subscribe(({ detail: { type, data }}) => {
+		bridge.subscribe(({ detail: { type, data } }) => {
 			if (type === 'VKWebAppUpdateConfig') {
 				const schemeAttribute = document.createAttribute('scheme');
 				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
 				document.body.attributes.setNamedItem(schemeAttribute);
 			}
 		});
-		async function fetchData() {
-			const user = await bridge.send('VKWebAppGetUserInfo');
-			setUser(user);
-			setPopout(null);
+
+		const fetchData = async () => {
+
+			try {
+				const userInfo = await bridge.send('VKWebAppGetUserInfo');
+
+				if (!('error_type' in userInfo))
+					setUserInfo(new User(userInfo));
+				else
+					throw new Error('Ошибка API');
+			}
+			catch (error) {
+				useAlert.error('Ошибка', error);
+			}
+
 		}
+
 		fetchData();
 	}, []);
 
-	const go = e => {
-		setActivePanel(e.currentTarget.dataset.to);
-	};
+	const alertContextValue = { useAlert, useSpinner, poput }
+	const sessionContextValue = { isDesktop, setIsDesktop, userInfo }
 
 	return (
-		<AdaptivityProvider>
-			<AppRoot>
-				<View activePanel={activePanel} popout={popout}>
-					<Home id='home' fetchedUser={fetchedUser} go={go} />
-					<Persik id='persik' go={go} />
-				</View>
-			</AppRoot>
-		</AdaptivityProvider>
+		<ConfigProvider>
+			<AdaptivityProvider>
+				<AlertContext.Provider value={alertContextValue}>
+					<SessionContext.Provider value={sessionContextValue}>
+						<Panels />
+					</SessionContext.Provider>
+				</AlertContext.Provider>
+			</AdaptivityProvider>
+		</ConfigProvider>
 	);
-}
+};
 
+export { alertContext, sessionContext }
 export default App;
-

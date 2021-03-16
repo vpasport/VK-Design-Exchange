@@ -1,0 +1,29 @@
+.userBlock{
+    display: flex;
+    align-items: center;
+
+    &__info{
+        flex: 1;
+        padding-left: 20px;
+    }
+
+    &__raiting{
+        margin-top: 15px;
+    }
+
+    &__experience{
+        margin-top: 6px;
+    }
+
+    &__status{
+        margin-top: 6px;
+    }
+}
+
+.specialisation{
+
+    &__text{
+        margin-top: 6px;
+    }
+
+}

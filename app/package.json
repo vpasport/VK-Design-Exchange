@@ -18,11 +18,12 @@
     "react-scripts": "^4.0.1"
   },
   "dependencies": {
-    "@vkontakte/icons": "^1.80.0",
+    "@vkontakte/icons": "^1.83.0",
     "@vkontakte/vk-bridge": "^2.4.1",
     "@vkontakte/vk-miniapps-deploy": "0.0.17",
     "@vkontakte/vkjs": "^0.20.0",
-    "@vkontakte/vkui": "^4.0.4",
+    "@vkontakte/vkui": "^4.3.0",
+    "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
     "chalk": "^2.4.2",
     "eruda": "^2.2.0",
@@ -30,6 +31,25 @@
     "eruda-dom": "^2.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
-    "react-dom": "^16.9.0"
+    "react-dom": "^16.9.0",
+    "react-infinite-scroll-component": "^6.0.0",
+    "react-infinite-scroller": "^1.2.4",
+    "react-precache-img": "^2.0.5",
+    "react-redux": "^7.2.2",
+    "react-star-ratings": "^2.3.0",
+    "redux": "^4.0.5",
+    "sass": "^1.32.8"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
