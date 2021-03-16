@@ -41,7 +41,6 @@ const getUrlByJson = (obj) => {
 const getDesignInfoById = async (id) => {
     const { data } = await axios(`${REACT_APP_API_URL}/portfolio/work/${id}`);
 
-
     if (data.isSuccess)
         return new Design(data.work);
     else

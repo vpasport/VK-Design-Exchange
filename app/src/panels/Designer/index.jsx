@@ -58,7 +58,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             <Avatar src={activeDesigner.getPhoto()} className={styles.userBlock__photo} size={120} />
                             <div className={styles.userBlock__info}>
                                 <Title weight='bold'>{`${activeDesigner.getFirstName()} ${activeDesigner.getLastName()}`}</Title>
-                                <StarRatings raiting={activeDesigner.getRaiting()} className={styles.userBlock__raiting} />
+                                <StarRatings rating={activeDesigner.getRating()} className={styles.userBlock__raiting} />
                                 <Text className={styles.userBlock__experience}>Стаж в дизайне: &lt;1 года</Text>
                                 <Text className={styles.userBlock__status}>Занят до 21.12.2112</Text>
                             </div>

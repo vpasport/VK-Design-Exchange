@@ -23,7 +23,7 @@ const DesignerItem = ({ designerCard }) => {
         <Card onClick={handleDesignerChange}>
             <Cell
                 description={
-                    <StarRatings raiting={designerCard.getRaiting()} />
+                    <StarRatings rating={designerCard.getRating()} />
                 }
                 before={
                     <Avatar src={designerCard.getPhoto()} />
