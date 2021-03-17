@@ -1,17 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Icon24ArrowUpOutline } from '@vkontakte/icons';
 
-import { PullToRefresh, Div, CardGrid, PanelSpinner, Text } from '@vkontakte/vkui';
+import { PullToRefresh, Div, CardGrid, PanelSpinner, Text, Button } from '@vkontakte/vkui';
 
 import InfiniteScroll from 'react-infinite-scroller';
-import { alertContext } from '../../App';
+import { alertContext, sessionContext } from '../../App';
 import useList from '../../utils/useList';
 import FiltersList from '../../components/FiltersList';
+import ScrollUpButton from "react-scroll-up-button";
+
+import styles from './style.module.scss';
 
 const ListBlock = ({ children, loadList, loadFilters, from = null, to = null, 
-    loadCount = null, actionType, size, isChangeSize = false, loadingCondition, nullText = 'Список пустой' }) => {
+    loadCount = null, actionType, isChangeSize = false, loadingCondition, nullText = 'Список пустой' }) => {
 
     const { useAlert } = alertContext();
+    const { isDesktop } = sessionContext();
 
     const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition );
 
@@ -21,7 +26,18 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                 <PullToRefresh
                     onRefresh={listHook.updateList}
                     isFetching={listHook.bind.isFetching}
+                    className={isDesktop || styles.block}
                 >
+                    <ScrollUpButton
+                        ContainerClassName={styles.arrowTop}
+                        TransitionClassName={styles.arrowTop__transition}
+                    >
+                        <Button 
+                            before={<Icon24ArrowUpOutline />}
+                            mode='secondary'
+                            style={{width: 50, height: 50, borderRadius: '100%'}}
+                        />
+                    </ScrollUpButton>
                     {Boolean((loadFilters || isChangeSize) && listHook.bind.list.length) &&
                         <Div>
                             <FiltersList

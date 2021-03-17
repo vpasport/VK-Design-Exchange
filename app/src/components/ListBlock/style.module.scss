@@ -1,0 +1,28 @@
+.arrowTop {
+    position: fixed;
+    right: 12px;
+    bottom: -100px;
+    transition: bottom 0.5s;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10;
+
+    &__transition{
+        bottom: 60px;
+    }
+}
+
+.scroll{
+    padding: 0;
+    background: none;
+}
+
+.topButton{
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+}
+
+.block{
+    padding-bottom: 55px;
+}
