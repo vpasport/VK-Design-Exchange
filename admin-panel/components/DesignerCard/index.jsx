@@ -3,12 +3,26 @@ import { Rating } from 'primereact/rating';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import Link from 'next/link';
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from 'primereact/inputtextarea';
+import { useEffect, useState } from 'react';
 
-const DesignerCard = ({ designer, edit }) => {
+const DesignerCard = ({ designer, edit, update }) => {
+    const [designerUpdated, setDesignerUpdated] = useState(designer);
 
-    const renderCard = (data) => {
+    const setDesigner = (json) => {
+        setDesignerUpdated(prev => ({
+            ...prev, ...json
+        }));
+    }
+
+    useEffect(() => {
+        setDesignerUpdated(designer);
+    }, [designer]);
+
+    const renderCard = (data, key) => {
         const footer = (
-            <span>
+            <span key={key}>
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>
                 </Button>
@@ -47,18 +61,46 @@ const DesignerCard = ({ designer, edit }) => {
                 </div>
                 <div>
                     <h3>Опыт:</h3>
-                    <p>{designer?.experience} года</p>
+                    {edit ?
+                        <div className='p-inputgroup p-m-1'>
+                            <InputText
+                                placeholder={'Опыт (в годах)'}
+                                type='number'
+                                value={designerUpdated?.experience}
+                                onChange={({ target: { value: experience } }) => setDesigner({experience})}
+                            />
+                        </div>
+                        :
+                        <p>{designer?.experience} года</p>
+                    }
                 </div>
                 <div>
                     <h3>Специализация:</h3>
-                    <p>{designer?.specialization}</p>
+                    {edit ?
+                        <div className='p-inputgroup p-m-1'>
+                            <InputTextarea
+                                placeholder={'Специализация'}
+                                value={designerUpdated?.specialization}
+                                style={{ height: '10vh' }}
+                                onChange={({ target: { value: specialization } }) => setDesigner({ specialization })}
+                            />
+                        </div>
+                        :
+                        <p>{designer?.specialization}</p>
+                    }
                 </div>
-                <div>
+                <div className='p-m-3' style={{ textAlign: 'center' }}>
+                    {edit && <Button label='Сохранить' onClick={() => update(designerUpdated)} />}
+                </div>
+                <div style={{ textAlign: 'center' }}>
                     <h3>Работы:</h3>
+                    <Button>
+                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer.id}`}>Добавить</Link>
+                    </Button>
+                    <div>
+                        {designer?.previews.map((el, i) => renderCard(el, i))}
+                    </div>
                 </div>
-            </div>
-            <div>
-                {designer?.previews.map(el => renderCard(el))}
             </div>
         </>
     )

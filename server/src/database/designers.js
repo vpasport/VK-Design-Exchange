@@ -18,6 +18,8 @@ async function getDesigners() {
         await client.query('commit');
         client.release();
 
+        designers.forEach(element => element.rating = Number(element.rating));
+
         return {
             isSuccess: true,
             designers
@@ -48,6 +50,8 @@ async function getDesigner(id) {
             await client.query('commit');
             client.release();
 
+            designer.rating = Number(designer.rating);
+
             return {
                 isSuccess: true,
                 designer
@@ -58,6 +62,8 @@ async function getDesigner(id) {
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        console.log(e)
 
         return {
             isSuccess: false
@@ -222,11 +228,44 @@ async function deleteDesigner(id) {
     }
 }
 
+async function updateInfo(id, experience, specialization){
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let designer = (await client.query(
+            `update designers
+                set experience = $1, specialization = $2
+            where
+                id = $3`,
+            [experience, specialization, id]
+        ));
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+
+    } catch (e){
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getDesigners,
     getDesigner,
     getReviews,
     getDesignerPreviews,
     createDesigner,
-    deleteDesigner
+    deleteDesigner,
+    updateInfo
 }

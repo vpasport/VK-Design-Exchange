@@ -7,7 +7,8 @@ const {
     getReviews: getReviews_,
     getDesignerPreviews: getDesignerPreviews_,
     createDesigner: createDesigner_,
-    deleteDesigner: deleteDesigner_
+    deleteDesigner: deleteDesigner_,
+    updateInfo: updateInfo_
 } = require('../database/designers');
 
 async function getDesigners(req, res) {
@@ -55,12 +56,12 @@ async function getDesignerPreviews({ params: { id } }, res) {
 }
 
 async function createDesigner({ body: { vk_id }, session }, res) {
-    if(session.role !== undefined && session.role.indexOf('admin') !== -1){
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
         let result = await createDesigner_(
             vk_id
         )
 
-        if(result.isSuccess){
+        if (result.isSuccess) {
             res.json(result);
             return;
         }
@@ -69,15 +70,39 @@ async function createDesigner({ body: { vk_id }, session }, res) {
         return;
     }
 
-    res.sendStatus(403);
+    res.sendStatus(401);
 }
 
-async function deleteDesigner({body: {id}, session}, res){
-    if(session.role !== undefined && session.role.indexOf('admin') !== -1){
+async function deleteDesigner({ body: { id }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
         let result = await deleteDesigner_(id);
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
     }
-    
-    res.sendStatus(204);
+
+    res.sendStatus(401);
+}
+
+async function updateInfo({ params: { id }, body: { experience, specialization }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await updateInfo_(id, experience, specialization);
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
 }
 
 function index() {
@@ -91,6 +116,8 @@ function index() {
     router.post('/', createDesigner);
 
     router.delete('/', deleteDesigner);
+
+    router.put('/:id', updateInfo); 
 
     return router;
 }

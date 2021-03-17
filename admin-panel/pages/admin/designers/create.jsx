@@ -3,8 +3,8 @@ import Header from '../../../components/Header';
 import { InputText } from 'primereact/inputtext';
 import { useState } from 'react';
 import { Button } from 'primereact/button';
-import { useRouter } from 'next/router'
-import { Dialog } from 'primereact/dialog';;
+import { useRouter } from 'next/router';
+import { Dialog } from 'primereact/dialog';
 
 const Create = ({ user }) => {
     const router = useRouter();

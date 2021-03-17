@@ -22,7 +22,6 @@ const Designers = ({ user }) => {
     }, [])
 
     const deleteDesigner = async (id) => {
-        console.log(id)
         let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/`, {
             method: 'DELETE',
             credentials: 'include',

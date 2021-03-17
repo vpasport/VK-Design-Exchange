@@ -70,7 +70,7 @@ async function create(name) {
     }
 }
 
-async function deleteTag(id){
+async function deleteTag(id) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -84,13 +84,44 @@ async function deleteTag(id){
 
         await client.query('commit');
         client.release();
-        
+
         return {
             isSuccess: true
         }
-    } catch (e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function updateTag(id, name) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let tag = (await client.query(
+            `update tags
+                set name = $1
+            where
+                id = $2`,
+            [name, id]
+        ));
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false
@@ -101,5 +132,6 @@ async function deleteTag(id){
 module.exports = {
     getAll,
     create,
-    deleteTag
+    deleteTag,
+    updateTag
 }
