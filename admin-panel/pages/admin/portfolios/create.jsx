@@ -23,7 +23,6 @@ const Create = ({ user }) => {
         {
             title: null,
             description: null,
-            tags: null,
             project_description: null,
             task_description: null,
             complited_work: null
@@ -64,11 +63,7 @@ const Create = ({ user }) => {
         set({ tags: val });
     }
 
-    useEffect(() => {
-        console.log(preview)
-    }, [preview])
-
-    const uploadPreview = ({target}) => {
+    const uploadPreview = ({ target }) => {
         const file = target.files[0];
 
         if (file) {
@@ -81,7 +76,7 @@ const Create = ({ user }) => {
         }
     }
 
-    const uploadWork = ({target}) => {
+    const uploadWork = ({ target }) => {
         const file = target.files[0];
 
         if (file) {
@@ -116,7 +111,37 @@ const Create = ({ user }) => {
             return;
         }
 
-        console.log(portfolio)
+        const formData = new FormData();
+
+        let tag_ids = [];
+        selectTags.forEach(element => tag_ids.push(element.id));
+
+        formData.append('preview', preview);
+        formData.append('image', workImage);
+        formData.append('title', portfolio.title);
+        formData.append('description', portfolio.description);
+        formData.append('project_description', portfolio.project_description);
+        formData.append('task_description', portfolio.task_description);
+        formData.append('completed_work', portfolio.complited_work);
+        formData.append('designer_id', designer_id);
+        formData.append('tag_ids', tag_ids);
+
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+
+        if (response.status !== 200) {
+            setError('Не удалось создать портолио');
+            setDialog(true);
+            return;
+        }
+
+        const { id } = await response.json();
+
+        router.push(`/admin/portfolios/${id}`);
     }
 
     return (

@@ -2,11 +2,11 @@
 
 const pool = require('./pg/pool').getPool();
 
-async function getAllPreviews(){
+async function getAllPreviews() {
     const client = await pool.connect();
     await client.query('begin');
 
-    try{
+    try {
         let previews = (await client.query(
             `select id, title, preview, description 
                 from portfolio
@@ -21,7 +21,7 @@ async function getAllPreviews(){
             previews
         }
 
-    } catch (e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
 
@@ -77,7 +77,7 @@ async function getPreviewsFromTo(from, to, from_id) {
         return {
             isSuccess: true,
             count,
-            from_id : from_id === undefined ? previews[0].id: Number(from_id),
+            from_id: from_id === undefined ? previews[0].id : Number(from_id),
             previews
         }
 
@@ -128,13 +128,13 @@ async function getPreviewsTags(from, to, from_id, tags) {
             params
         );
 
-        if(previews.length > 0){
+        if (previews.length > 0) {
             let count = previews[0].count;
             previews.forEach(element => delete element.count);
-    
+
             await client.query('commit');
             client.release();
-    
+
             return {
                 isSuccess: true,
                 count,
@@ -163,7 +163,7 @@ async function getWork(id, full) {
 
     try {
         let work = (await client.query(
-            `${full !== true ? 'select *' : 'select p.project_description, p.task_description, p.completed_work, p.work_image' }
+            `${full !== true ? 'select *' : 'select p.project_description, p.task_description, p.completed_work, p.work_image'}
                 from portfolio as p
             where p.id = $1`,
             [id]
@@ -189,8 +189,8 @@ async function getWork(id, full) {
             await client.query('commit');
             client.release();
 
-            if(tags.length > 0) work.tags = tags;
-            if(user !== undefined) work.author = user;
+            if (tags.length > 0) work.tags = tags;
+            if (user !== undefined) work.author = user;
 
             return {
                 isSuccess: true,
@@ -211,7 +211,8 @@ async function getWork(id, full) {
 
 async function createWork(
     title, preview, description,
-    project_description, task_description, completed_work, work_image
+    project_description, task_description, completed_work, work_image,
+    designer_id, tag_ids
 ) {
     const client = await pool.connect();
     await client.query('begin');
@@ -226,16 +227,50 @@ async function createWork(
             [title, preview, description, project_description, task_description, completed_work, work_image]
         )).rows[0].id;
 
-        await client.query('commit');
-        client.release();
+        if (id !== undefined) {
+            let s = tag_ids.map((_, i) => (i += 2, `($1, $${i})`)).join(',');
 
-        return {
-            isSuccess: true,
-            id
+            let tags = (await client.query(
+                `insert into
+                    tags_portfolios (portfolio_id, tag_id)
+                values ${s}
+                    returning id`,
+                [id, ...tag_ids]
+            )).rows;
+
+            if (tags.length > 0) {
+                let designer = (await client.query(
+                    `insert into
+                        designers_portfolios (designer_id, portfolio_id)
+                    values
+                        ($1, $2)
+                    returning id`,
+                    [designer_id, id]
+                )).rows[0].id;
+
+                if (designer_id !== undefined) {
+                    await client.query('commit');
+                    client.release();
+
+                    return {
+                        isSuccess: true,
+                        id
+                    }
+                }
+
+                throw 'Error when adding portfolio to designer';
+            }
+
+            throw 'Error while adding portfolio tags';
         }
+
+        throw 'Error while creating portfolio';
+
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false
@@ -278,11 +313,43 @@ async function addTags(portfolio_id, tag_ids) {
     }
 }
 
+async function deleteWork(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `delete from portfolio
+            where
+                id = $1`,
+            [id]
+        );
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getAllPreviews,
     getPreviewsFromTo,
     getPreviewsTags,
     getWork,
     createWork,
-    addTags
+    addTags,
+    deleteWork
 }

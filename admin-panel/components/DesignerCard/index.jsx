@@ -24,14 +24,14 @@ const DesignerCard = ({ designer, edit, update }) => {
         const footer = (
             <span key={key}>
                 <Button>
-                    <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>
+                    <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data?.id}`}>Обзор</Link>
                 </Button>
                 <Button label='Удалить' className='p-button-danger p-ml-2' />
             </span>
         );
 
         const header = (
-            <img alt={data.description} src={`${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
+            <img alt={data.description} src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
         );
 
         return (
@@ -95,7 +95,7 @@ const DesignerCard = ({ designer, edit, update }) => {
                 <div style={{ textAlign: 'center' }}>
                     <h3>Работы:</h3>
                     <Button>
-                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer.id}`}>Добавить</Link>
+                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer?.id}`}>Добавить</Link>
                     </Button>
                     <div>
                         {designer?.previews.map((el, i) => renderCard(el, i))}

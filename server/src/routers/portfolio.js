@@ -11,7 +11,8 @@ const {
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
     createWork: createWork_,
-    addTags: addTags_
+    addTags: addTags_,
+    deleteWork: deleteWork_
 } = require('../database/portfolio');
 
 async function getPreviews({ query: { from, to, from_id, tags } }, res) {
@@ -42,7 +43,7 @@ async function getPreviews({ query: { from, to, from_id, tags } }, res) {
 async function getWork({ params: { id }, session }, res) {
     let result;
 
-    if ( session.role !== undefined && session.role.indexOf('adimn') !== -1) {
+    if (session.role !== undefined && session.role.indexOf('adimn') !== -1) {
         result = await getWork_(
             id, true
         );
@@ -60,50 +61,54 @@ async function getWork({ params: { id }, session }, res) {
     res.sendStatus(204);
 }
 
-async function createWork({ files, body }, res) {
-    if (files.preview === undefined || files.image === undefined) {
-        res.sendStatus(204);
-        return;
-    }
-
-    let images = [
-        { type: 'previews', file: files.preview[0] },
-        { type: 'works', file: files.image[0] }
-    ];
-
-    for (const image of images) {
-        if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) && image.file.size >= 20971520) {
-            res.sendStatus(422);
+async function createWork({ files, body, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        if (files.preview === undefined || files.image === undefined) {
+            res.sendStatus(204);
             return;
         }
 
-        let originalname = image.file.originalname;
-        image.name = `uploads/${image.type}/${uuid()}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
-    }
+        let images = [
+            { type: 'previews', file: files.preview[0] },
+            { type: 'works', file: files.image[0] }
+        ];
 
-    let result = await createWork_(
-        body.title,
-        images[0].name,
-        body.description,
-        body.project_description,
-        body.task_description,
-        body.completed_work,
-        images[1].name
-    )
-
-    if (result.isSuccess) {
         for (const image of images) {
-            await writeFile(`static/${image.name}`, image.file.buffer);
+            if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) && image.file.size >= 20971520) {
+                res.sendStatus(422);
+                return;
+            }
+
+            let originalname = image.file.originalname;
+            image.name = `uploads/${image.type}/${uuid()}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
         }
 
-        res.json({
-            result
-        });
+        let result = await createWork_(
+            body.title,
+            images[0].name,
+            body.description,
+            body.project_description,
+            body.task_description,
+            body.completed_work,
+            images[1].name,
+            body.designer_id,
+            body.tag_ids.split(',')
+        )
 
+        if (result.isSuccess) {
+            for (const image of images) {
+                await writeFile(`static/${image.name}`, image.file.buffer);
+            }
+
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
         return;
     }
 
-    res.sendStatus(500);
+    res.sendStatus(401);
 }
 
 async function addTags({ body: { portfolio_id, tag_ids } }, res) {
@@ -119,6 +124,23 @@ async function addTags({ body: { portfolio_id, tag_ids } }, res) {
     res.sendStatus(204);
 }
 
+async function deleteWork({body: {id}, session}, res){
+    if(session.role !== undefined && session.role.indexOf('admin') !== -1){
+
+        let result = await deleteWork_(id);
+
+        if(result.isSuccess){
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 function index() {
     const upload = multer();
 
@@ -129,6 +151,8 @@ function index() {
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
     router.post('/tags', addTags);
+
+    router.delete('/work', deleteWork);
 
     return router;
 }
