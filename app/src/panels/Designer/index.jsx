@@ -78,7 +78,13 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                         >
                             Посмотреть портфолио
                         </SimpleCell>
-                        <SimpleCell before={<Icon24Advertising />} expandable>Отзывы</SimpleCell>
+                        <SimpleCell 
+                            before={<Icon24Advertising />} 
+                            expandable
+                            onClick={() => router.setActivePanel('reviews')}
+                        >
+                            Отзывы
+                        </SimpleCell>
                     </Group>
                 </>
             :

@@ -5,6 +5,7 @@ import { designerListReducer } from './DesignerList/reducers';
 import { designerReducer } from './Designer/reducers';
 import { pathReducer } from './router/reducers';
 import { portfolioReducer } from './Designer/Portfolio/reducers';
+import { reviewsReducer } from './Designer/Reviews/reducers';
 
 export default combineReducers({
     galleryList: galleryListReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
     designerList: designerListReducer,
     designer: designerReducer,
     path: pathReducer,
-    portfolio: portfolioReducer
+    portfolio: portfolioReducer,
+    reviews: reviewsReducer
 })

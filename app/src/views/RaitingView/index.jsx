@@ -6,6 +6,7 @@ import Designer from '../../panels/Designer';
 import PropTypes from 'prop-types';
 import useRouter from '../../utils/useRouter';
 import Portfolio from '../../panels/Portfolio';
+import Reviews from '../../panels/Reviews';
 
 const RaitingView = ({id}) => {
 
@@ -17,6 +18,7 @@ const RaitingView = ({id}) => {
             <Raiting id='raiting' />
             <Designer id='designer' />
             <Portfolio id='portfolio' />
+            <Reviews id='reviews' />
         </View>
     )
 }

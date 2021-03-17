@@ -1,6 +1,7 @@
 import DesignerDefaultProps from "./DesignerDefaultProps";
 import axios from 'axios';
 import DesignCard from "../Gallery/DesignCard";
+import ReviewCard from './ReviewCard';
 
 const { REACT_APP_API_URL } = process.env;
 
@@ -29,6 +30,19 @@ class Designer extends DesignerDefaultProps {
             }
         }
         else throw new Error('Ошибка при загрузке дизайнера')
+    }
+
+    async getReviews() {
+        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/reviews`);
+
+        if(data.isSuccess){
+            const reviewCards = data.reviews.map(el => new ReviewCard(el));
+
+            return {
+                list: reviewCards
+            }
+        }
+        else throw new Error('Не удалось загрузить отзывы');
     }
 
     // async getNewPortfolio(){

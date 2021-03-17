@@ -102,7 +102,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
 
     useEffect(() => {
         if(!filters.length && loadFilters) getFilters();
-        if( loadingCondition() || !list.length) getList();
+        if( loadingCondition() || !list?.length) getList();
         else setIsLoad(true);
     }, []);
 

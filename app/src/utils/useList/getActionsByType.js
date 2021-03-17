@@ -1,13 +1,15 @@
 import * as galleryList from '../../store/GalleryList/actions';
 import * as designerList from '../../store/DesignerList/actions';
 import * as portfolio from '../../store/Designer/Portfolio/actions';
+import * as reviews from '../../store/Designer/Reviews/actions';
 
 export default (type, dispatch) => {
 
     const actions = {
         galleryList,
         designerList,
-        portfolio
+        portfolio,
+        reviews
     }
 
     return {
