@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { View } from '@vkontakte/vkui';
+import { View, ModalRoot, ModalPage } from '@vkontakte/vkui';
 
 import Gallery from '../../panels/Gallery';
 import Design from '../../panels/Design';
-import { alertContext } from '../../App';
+import { alertContext, modalContext } from '../../App';
 import useRouter from '../../utils/useRouter';
+import Modal from './Modal';
 
 const GalleryView = ({ id }) => {
 
@@ -13,7 +14,7 @@ const GalleryView = ({ id }) => {
     const router = useRouter();
 
     return (
-        <View id={id} activePanel={router.bind.activePanel} popout={poput}>
+        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={<Modal />}>
             <Gallery id='gallery' />
             <Design id='design' />
         </View>

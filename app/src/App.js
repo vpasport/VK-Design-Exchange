@@ -13,16 +13,18 @@ import User from './utils/User';
 
 const AlertContext = React.createContext();
 const SessionContext = React.createContext();
+const ModalContext = React.createContext();
 
 const alertContext = () => useContext(AlertContext);
 const sessionContext = () => useContext(SessionContext);
-
+const modalContext = () => useContext(ModalContext);
 
 const App = () => {
 
 	const [userInfo, setUserInfo] = useState(null);
 	const [poput, setPoput] = useState(null);
 	const [isDesktop, setIsDesktop] = useState(false);
+	const [activeModal, setActiveModal] = useState(null);
 
 	const useAlert = useAlertHook(setPoput);
 	const useSpinner = useSpinnerHook(setPoput);
@@ -56,6 +58,7 @@ const App = () => {
 	}, []);
 
 	const alertContextValue = { useAlert, useSpinner, poput }
+	const modalContextValue = { activeModal, setActiveModal }
 	const sessionContextValue = { isDesktop, setIsDesktop, userInfo }
 
 	return (
@@ -63,7 +66,9 @@ const App = () => {
 			<AdaptivityProvider>
 				<AlertContext.Provider value={alertContextValue}>
 					<SessionContext.Provider value={sessionContextValue}>
-						<Panels />
+						<ModalContext.Provider value={modalContextValue}>
+							<Panels />
+						</ModalContext.Provider>
 					</SessionContext.Provider>
 				</AlertContext.Provider>
 			</AdaptivityProvider>
@@ -71,5 +76,5 @@ const App = () => {
 	);
 };
 
-export { alertContext, sessionContext }
+export { alertContext, sessionContext, modalContext }
 export default App;

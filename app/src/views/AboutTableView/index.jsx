@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import { alertContext } from '../../App';
 import useRouter from '../../utils/useRouter';
+import modal from '../GalleryView/Modal';
 
 const AboutTableView = ({id}) => {
 
@@ -13,7 +14,7 @@ const AboutTableView = ({id}) => {
     const router = useRouter();
 
     return (
-        <View id={id} popout={poput} activePanel={router.bind.activePanel}>
+        <View id={id} popout={poput} activePanel={router.bind.activePanel} modal={modal}>
             <AboutTable id='table' />
         </View>
     )

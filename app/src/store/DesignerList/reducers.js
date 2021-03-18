@@ -5,7 +5,8 @@ import {
     DESIGNERLIST_CHANGE_SECOND_LENGTH,
     DESIGNERLIST_CHANGE_FROM_ID,
     DESIGNERLIST_CHANGE_ACTIVE_FILTERS,
-    DESIGNERLIST_CHANGE_FILTERS
+    DESIGNERLIST_CHANGE_FILTERS,
+    DESIGNERLIST_CHANGE_IS_FETCH
 } from './actions';
 
 const defaultState = {
@@ -15,7 +16,8 @@ const defaultState = {
     secondLength: 0,
     fromId: null,
     filters: {},
-    activeFilters: {}
+    activeFilters: {},
+    isFetch: false
 }
 
 export const designerListReducer = (state = defaultState, action) => {
@@ -27,6 +29,7 @@ export const designerListReducer = (state = defaultState, action) => {
         case DESIGNERLIST_CHANGE_FROM_ID: return { ...state, fromId: action.payload }
         case DESIGNERLIST_CHANGE_FILTERS: return { ...state, filters: action.payload }
         case DESIGNERLIST_CHANGE_ACTIVE_FILTERS: return { ...state, activeFilters: action.payload }
+        case DESIGNERLIST_CHANGE_IS_FETCH: return { ...state, isFetch: action.payload }
     }
 
     return state;

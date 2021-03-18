@@ -9,5 +9,10 @@ $drobGap: $gap / 2;
 }
 
 .bottom{
-    margin-top: $gap;
+    display: flex;
+    justify-content: space-between;
+}
+
+.button{
+    padding: 0;
 }

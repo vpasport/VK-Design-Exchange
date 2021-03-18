@@ -6,6 +6,12 @@ export const REVIEWS_CHANGE_SECOND_LENGTH = 'REVIEWS_CHANGE_SECOND_LENGTH';
 export const REVIEWS_CHANGE_FROM_ID = 'REVIEWS_CHANGE_FROM_ID';
 export const REVIEWS_CHANGE_FILTERS = 'REVIEWS_CHANGE_FILTERS';
 export const REVIEWS_CHANGE_ACTIVE_FILTERS = 'REVIEWS_CHANGE_ACTIVE_FILTERS';
+export const REVIEWS_CHANGE_IS_FETCH = 'DESIGNERLIST_CHANGE_IS_FETCH';
+
+export const changeIsFetch = (isFetch) => ({
+    type: REVIEWS_CHANGE_IS_FETCH,
+    payload: isFetch
+})
 
 export const changePrevUserId = (prevUserId) => ({
     type: REVIEWS_CHANGE_PREV_USER_ID,

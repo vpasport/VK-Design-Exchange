@@ -5,20 +5,18 @@ import getActionsByType from './getActionsByType';
 
 const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, loadingCondition = () => {}) => {
 
-    const dispatch = useDispatch();
-
     const { changeList, 
             changeLength, 
             changeFromId, 
             changeSecondLength, 
             changeFilters, 
             changeActiveFilters,
-            changeListFormat
-        } = useMemo(() => getActionsByType(type, dispatch), []);
+            changeListFormat,
+            changeIsFetch
+        } = getActionsByType(type);
 
-    const { length, secondLength, fromId, list, filters, activeFilters, listFormat } = useSelector(state => state[type]);
+    const { length, secondLength, fromId, list, filters, activeFilters, listFormat, isFetch } = useSelector(state => state[type]);
 
-    const [ isFetching, setIsFetching ] = useState(false);
     const [ isLoad, setIsLoad ] = useState(Boolean(list && list.length));
 
     const changeHasMore = () => {
@@ -79,7 +77,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
         changeFromId(null);
         changeSecondLength(Number(from));
 
-        setIsFetching(true);
+        changeIsFetch(true);
     }
 
     const changeActiveFilter = (filter) => {
@@ -92,12 +90,12 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
 
         const fetchData = async () => {
             await getList();
-            setIsFetching(false);
+            changeIsFetch(false);
         }
 
-        if(isFetching) fetchData()
+        if(isFetch) fetchData()
 
-    }, [isFetching])
+    }, [isFetch])
 
 
     useEffect(() => {
@@ -109,7 +107,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
 
     return {
         bind: {
-            list, length, secondLength, hasMore, isFetching, filters, activeFilters, listFormat, isLoad
+            list, length, secondLength, hasMore, isFetch, filters, activeFilters, listFormat, isLoad
         },
         getList, updateList, changeActiveFilter, changeListFormat
     }

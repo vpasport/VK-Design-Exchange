@@ -12,43 +12,39 @@ import ScrollUpButton from "react-scroll-up-button";
 
 import styles from './style.module.scss';
 
-const ListBlock = ({ children, loadList, loadFilters, from = null, to = null, 
+const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
     loadCount = null, actionType, isChangeSize = false, loadingCondition, nullText = 'Список пустой' }) => {
 
     const { useAlert } = alertContext();
     const { isDesktop } = sessionContext();
 
-    const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition );
+    const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition);
+
 
     return (
         <>
             {listHook.bind.isLoad ?
                 <PullToRefresh
                     onRefresh={listHook.updateList}
-                    isFetching={listHook.bind.isFetching}
-                    className={isDesktop || styles.block}
+                    isFetching={listHook.bind.isFetch}
                 >
                     <ScrollUpButton
                         ContainerClassName={styles.arrowTop}
                         TransitionClassName={styles.arrowTop__transition}
                     >
-                        <Button 
+                        <Button
                             before={<Icon24ArrowUpOutline />}
                             mode='secondary'
-                            style={{width: 50, height: 50, borderRadius: '100%'}}
+                            style={{ width: 50, height: 50, borderRadius: '100%' }}
                         />
                     </ScrollUpButton>
-                    {Boolean((loadFilters || isChangeSize) && listHook.bind.list.length) &&
-                        <Div>
-                            <FiltersList
-                                filters={listHook.bind.filters}
-                                size={listHook.bind.listFormat}
-                                changeListFormat={listHook.changeListFormat}
-                                activeFilters={listHook.bind.activeFilters}
-                                changeActiveFilter={listHook.changeActiveFilter}
-                                isChangeSize={isChangeSize}
-                            />
-                        </Div>
+                    {listHook.bind.list.length &&
+                        <FiltersList
+                            filters={listHook.bind.filters}
+                            size={listHook.bind.listFormat}
+                            changeListFormat={listHook.changeListFormat}
+                            isChangeSize={isChangeSize}
+                        />
                     }
                     {listHook.bind.list.length ?
                         <InfiniteScroll
@@ -57,7 +53,10 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                             loader={<PanelSpinner size='large' key={0} />}
                             initialLoad={false}
                         >
-                            <CardGrid size={listHook.bind.listFormat}>
+                            <CardGrid
+                                size={listHook.bind.listFormat}
+                                className={isDesktop || styles.block}
+                            >
                                 {listHook.bind.list.map((el) => (
                                     children(el)
                                 ))}
@@ -65,7 +64,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                         </InfiniteScroll>
                         :
                         <Div>
-                            <Text weight='semibold' style={{textAlign: 'center'}}>{nullText}</Text>
+                            <Text weight='semibold' style={{ textAlign: 'center' }}>{nullText}</Text>
                         </Div>
                     }
                 </PullToRefresh>

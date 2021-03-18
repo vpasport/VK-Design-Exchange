@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import useRouter from '../../utils/useRouter';
 import Portfolio from '../../panels/Portfolio';
 import Reviews from '../../panels/Reviews';
+import modal from '../GalleryView/Modal';
 
 const RaitingView = ({id}) => {
 
@@ -14,7 +15,7 @@ const RaitingView = ({id}) => {
     const router = useRouter();
 
     return (
-        <View id={id} activePanel={router.bind.activePanel} popout={poput}>
+        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={modal}>
             <Raiting id='raiting' />
             <Designer id='designer' />
             <Portfolio id='portfolio' />

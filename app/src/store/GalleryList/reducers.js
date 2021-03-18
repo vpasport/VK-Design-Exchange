@@ -5,7 +5,8 @@ import {
     GALLERYLIST_CHANGE_SECOND_LENGTH,
     GALLERYLIST_CHANGE_FROM_ID,
     GALLERYLIST_CHANGE_ACTIVE_FILTERS,
-    GALLERYLIST_CHANGE_FILTERS
+    GALLERYLIST_CHANGE_FILTERS,
+    GALLERYLIST_CHANGE_IS_FETCH
 } from './actions';
 
 const defaultState = {
@@ -15,7 +16,8 @@ const defaultState = {
     secondLength: 0,
     fromId: null,
     filters: {},
-    activeFilters: {}
+    activeFilters: {},
+    isFetch: false
 }
 
 export const galleryListReducer = (state = defaultState, action) => {
@@ -27,6 +29,7 @@ export const galleryListReducer = (state = defaultState, action) => {
         case GALLERYLIST_CHANGE_FROM_ID: return { ...state, fromId: action.payload }
         case GALLERYLIST_CHANGE_FILTERS: return { ...state, filters: action.payload }
         case GALLERYLIST_CHANGE_ACTIVE_FILTERS: return { ...state, activeFilters: action.payload }
+        case GALLERYLIST_CHANGE_IS_FETCH: return { ...state, isFetch: action.payload }
     }
 
     return state;

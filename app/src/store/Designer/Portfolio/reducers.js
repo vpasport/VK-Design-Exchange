@@ -6,7 +6,8 @@ import {
     PORTFOLIO_CHANGE_FROM_ID,
     PORTFOLIO_CHANGE_ACTIVE_FILTERS,
     PORTFOLIO_CHANGE_FILTERS,
-    PORTFOLIO_CHANGE_PREV_USER_ID
+    PORTFOLIO_CHANGE_PREV_USER_ID,
+    PORTFOLIO_CHANGE_IS_FETCH
 } from './actions';
 
 const defaultState = {
@@ -17,7 +18,8 @@ const defaultState = {
     secondLength: 0,
     fromId: null,
     filters: {},
-    activeFilters: {}
+    activeFilters: {},
+    isFetch: false
 }
 
 export const portfolioReducer = (state = defaultState, action) => {
@@ -30,6 +32,7 @@ export const portfolioReducer = (state = defaultState, action) => {
         case PORTFOLIO_CHANGE_FROM_ID: return { ...state, fromId: action.payload }
         case PORTFOLIO_CHANGE_FILTERS: return { ...state, filters: action.payload }
         case PORTFOLIO_CHANGE_ACTIVE_FILTERS: return { ...state, activeFilters: action.payload }
+        case PORTFOLIO_CHANGE_IS_FETCH: return { ...state, isFetch: action.payload }
     }
 
     return state;

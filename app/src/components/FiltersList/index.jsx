@@ -1,61 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, SliderSwitch } from '@vkontakte/vkui';
-import { Icon16GridOfFour } from '@vkontakte/icons';
+import { Button, Div, SliderSwitch } from '@vkontakte/vkui';
+import { Icon16GridOfFour, Icon24MoreHorizontal } from '@vkontakte/icons';
 import { Icon16ArticleOutline } from '@vkontakte/icons';
+import { Icon24Filter } from '@vkontakte/icons';
 
 import styles from './style.module.scss';
+import { modalContext } from '../../App';
 
-const FiltersList = ({ filters, size, changeListFormat, activeFilters, changeActiveFilter, isChangeSize }) => {
+const FiltersList = ({ filters, size, changeListFormat, isChangeSize }) => {
 
-    const sliderSwitchOptions =
-        [{
-            name: <Icon16GridOfFour />,
-            value: 'm'
-        },
-        {
-            name: <Icon16ArticleOutline />,
-            value: 'l'
-        }]
-
-    const changeTag = (id) => {
-        const newFilter = [...(activeFilters.tags || [])];
-        const findedActiveFilter = newFilter.indexOf(id);
-
-        if (findedActiveFilter == -1) newFilter.push(id);
-        else newFilter.splice(findedActiveFilter, 1);
-
-        changeActiveFilter({...activeFilters, tags: newFilter});
-    }
-
+    const { setActiveModal } = modalContext();
+    const showFilterButton = Boolean(filters && Object.keys(filters).length)
 
     return (
         <>
-            {filters && 
-                <div className={styles.list}>
-                    {'tags' in filters && filters.tags.map((el) => {
-                            const isActive = activeFilters.tags && activeFilters.tags.some(activeEl => el.id === activeEl);
-
-                            return (
-                                <Button
-                                    mode={isActive ? 'primary' : 'secondary'}
-                                    key={el.id}
-                                    onClick={() => changeTag(el.id)}
-                                >
-                                    {el.name}
-                                </Button>
-                            )
-                        })
+            {Boolean(isChangeSize || showFilterButton) &&
+                <Div className={styles.bottom}>
+                    {isChangeSize &&
+                        <Button
+                            before={size === 'm' ? <Icon16GridOfFour /> : <Icon16ArticleOutline />}
+                            mode='tertiary'
+                            onClick={() => changeListFormat( size === 'm' ? 'l' : 'm' )}
+                            className={styles.button}
+                        />
                     }
-                </div>
-            }
-            {isChangeSize &&
-                <div className={styles.bottom}>
-                    <SliderSwitch options={sliderSwitchOptions}
-                        activeValue={size}
-                        onSwitch={(e) => changeListFormat(e)}
-                        style={{ width: 100 }} />
-                </div>
+                    {showFilterButton &&
+                        <Button
+                            before={<Icon24Filter />}
+                            mode='tertiary'
+                            onClick={() => setActiveModal('filters')}
+                            className={styles.button}
+                        />
+                    }
+                </Div>
             }
         </>
     )
@@ -65,8 +43,7 @@ FiltersList.propTypes = {
     filters: PropTypes.object,
     size: PropTypes.string,
     changeListFormat: PropTypes.func,
-    activeFilters: PropTypes.object,
-    changeActiveFilter: PropTypes.func.isRequired
+    isChangeSize: PropTypes.bool.isRequired
 }
 
 export default FiltersList;
