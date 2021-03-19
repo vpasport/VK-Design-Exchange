@@ -12,7 +12,9 @@ const {
     getWork: getWork_,
     createWork: createWork_,
     addTags: addTags_,
-    deleteWork: deleteWork_
+    deleteWork: deleteWork_,
+    updateTags: updateTags_,
+    updateDescription: updateDescription_
 } = require('../database/portfolio');
 
 async function getPreviews({ query: { from, to, from_id, tags } }, res) {
@@ -124,12 +126,50 @@ async function addTags({ body: { portfolio_id, tag_ids } }, res) {
     res.sendStatus(204);
 }
 
-async function deleteWork({body: {id}, session}, res){
-    if(session.role !== undefined && session.role.indexOf('admin') !== -1){
+async function updateTags({ params: { id }, body: { tag_ids }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await updateTags_(id, tag_ids);
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
+async function updateDescription({
+    params: { id },
+    body: { title, description, project_description, task_description, completed_work },
+    session
+}, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await updateDescription_(
+            id, title, description, project_description, task_description, completed_work
+        );
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
+async function deleteWork({ body: { id }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
 
         let result = await deleteWork_(id);
 
-        if(result.isSuccess){
+        if (result.isSuccess) {
             res.sendStatus(204);
             return;
         }
@@ -151,6 +191,9 @@ function index() {
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
     router.post('/tags', addTags);
+
+    router.put('/:id/tags', updateTags);
+    router.put('/:id/description', updateDescription);
 
     router.delete('/work', deleteWork);
 

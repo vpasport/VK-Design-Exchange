@@ -4,9 +4,9 @@ import Header from '../../components/Header';
 function Panel({ user }) {
     return (
         <Container>
-            <Header 
+            <Header
                 user={user}
-                url='/admin' 
+                url='/admin'
             />
         </Container>
     )

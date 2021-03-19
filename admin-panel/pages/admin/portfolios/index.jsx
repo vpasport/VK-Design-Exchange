@@ -1,16 +1,15 @@
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
 import { useEffect, useState } from 'react';
-import { InputText } from 'primereact/inputtext';
 
 import dynamic from 'next/dynamic';
 
 const Previews = dynamic(
     () => import('../../../components/Previews'),
-    {ssr: false}
+    { ssr: false }
 )
 
-const Portfolios = ({ user }) => {    
+const Portfolios = ({ user }) => {
     const [previews, setPreviews] = useState(null);
 
     const getPreviews = async () => {
@@ -45,7 +44,6 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
         }
     });
     const { role } = await response.json();
-    console.log(role)
 
     if (role === undefined || role.indexOf('admin') === -1) {
         return {

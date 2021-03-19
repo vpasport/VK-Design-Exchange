@@ -302,10 +302,89 @@ async function addTags(portfolio_id, tag_ids) {
             }
         }
 
-        throw 'Previews no found';
+        throw 'Portfolio no found';
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function updateTags(portfolio_id, tag_ids) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `delete from tags_portfolios
+            where
+                portfolio_id = $1`,
+            [portfolio_id]
+        );
+
+        let s = tag_ids.map((_, i) => (i += 2, `($1, $${i})`)).join(',');
+
+        let tags = (await client.query(
+            `insert into 
+                tags_portfolios (portfolio_id, tag_id)
+            values ${s}
+                returning id`,
+            [portfolio_id, ...tag_ids]
+        )).rows;
+
+        if (tags.length > 0) {
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true
+            }
+        }
+
+        throw 'Portfolio no found';
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function updateDescription(
+    id, title, description, project_description, task_description, completed_work
+) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `update portfolio
+                set title = $1, description = $2, project_description = $3,
+                    task_description = $4, completed_work = $5
+            where
+                id = $6`,
+            [title, description, project_description, task_description, completed_work, id]
+        )
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false
@@ -351,5 +430,7 @@ module.exports = {
     getWork,
     createWork,
     addTags,
+    updateTags,
+    updateDescription,
     deleteWork
 }

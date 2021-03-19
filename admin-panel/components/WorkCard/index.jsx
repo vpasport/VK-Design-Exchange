@@ -2,9 +2,18 @@ import { Button } from 'primereact/button';
 import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { InputText } from "primereact/inputtext";
+import { MultiSelect } from 'primereact/multiselect';
+import { InputTextarea } from 'primereact/inputtextarea';
+import FileUpload from '../FileUpload';
 
-const WorkCard = ({ work, edit }) => {
-    console.log(edit)
+const WorkCard = ({
+    work, edit,
+    tags, selectedTags, setSelectedTags,
+    updateWork, set,
+    uploadWork, workUrl,
+    uploadPreview, previewUrl,
+    save
+}) => {
     return (
         <>
             <div style={{ width: '40vw', margin: 'auto' }} className='p-mt-6'>
@@ -18,9 +27,23 @@ const WorkCard = ({ work, edit }) => {
                     </div>
                 </div>
                 <div className='p-mt-3'>
-                    {work?.tags.map((el, i) => (
-                        <Button key={i} label={el.name} className="p-button-outlined p-button-rounded p-mr-2" />
-                    ))}
+                    {!edit ?
+                        work?.tags.map((el, i) => (
+                            <Button key={i} label={el.name} className="p-button-outlined p-button-rounded p-mr-2" />
+                        ))
+                        :
+                        <span className="p-float-label p-mt-6" style={{ width: '100%' }}>
+                            <MultiSelect
+                                style={{ width: '100%' }}
+                                id="multiselect"
+                                value={selectedTags}
+                                options={tags}
+                                onChange={(e) => setSelectedTags(e.value)}
+                                optionLabel="name"
+                            />
+                            <label htmlFor="multiselect">Тэги</label>
+                        </span>
+                    }
                 </div>
                 <div>
                     <h3>Название:</h3>
@@ -28,11 +51,21 @@ const WorkCard = ({ work, edit }) => {
                         <>
                             <div className="p-inputgroup p-m-1">
                                 <p>Название:</p>
-                                <InputText className='p-ml-3' placeholder={work?.title || 'Название'} />
+                                <InputText
+                                    className='p-ml-3'
+                                    placeholder={work?.title || 'Название'}
+                                    value={updateWork.title}
+                                    onChange={({ target: { value: title } }) => set({ title })}
+                                />
                             </div>
                             <div className="p-inputgroup p-m-1">
                                 <p>Описание:</p>
-                                <InputText className='p-ml-3' placeholder={work?.description || 'Описание'} />
+                                <InputText
+                                    className='p-ml-3'
+                                    placeholder={work?.description || 'Описание'}
+                                    value={updateWork.description}
+                                    onChange={({ target: { value: description } }) => set({ description })}
+                                />
                             </div>
                         </>
                         :
@@ -41,33 +74,84 @@ const WorkCard = ({ work, edit }) => {
                 </div>
             </div>
             <div style={{ textAlign: 'center' }} className='p-mt-6 p-mb-6'>
-                <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.preview}`}
-                    style={{ width: '50%' }}>
-
-                </img>
+                {!edit ?
+                    <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.preview}`}
+                        style={{ width: '50%' }}>
+                    </img>
+                    :
+                    <FileUpload
+                        onChange={uploadPreview}
+                        preview={previewUrl}
+                    />
+                }
             </div>
             <div style={{ width: '40vw', margin: 'auto' }}>
                 <div>
                     <h3>Описание проекта:</h3>
-                    <p>{work?.project_description}</p>
+                    {!edit ?
+                        <p>{work?.project_description}</p>
+                        :
+                        <InputTextarea
+                            style={{ width: '100%', height: '15vh' }}
+                            label='Описание проекта'
+                            value={updateWork?.project_description}
+                            onChange={({ target: { value: project_description } }) => set({ project_description })}
+                        >
+                        </InputTextarea>
+                    }
                 </div>
                 <div>
                     <h3>Описание задачи:</h3>
-                    <p>{work?.task_description}</p>
+                    {!edit ?
+                        <p>{work?.task_description}</p>
+                        :
+                        <InputTextarea
+                            style={{ width: '100%', height: '15vh' }}
+                            label='Описание проекта'
+                            value={updateWork?.task_description}
+                            onChange={({ target: { value: task_description } }) => set({ task_description })}
+                        >
+                        </InputTextarea>
+                    }
                 </div>
                 <div>
                     <h3>Выполненная работа:</h3>
-                    <p style={{ whiteSpace: 'pre-wrap' }}>{work?.completed_work}</p>
+                    {!edit ?
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{work?.completed_work}</p>
+                        :
+                        <InputTextarea
+                            style={{ width: '100%', height: '15vh' }}
+                            label='Описание проекта'
+                            value={updateWork?.completed_work}
+                            onChange={({ target: { value: completed_work } }) => set({ completed_work })}
+                        >
+                        </InputTextarea>
+                    }
                 </div>
             </div>
             <div style={{ textAlign: 'center' }} className='p-mt-6 p-mb-6'>
-                <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.work_image}`}
-                    style={{ width: '100%' }}>
-
-                </img>
+                {!edit ?
+                    <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.work_image}`}
+                        style={{ width: '100%' }}>
+                    </img>
+                    :
+                    <FileUpload
+                        onChange={uploadWork}
+                        preview={workUrl}
+                    />
+                }
             </div>
+            {edit &&
+                <div className='p-m-4' style={{ textAlign: 'center' }}>
+                    <Button
+                        label='Сохранить'
+                        onClick={save}
+                    >
+                    </Button>
+                </div>
+            }
         </>
     )
 }

@@ -11,7 +11,7 @@ const Header = ({ url, user }) => {
         { label: 'Все работы', icon: 'pi pi-fw pi-desktop', url: '/admin/portfolios' },
         { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: '/admin/designers' },
         { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: '/admin/tags' },
-        { label: 'Documentation', icon: 'pi pi-fw pi-file' },
+        { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url : '/admin/admins' },
         { label: 'Settings', icon: 'pi pi-fw pi-cog' }
     ];
 

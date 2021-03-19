@@ -22,6 +22,31 @@ async function getUserInfo(vk_id){
             user: user[0]
         }
     } catch (e){
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function getUsersInfo(vk_ids){
+    try{
+        let users = await api.users.get(
+            {
+                user_ids: vk_ids,
+                fields: 'photo_max',
+                name_case: 'nom'
+            }
+        )
+
+        return {
+            isSuccess: true,
+            users
+        }
+    } catch (e){
+        console.error(e);
+
         return {
             isSuccess: false
         }
@@ -58,5 +83,6 @@ async function updaetInfo(){
 
 module.exports = {
     getUserInfo,
+    getUsersInfo
     // updaetInfo
 }

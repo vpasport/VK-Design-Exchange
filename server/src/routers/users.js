@@ -17,6 +17,21 @@ async function getInfo(req, res){
     res.sendStatus(511);
 }
 
+async function getInfoByLink({query: {link}}, res){
+    if (link.includes('https')) {
+        link = link.match(/https?:\/\/.*\/(.*)\/?/)[1];
+    }
+
+    let result = await getUserInfo(link);
+
+    if(result.isSuccess){
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(511);
+}
+
 async function getRole(req, res){
     res.json({
         role: req.session.role
@@ -28,6 +43,7 @@ function index() {
 
     router.get('/info', getInfo);
     router.get('/role', getRole);
+    router.get('/check?:link', getInfoByLink)
 
     return router;
 }

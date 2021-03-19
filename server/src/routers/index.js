@@ -5,6 +5,7 @@ const designers = require('./designers');
 const tags = require('./tags');
 const reviews = require('./reviews');
 const users = require('./users');
+const admins = require('./admins');
 
 const {
     getRoles
@@ -25,7 +26,7 @@ const {
 const { oauth } = require('../helper/oauth');
 
 async function auth(response, req, res) {
-    if(response.error !== undefined){
+    if (response.error !== undefined) {
         res.redirect(`${process.env.CLIENT}/login/error`);
     }
 
@@ -70,6 +71,8 @@ function index(server) {
     server.use('/reviews', reviews);
 
     server.use('/users', users);
+
+    server.use('/admins', admins);
 
     server.get('/logout', logout);
 
