@@ -104,8 +104,9 @@ const CreatePortfolio = ({
                     />
                 </div>
             </div>
-            <div className='p-m-4' style={{textAlign: 'center' }}>
+            <div style={{textAlign: 'center', width: '70%' }}>
                 <Button
+                    className='p-m-4'
                     label='Создать'
                     onClick={save}
                 >

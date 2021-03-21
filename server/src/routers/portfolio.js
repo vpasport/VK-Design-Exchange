@@ -2,7 +2,7 @@
 
 const multer = require('multer');
 const { v4: uuid } = require('uuid');
-const { promises: { writeFile } } = require('fs');
+const { promises: { writeFile, rename } } = require('fs');
 
 const { Router } = require('express');
 const {
@@ -10,11 +10,13 @@ const {
     getPreviewsFromTo: getPreviewsFromTo_,
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
+    getImagesNames: getImagesNames_,
     createWork: createWork_,
     addTags: addTags_,
     deleteWork: deleteWork_,
     updateTags: updateTags_,
-    updateDescription: updateDescription_
+    updateDescription: updateDescription_,
+    updateImagePaths: updateImagePaths_
 } = require('../database/portfolio');
 
 async function getPreviews({ query: { from, to, from_id, tags } }, res) {
@@ -66,7 +68,7 @@ async function getWork({ params: { id }, session }, res) {
 async function createWork({ files, body, session }, res) {
     if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
         if (files.preview === undefined || files.image === undefined) {
-            res.sendStatus(204);
+            res.sendStatus(520);
             return;
         }
 
@@ -76,7 +78,7 @@ async function createWork({ files, body, session }, res) {
         ];
 
         for (const image of images) {
-            if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) && image.file.size >= 20971520) {
+            if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) || image.file.size >= 20971520) {
                 res.sendStatus(422);
                 return;
             }
@@ -164,6 +166,71 @@ async function updateDescription({
     res.sendStatus(401);
 }
 
+async function updateImages({ params: { id }, files, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        try {
+            if (files.preview === undefined && files.image === undefined) {
+                res.sendStatus(520);
+                return;
+            }
+
+            let { imageNames } = await getImagesNames_(id);
+
+            let images = [];
+
+            if (files.preview !== undefined) {
+                images.push({
+                    type: 'preview',
+                    name: imageNames.preview,
+                    file: files.preview[0]
+                })
+            }
+            if (files.image !== undefined) {
+                images.push({
+                    type: 'work',
+                    name: imageNames.work_image,
+                    file: files.image[0]
+                })
+            }
+
+            let preview = undefined;
+            let work_image = undefined;
+
+            for (const image of images) {
+                if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) || image.file.size >= 20971520) {
+                    res.sendStatus(422);
+                    return;
+                }
+
+                let originalname = image.file.originalname;
+                image.newName = `${image.name.slice(0, image.name.lastIndexOf('.'))}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
+
+                if (image.type === 'preview') preview = image.newName;
+                if (image.type === 'work') work_image = image.newName;
+            }
+
+            let update = await updateImagePaths_(id, preview, work_image)
+
+            if (update.isSuccess) {
+                for (const image of images) {
+                    await rename(`static/${image.name}`, `static/${image.newName}`);
+                    await writeFile(`static/${image.newName}`, image.file.buffer);
+                }
+            }
+
+            res.sendStatus(204);
+            return;
+        } catch (e) {
+            console.error(e);
+
+            res.sendStatus(520);
+            return;
+        }
+    }
+
+    res.sendStatus(401);
+}
+
 async function deleteWork({ body: { id }, session }, res) {
     if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
 
@@ -194,6 +261,7 @@ function index() {
 
     router.put('/:id/tags', updateTags);
     router.put('/:id/description', updateDescription);
+    router.put('/:id/images', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), updateImages);
 
     router.delete('/work', deleteWork);
 

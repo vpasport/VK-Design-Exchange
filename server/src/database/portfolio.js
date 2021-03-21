@@ -184,6 +184,8 @@ async function getWork(id, full) {
                 dp.portfolio_id = $1 and d.id = dp.designer_id`,
             [id]
         )).rows[0];
+        
+        user.rating = Number(user.rating);
 
         if (work !== undefined) {
             await client.query('commit');
@@ -202,6 +204,85 @@ async function getWork(id, full) {
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function getImagesNames(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let imageNames = (await client.query(
+            `select preview, work_image
+                from portfolio
+            where
+                id = $1`,
+            [id]
+        )).rows[0];
+
+        if (imageNames !== undefined) {
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                imageNames
+            }
+        }
+
+        throw 'Work not found'
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function updateImagePaths(id, preview, work_image) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let set = [];
+        let params = [];
+
+        if (work_image !== undefined) {
+            params.push(work_image);
+            set.push(`work_image = $${params.length + 1}`);
+        }
+        if (preview !== undefined) {
+            params.push(preview);
+            set.push(`preview = $${params.length + 1}`);
+        }
+
+        await client.query(
+            `update portfolio
+                set ${set.join(',')}
+            where
+                id = $1`,
+            [id, ...params]
+        );
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false
@@ -428,9 +509,11 @@ module.exports = {
     getPreviewsFromTo,
     getPreviewsTags,
     getWork,
+    getImagesNames,
     createWork,
     addTags,
     updateTags,
     updateDescription,
+    updateImagePaths,
     deleteWork
 }

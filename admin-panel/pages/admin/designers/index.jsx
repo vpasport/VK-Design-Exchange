@@ -22,6 +22,7 @@ const Designers = ({ user }) => {
     }, [])
 
     const deleteDesigner = async (id) => {
+        console.log(id)
         let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/`, {
             method: 'DELETE',
             credentials: 'include',
@@ -45,7 +46,7 @@ const Designers = ({ user }) => {
                 user={user}
                 url='/admin/designers'
             />
-            <div className='p-m-6'>
+            <div className='p-m-6' style={{textAlign: 'center'}}>
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/designers/create`}>Создать</Link>
                 </Button>

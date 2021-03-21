@@ -26,7 +26,6 @@ const DesignerCard = ({ designer, edit, update }) => {
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data?.id}`}>Обзор</Link>
                 </Button>
-                <Button label='Удалить' className='p-button-danger p-ml-2' />
             </span>
         );
 
@@ -36,6 +35,7 @@ const DesignerCard = ({ designer, edit, update }) => {
 
         return (
             <Card
+                key={key}
                 className='p-m-2'
                 style={{ width: '48%' }}
                 title={data.description}

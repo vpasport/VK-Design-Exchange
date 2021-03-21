@@ -17,8 +17,6 @@ const Portfolios = ({ user }) => {
 
         const { previews } = await res.json();
 
-        console.log(previews)
-
         setPreviews(previews);
     }
 

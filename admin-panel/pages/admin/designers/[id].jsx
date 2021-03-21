@@ -71,6 +71,21 @@ const Designer = ({ user }) => {
         setDesigner(designer);
     }
 
+    const deleteDesigner = async () => {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id
+            })
+        })
+
+        router.push('/admin/designers');
+    }
+
     return (
         <Container>
             <Header
@@ -80,7 +95,7 @@ const Designer = ({ user }) => {
             <div style={{ width: '40%', margin: 'auto' }} className='p-mt-6'>
                 <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
-                <Button label='Удалить' className='p-m-2 p-button-danger'></Button>
+                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deleteDesigner()}></Button>
             </div>
             <DesignerCard designer={designer} edit={edit} update={updateDesigner} />
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
 import { Dialog } from 'primereact/dialog';
+import CreateUser from '../../../components/CreateUser';
 
 const Create = ({ user }) => {
     const router = useRouter();
@@ -43,9 +44,9 @@ const Create = ({ user }) => {
                 user={user}
                 url='/admin/designers'
             />
-            <div style={{ width: '50%', margin: 'auto' }}>
+            <div style={{ margin: 'auto' }}>
                 <div>
-                    <h3>Вставьте ссылку ВК или id дизайнера</h3>
+                    {/* <h3>Вставьте ссылку ВК или id дизайнера</h3>
                     <InputText
                         placeholder='https://vk.com/example'
                         id="username"
@@ -57,6 +58,11 @@ const Create = ({ user }) => {
                         label='Создать'
                         className='p-mt-4'
                         onClick={create}
+                    /> */}
+                    <CreateUser
+                        link={link}
+                        setLink={setLink}
+                        create={create}
                     />
                     <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                         <p>

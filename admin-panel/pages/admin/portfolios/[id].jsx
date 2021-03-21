@@ -116,24 +116,24 @@ const Work = ({ user }) => {
 
         selectedTags.forEach(el => tags.push(el.id));
 
-        // let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/tags`, {
-        //     method: 'PUT',
-        //     credentials: 'include',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         tag_ids: tags
-        //     })
-        // });
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/tags`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tag_ids: tags
+            })
+        });
 
-        // if (response.status !== 204) {
-        //     setError('Не удалось обновить тэги. Обновление остановлено');
-        //     setDialog(true);
-        //     return;
-        // }
+        if (response.status !== 204) {
+            setError('Не удалось обновить тэги. Обновление остановлено');
+            setDialog(true);
+            return;
+        }
 
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/description`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/description`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -150,7 +150,27 @@ const Work = ({ user }) => {
             return;
         }
 
+        const formData = new FormData();
+
+        if (preview !== null) formData.append('preview', preview);
+        if (workImage !== null) formData.append('image', workImage);
+
+        if (preview !== null || workImage !== null) {
+            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/images`, {
+                method: 'PUT',
+                credentials: 'include',
+                body: formData
+            });
+
+            if (response.status !== 204) {
+                setError('Не удалось обновить превью или изображение работы. Обновление остановлено');
+                setDialog(true);
+                return;
+            }
+        }
+
         getWork();
+        setEdit();
     }
 
     const deletePortfolio = async () => {
