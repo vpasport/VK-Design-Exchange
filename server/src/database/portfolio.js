@@ -184,15 +184,17 @@ async function getWork(id, full) {
                 dp.portfolio_id = $1 and d.id = dp.designer_id`,
             [id]
         )).rows[0];
-        
-        user.rating = Number(user.rating);
+
 
         if (work !== undefined) {
             await client.query('commit');
             client.release();
 
             if (tags.length > 0) work.tags = tags;
-            if (user !== undefined) work.author = user;
+            if (user !== undefined) {
+                user.rating = Number(user.rating);
+                work.author = user;
+            }
 
             return {
                 isSuccess: true,
@@ -204,6 +206,8 @@ async function getWork(id, full) {
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false

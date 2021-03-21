@@ -62,7 +62,7 @@ async function getWork({ params: { id }, session }, res) {
         return;
     }
 
-    res.sendStatus(204);
+    res.sendStatus(520);
 }
 
 async function createWork({ files, body, session }, res) {
