@@ -36,6 +36,8 @@ const Create = ({ user }) => {
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
 
+    const [creation, setCreation] = useState(false);
+
     const set = (json) => {
         setPortfolio(prev => ({
             ...prev, ...json
@@ -157,6 +159,7 @@ const Create = ({ user }) => {
                 previewUrl={previewUrl} uploadPreview={uploadPreview}
                 workUrl={workUrl} uploadWork={uploadWork}
                 set={set} save={save}
+                creation={creation} setCreation={setCreation}
             ></CreatePortfolio>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>

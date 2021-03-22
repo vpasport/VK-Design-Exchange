@@ -35,8 +35,6 @@ const Designer = ({ user }) => {
         designer.previews = previews;
         designer.reviews = reviews;
 
-        console.log(designer);
-
         setDesigner(designer);
     }, [])
 

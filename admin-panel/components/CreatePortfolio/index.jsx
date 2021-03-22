@@ -11,7 +11,7 @@ const CreatePortfolio = ({
     selectTags, setSelectTags,
     previewUrl, uploadPreview,
     uploadWork, workUrl,
-    set, save
+    set, save, creation, setCreation
 }) => {
     return (
         <div
@@ -133,7 +133,11 @@ const CreatePortfolio = ({
                     <Button
                         className='p-m-4'
                         label='Создать'
-                        onClick={save}
+                        onClick={() => {
+                            setCreation(true);
+                            save();
+                        }}
+                        disabled={creation}
                     >
                     </Button>
                 </div>
