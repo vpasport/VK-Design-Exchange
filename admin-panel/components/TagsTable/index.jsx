@@ -75,7 +75,7 @@ const DesignersTable = ({ tags, deleteTag, updateTag }) => {
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" rowsPerPageOptions={[10, 25, 50]}>
                     {/* <Column field="name" headerStyle={{ textAlign: 'center' }} bodyStyle={{ overflow: 'visible' }} header="Название" sortable filter filterPlaceholder="Search" /> */}
                     <Column body={name} headerStyle={{ textAlign: 'center' }} bodyStyle={{ overflow: 'visible' }} header="Название" sortable filter filterPlaceholder="Search" />
-                    <Column body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
+                    <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
                 </DataTable>
             </div>
         </>

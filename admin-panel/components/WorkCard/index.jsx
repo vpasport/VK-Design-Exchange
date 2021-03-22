@@ -16,7 +16,7 @@ const WorkCard = ({
 }) => {
     return (
         <>
-            <div style={{ width: '40vw', margin: 'auto' }} className='p-mt-6'>
+            <div style={{ width: '70%', margin: 'auto' }} className='p-mt-6'>
                 <div className='p-d-flex p-ai-center'>
                     <Avatar shape="circle" image={work?.author?.photo} size="xlarge" />
                     <div className='p-ml-3'>
@@ -86,7 +86,7 @@ const WorkCard = ({
                     />
                 }
             </div>
-            <div style={{ width: '40vw', margin: 'auto' }}>
+            <div style={{ width: '70%', margin: 'auto' }}>
                 <div>
                     <h3>Описание проекта:</h3>
                     {!edit ?
@@ -134,7 +134,7 @@ const WorkCard = ({
                 {!edit ?
                     <img
                         src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.work_image}`}
-                        style={{ width: '100%' }}>
+                        style={{ width: '70%' }}>
                     </img>
                     :
                     <FileUpload

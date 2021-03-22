@@ -36,7 +36,7 @@ const AdminTable = ({ admins, deleteAdmin }) => {
                 <Column field='photo' headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="Фото" body={photo} />
                 <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Search" />
                 <Column field='last_name' header='Фамилия' sortable filter filterPlaceholder="Search" />
-                <Column body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
+                <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
             </DataTable>
         </div>
     )

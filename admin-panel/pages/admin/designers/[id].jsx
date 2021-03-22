@@ -27,7 +27,15 @@ const Designer = ({ user }) => {
         });
         const { previews } = await response.json();
 
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}/reviews`, {
+            credentials: 'include'
+        });
+        const {reviews} = await response.json();
+
         designer.previews = previews;
+        designer.reviews = reviews;
+
+        console.log(designer);
 
         setDesigner(designer);
     }, [])
@@ -91,7 +99,7 @@ const Designer = ({ user }) => {
                 user={user}
                 url='/admin/designers'
             />
-            <div style={{ width: '40%', margin: 'auto' }} className='p-mt-6'>
+            <div style={{ textAlign: 'center' }} className='p-mt-6'>
                 <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
                 <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deleteDesigner()}></Button>

@@ -93,6 +93,8 @@ async function getReviews(id) {
             await client.query('commit');
             client.release();
 
+            reviews.forEach(element => element.rating = Number(element.rating));
+
             return {
                 isSuccess: true,
                 reviews

@@ -10,7 +10,7 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
     const photo = (designer) => {
         return (
             <div className="p-multiselect-representative-option">
-                <Avatar shape="circle" image={designer.photo} size='xlarge' />
+                <Avatar shape="circle" image={designer.photo} size='xlarge'/>
                 {/* <img alt='Аватар' src={designer.photo !== null && designer.photo} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width="32" style={{verticalAlign: 'middle'}} /> */}
             </div>
         );
@@ -54,7 +54,7 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
                     <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Search" />
                     <Column field='last_name' header='Фамилия' sortable filter filterPlaceholder="Search" />
                     <Column field="rating" header="Рейтинг" body={rating} />
-                    <Column body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
+                    <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
                 </DataTable>
             </div>
         </>

@@ -202,7 +202,7 @@ const Work = ({ user }) => {
                 user={user}
                 url='/admin/portfolios'
             />
-            <div style={{ width: '40%', margin: 'auto' }} className='p-mt-6'>
+            <div style={{ textAlign: 'center' }} className='p-mt-6'>
                 <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
                 <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deletePortfolio()}></Button>

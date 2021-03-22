@@ -2,7 +2,11 @@
 
 const multer = require('multer');
 const { v4: uuid } = require('uuid');
-const { promises: { writeFile, rename } } = require('fs');
+const { promises: {
+    writeFile,
+    rename,
+    unlink
+} } = require('fs');
 
 const { Router } = require('express');
 const {
@@ -237,6 +241,9 @@ async function deleteWork({ body: { id }, session }, res) {
         let result = await deleteWork_(id);
 
         if (result.isSuccess) {
+            await unlink(`static/${result.images.preview}`);
+            await unlink(`static/${result.images.work_image}`);
+
             res.sendStatus(204);
             return;
         }

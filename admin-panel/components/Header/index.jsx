@@ -12,7 +12,7 @@ const Header = ({ url, user }) => {
         { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: '/admin/designers' },
         { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: '/admin/tags' },
         { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url : '/admin/admins' },
-        { label: 'Settings', icon: 'pi pi-fw pi-cog' }
+        // { label: 'Settings', icon: 'pi pi-fw pi-cog' }
     ];
 
     const logout = async () => {

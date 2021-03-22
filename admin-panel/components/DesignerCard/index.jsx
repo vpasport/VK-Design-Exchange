@@ -3,7 +3,6 @@ import { Rating } from 'primereact/rating';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import Link from 'next/link';
-import { InputText } from "primereact/inputtext";
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useEffect, useState } from 'react';
 
@@ -47,6 +46,24 @@ const DesignerCard = ({ designer, edit, update }) => {
         );
     }
 
+    const renderReviews = (data, key) => {
+        return (
+            <div key={key} className='p-m-4'>
+                <div className='p-d-flex p-ai-center'>
+                    <Avatar shape="circle" image={data.user.photo} size="xlarge" />
+                    <div className='p-ml-3'>
+                        <div>
+                            <b>{data.user.first_name} {data.user.last_name}</b>
+                        </div>
+                        <Rating value={data.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
+                    </div>
+                </div>
+                <hr style={{width: '50%', marginLeft: '0'}}></hr>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{data.text}</p>
+            </div>
+        )
+    }
+
     return (
         <>
             <div style={{ width: '50%', margin: 'auto' }} className='p-mt-6 p-mb-4'>
@@ -59,21 +76,6 @@ const DesignerCard = ({ designer, edit, update }) => {
                         <Rating value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                     </div>
                 </div>
-                {/* <div>
-                    <h3>Опыт:</h3>
-                    {edit ?
-                        <div className='p-inputgroup p-m-1'>
-                            <InputText
-                                placeholder={'Опыт (в годах)'}
-                                type='number'
-                                value={designerUpdated?.experience}
-                                onChange={({ target: { value: experience } }) => setDesigner({experience})}
-                            />
-                        </div>
-                        :
-                        <p>{designer?.experience} года</p>
-                    }
-                </div> */}
                 <div>
                     <h3>О себе:</h3>
                     {edit ?
@@ -92,14 +94,30 @@ const DesignerCard = ({ designer, edit, update }) => {
                 <div className='p-m-3' style={{ textAlign: 'center' }}>
                     {edit && <Button label='Сохранить' onClick={() => update(designerUpdated)} />}
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                    <h3>Работы:</h3>
-                    <Button>
-                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer?.id}`}>Добавить</Link>
-                    </Button>
-                    <div>
+            </div>
+            <div style={{ textAlign: 'center', width: '80%', margin: 'auto' }}>
+                <h3>Работы:</h3>
+                <Button>
+                    <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer?.id}`}>Добавить</Link>
+                </Button>
+                {designer?.previews.length > 0 ?
+                    (<div
+                        style={{ display: 'flex', flexWrap: 'wrap' }}
+                    >
                         {designer?.previews.map((el, i) => renderCard(el, i))}
-                    </div>
+                    </div>)
+                    :
+                    <p style={{ textAlign: 'center' }}>У этого дизайнера пока нет работ</p>
+                }
+            </div>
+            <div style={{ width: '70%', margin: 'auto' }}>
+                <h3 style={{textAlign: 'center'}}>Отзывы:</h3>
+                <div>
+                    {designer?.reviews.length > 0 ?
+                        designer?.reviews.map((el, i) => renderReviews(el, i))
+                        :
+                        <p style={{ textAlign: 'center' }}>У этого дизайнера пока нет отзывов</p>
+                    }
                 </div>
             </div>
         </>

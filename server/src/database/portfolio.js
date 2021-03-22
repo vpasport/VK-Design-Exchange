@@ -482,6 +482,14 @@ async function deleteWork(id) {
     await client.query('begin');
 
     try {
+        let images = (await client.query(
+            `select preview, work_image
+                from portfolio
+            where
+                id = $1`,
+            [id]
+        )).rows[0];
+
         await client.query(
             `delete from portfolio
             where
@@ -493,7 +501,8 @@ async function deleteWork(id) {
         client.release();
 
         return {
-            isSuccess: true
+            isSuccess: true,
+            images
         }
 
     } catch (e) {
