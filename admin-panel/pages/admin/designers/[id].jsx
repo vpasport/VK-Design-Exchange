@@ -44,8 +44,7 @@ const Designer = ({ user }) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                experience: _designer?.experience,
-                specialization: _designer?.specialization
+                bio: _designer?.bio,
             })
         })
 

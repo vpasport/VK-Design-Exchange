@@ -90,7 +90,7 @@ const WorkCard = ({
                 <div>
                     <h3>Описание проекта:</h3>
                     {!edit ?
-                        <p>{work?.project_description}</p>
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{work?.project_description}</p>
                         :
                         <InputTextarea
                             style={{ width: '100%', height: '15vh' }}
@@ -104,7 +104,7 @@ const WorkCard = ({
                 <div>
                     <h3>Описание задачи:</h3>
                     {!edit ?
-                        <p>{work?.task_description}</p>
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{work?.task_description}</p>
                         :
                         <InputTextarea
                             style={{ width: '100%', height: '15vh' }}

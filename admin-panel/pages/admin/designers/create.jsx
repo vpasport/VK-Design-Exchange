@@ -1,8 +1,6 @@
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
-import { InputText } from 'primereact/inputtext';
 import { useState } from 'react';
-import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
 import { Dialog } from 'primereact/dialog';
 import CreateUser from '../../../components/CreateUser';
@@ -46,19 +44,6 @@ const Create = ({ user }) => {
             />
             <div style={{ margin: 'auto' }}>
                 <div>
-                    {/* <h3>Вставьте ссылку ВК или id дизайнера</h3>
-                    <InputText
-                        placeholder='https://vk.com/example'
-                        id="username"
-                        value={link}
-                        onChange={(e) => setLink(e.target.value)}
-                        style={{ width: '100%' }}
-                    />
-                    <Button
-                        label='Создать'
-                        className='p-mt-4'
-                        onClick={create}
-                    /> */}
                     <CreateUser
                         link={link}
                         setLink={setLink}

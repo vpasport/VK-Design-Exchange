@@ -89,9 +89,9 @@ async function deleteDesigner({ body: { id }, session }, res) {
     res.sendStatus(401);
 }
 
-async function updateInfo({ params: { id }, body: { experience, specialization }, session }, res) {
+async function updateInfo({ params: { id }, body: { bio }, session }, res) {
     if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
-        let result = await updateInfo_(id, experience, specialization);
+        let result = await updateInfo_(id, bio);
 
         if (result.isSuccess) {
             res.sendStatus(204);

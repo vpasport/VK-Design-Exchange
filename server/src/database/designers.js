@@ -40,7 +40,7 @@ async function getDesigner(id) {
 
     try {
         let designer = (await client.query(
-            `select d.id, d.vk_id, d.rating, d.experience, d.specialization, d.photo, d.first_name, d.last_name
+            `select d.id, d.vk_id, d.rating, d.bio, d.photo, d.first_name, d.last_name
                 from designers as d
             where id = $1`,
             [id]
@@ -228,17 +228,17 @@ async function deleteDesigner(id) {
     }
 }
 
-async function updateInfo(id, experience, specialization){
+async function updateInfo(id, bio){
     const client = await pool.connect();
     await client.query('begin');
 
     try {
         let designer = (await client.query(
             `update designers
-                set experience = $1, specialization = $2
+                set bio = $1
             where
-                id = $3`,
-            [experience, specialization, id]
+                id = $2`,
+            [bio, id]
         ));
 
         await client.query('commit');

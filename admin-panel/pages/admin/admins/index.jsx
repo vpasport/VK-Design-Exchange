@@ -18,7 +18,7 @@ const Admins = ({ user }) => {
 
     const [admins, setAdmins] = useState(null);
 
-    const [createAdminProfile, setcreateAdminProfile] = useState(false);
+    const [createAdminProfile, setCreateAdminProfile] = useState(false);
     const [link, setLink] = useState('');
 
     useEffect(async () => {
@@ -55,7 +55,7 @@ const Admins = ({ user }) => {
         const { admins } = await response.json();
 
         setAdmins(admins);
-        setcreateAdminProfile(false);
+        setCreateAdminProfile(false);
     }
 
     const createAdmin = async () => {
@@ -72,6 +72,7 @@ const Admins = ({ user }) => {
         })
 
         if (response.status !== 200) {
+            setCreateAdminProfile(false);
             setError('Не удалось создать администратора');
             setDialog(true);
             return;
@@ -83,7 +84,13 @@ const Admins = ({ user }) => {
         const { admins } = await response.json();
 
         setAdmins(admins);
-        setcreateAdminProfile(false);
+        setDialog(false);
+        setCreateAdminProfile(false);
+    }
+
+    const createProfile = () => {
+        setDialog(true);
+        setCreateAdminProfile(true);
     }
 
     return (
@@ -92,31 +99,39 @@ const Admins = ({ user }) => {
                 user={user}
                 url='/admin/admins'
             />
-            {createAdminProfile ?
-                <div>
-                    <CreateUser
-                        link={link}
-                        setLink={setLink}
-                        create={createAdmin}
-                    />
-                </div>
-                :
-                <div style={{ textAlign: 'center' }}>
-                    <Button
-                        label='Создать'
-                        className='p-mt-4'
-                        onClick={() => setcreateAdminProfile(true)}
-                    />
-                </div>
-            }
+            <div style={{ textAlign: 'center' }}>
+                <Button
+                    label='Создать'
+                    className='p-mt-4'
+                    onClick={() => createProfile()}
+                />
+            </div>
             <AdminTable
                 admins={admins}
                 deleteAdmin={deleteAdmin}
             />
-            <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
+            <Dialog
+                header={createAdminProfile ? 'Создать' : 'Ошибка'}
+                visible={dialog}
+                style={{ width: '50vw' }}
+                onHide={() => {
+                    if (createAdminProfile) setCreateAdminProfile(false);
+                    setDialog(false);
+                    setError('');
+                }}
+            >
                 <p>
                     {error}
                 </p>
+                {createAdminProfile &&
+                    <div>
+                        <CreateUser
+                            link={link}
+                            setLink={setLink}
+                            create={createAdmin}
+                        />
+                    </div>
+                }
             </Dialog>
         </Container>
     )

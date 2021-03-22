@@ -22,7 +22,7 @@ const CreateUser = ({ link, setLink, create }) => {
     }
 
     return (
-        <div style={{width: '50%', margin: 'auto'}}>
+        <div style={{width: '90%', margin: 'auto'}}>
             <h3>Вставьте ссылку ВК или id пользователя</h3>
             <InputText
                 placeholder='https://vk.com/example'

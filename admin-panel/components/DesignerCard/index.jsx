@@ -59,7 +59,7 @@ const DesignerCard = ({ designer, edit, update }) => {
                         <Rating value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                     </div>
                 </div>
-                <div>
+                {/* <div>
                     <h3>Опыт:</h3>
                     {edit ?
                         <div className='p-inputgroup p-m-1'>
@@ -73,20 +73,20 @@ const DesignerCard = ({ designer, edit, update }) => {
                         :
                         <p>{designer?.experience} года</p>
                     }
-                </div>
+                </div> */}
                 <div>
-                    <h3>Специализация:</h3>
+                    <h3>О себе:</h3>
                     {edit ?
                         <div className='p-inputgroup p-m-1'>
                             <InputTextarea
-                                placeholder={'Специализация'}
-                                value={designerUpdated?.specialization}
+                                placeholder={'Осебе'}
+                                value={designerUpdated?.bio}
                                 style={{ height: '10vh' }}
-                                onChange={({ target: { value: specialization } }) => setDesigner({ specialization })}
+                                onChange={({ target: { value: bio } }) => setDesigner({ bio })}
                             />
                         </div>
                         :
-                        <p>{designer?.specialization}</p>
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{designer?.bio}</p>
                     }
                 </div>
                 <div className='p-m-3' style={{ textAlign: 'center' }}>
