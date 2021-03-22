@@ -2,7 +2,7 @@ import { Avatar, Div, Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, 
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { alertContext } from '../../App';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { changeActiveDesignerId, changeActiveDesigner } from '../../store/Designer/actions';
 import { getDesignerInfoById } from '../../utils/helpers';
@@ -59,14 +59,13 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             <div className={styles.userBlock__info}>
                                 <Title weight='bold'>{`${activeDesigner.getFirstName()} ${activeDesigner.getLastName()}`}</Title>
                                 <StarRatings rating={activeDesigner.getRating()} className={styles.userBlock__raiting} />
-                                <Text className={styles.userBlock__experience}>Стаж в дизайне: &lt;1 года</Text>
                                 <Text className={styles.userBlock__status}>Занят до 21.12.2112</Text>
                             </div>
                         </Div>
                     </Group>
                     <Group>
                         <Div className={styles.specialisation}>
-                            <Title level='3'>Специализация</Title>
+                            <Title level='3'>Биография</Title>
                             <Text className={styles.specialisation__text}>{activeDesigner.getSpecialisation() || 'Нет данных'}</Text>
                         </Div>
                     </Group>

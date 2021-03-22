@@ -1,6 +1,3 @@
-export const DESIGN_CHANGE_ACTIVE_DESIGN_ID = 'DESIGN_CHANGE_ACTIVE_DESIGN_ID';
+import { createAction } from 'redux-actions';
 
-export const changeActiveDesignId = (designId) => ({
-    type: DESIGN_CHANGE_ACTIVE_DESIGN_ID,
-    payload: designId
-})
+export const changeActiveDesignId = createAction('DESIGN_CHANGE_ACTIVE_DESIGN_ID');

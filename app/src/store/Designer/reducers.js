@@ -1,15 +1,12 @@
-import { DESIGNER_CHANGE_ACTIVE_DESIGNER_ID, DESIGNER_CHANGE_ACTIVE_DESIGNER } from './actions';
+import { handleActions } from 'redux-actions';
+import { changeActiveDesigner, changeActiveDesignerId } from './actions';
 
 const defaultState = {
     activeDesignerId: null,
     activeDesigner: null
 }
 
-export const designerReducer = (state = defaultState, action) => {
-    switch (action.type){
-        case DESIGNER_CHANGE_ACTIVE_DESIGNER_ID: return { ...state, activeDesignerId: action.payload };
-        case DESIGNER_CHANGE_ACTIVE_DESIGNER: return { ...state, activeDesigner: action.payload }
-    }
-
-    return state;
-}
+export const designerReducer = handleActions(new Map([
+    [changeActiveDesigner, (state, {payload}) => ({...state, activeDesigner: payload})],
+    [changeActiveDesignerId, (state, {payload}) => ({...state, activeDesignerId: payload})]
+]), defaultState)

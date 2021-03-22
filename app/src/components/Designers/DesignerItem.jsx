@@ -14,7 +14,6 @@ const DesignerItem = ({ designerCard }) => {
     const router = useRouter();
 
     const handleDesignerChange = () => {
-        
         dispatch(changeActiveDesignerId(designerCard.getId())); 
         router.setActivePanel('designer');
     }

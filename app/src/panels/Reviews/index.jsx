@@ -2,16 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Panel, PanelHeader, PanelHeaderBack, Group } from '@vkontakte/vkui';
 import useRouter from '../../utils/useRouter';
-import ListBlock from '../../components/ListBlock';
 import ReviewCard from '../../components/ReviewCard';
 import useUserListParams from '../../utils/useUserListParams';
+import UserListBlock from '../../components/UserListBlock';
 
 const Reviews = ({ id }) => {
 
     const router = useRouter();
-    const userListParams = useUserListParams('reviews');
-
-    const activeDesigner = userListParams.bind.activeDesigner;
 
     return (
         <Panel id={id}>
@@ -21,23 +18,20 @@ const Reviews = ({ id }) => {
                 Отзывы
             </PanelHeader>
             <Group>
-                { userListParams.bind.isShowList &&
-                    <ListBlock
-                        actionType='reviews'
-                        loadList={activeDesigner.getReviews.bind(activeDesigner)}
-                        loadingCondition={userListParams.checkId}
-                        nullText='Отзывы отсутствуют'
-                    >
-                        {el => (
-                            <ReviewCard
-                                reviewCard={el}
-                                key={el.getId()}
-                            />
-                        )}
-                    </ListBlock>
-                }
+                <UserListBlock
+                    actionType='reviews'
+                    loadList={(activeDesigner) => activeDesigner.getReviews.call(activeDesigner)}
+                    nullText='Отзывы отсутствуют'
+                >
+                    {el => (
+                        <ReviewCard
+                            reviewCard={el}
+                            key={el.getId()}
+                        />
+                    )}
+                </UserListBlock>
             </Group>
-        </Panel>   
+        </Panel>
     )
 }
 

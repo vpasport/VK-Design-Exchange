@@ -1,23 +1,15 @@
 import axios from 'axios';
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import getActionsByType from './getActionsByType';
+import * as listActions from '../../store/ListBlock/actions';
 
 const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, loadingCondition = () => {}) => {
 
-    const { changeList, 
-            changeLength, 
-            changeFromId, 
-            changeSecondLength, 
-            changeFilters, 
-            changeActiveFilters,
-            changeListFormat,
-            changeIsFetch
-        } = getActionsByType(type);
-
+    const dispatch = useDispatch();
     const { length, secondLength, fromId, list, filters, activeFilters, listFormat, isFetch } = useSelector(state => state[type]);
 
     const [ isLoad, setIsLoad ] = useState(Boolean(list && list.length));
+    const dispatchActionType = useMemo(() => type.toUpperCase(), []);
 
     const changeHasMore = () => {
         //check by to
@@ -47,12 +39,12 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
             
             const data = await loadList({from, to: nextStep, fromId, activeFilters});
 
-            changeList(data.list);
+            dispatch(listActions.changeList(dispatchActionType)(data.list));
 
-            if(!length) changeLength(data.count);
-            if(!fromId) changeFromId(data.fromId);
+            if(!length) dispatch(listActions.changeLength(dispatchActionType)(data.count));
+            if(!fromId) dispatch(listActions.changeFromId(dispatchActionType)(data.fromId));
             
-            changeSecondLength(secondLength + loadLength);
+            dispatch(listActions.changeSecondLength(dispatchActionType)(secondLength + loadLength))
             setIsLoad(true)
         }
         catch(error){
@@ -63,34 +55,21 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
     const getFilters = async () => {
         try{
             const data = await loadFilters();
-            changeFilters(data);
+            dispatch(listActions.changeFilters(dispatchActionType)(data))
         }
         catch(error){
             useAlert.error('Ошибка', error.message);
         }
     }
 
-    
-
-    const updateList = () => {
-        changeLength(null);
-        changeFromId(null);
-        changeSecondLength(Number(from));
-
-        changeIsFetch(true);
-    }
-
-    const changeActiveFilter = (filter) => {
-        changeActiveFilters(filter);
-        updateList();
-    }
-
+    const updateList = () => dispatch(listActions.updateList(dispatchActionType)());
+    const changeListFormat = (listFormat) => dispatch(listActions.changeListFormat(dispatchActionType)(listFormat));
 
     useEffect(() => {
 
         const fetchData = async () => {
             await getList();
-            changeIsFetch(false);
+            dispatch(listActions.changeIsFetch(dispatchActionType)(false))
         }
 
         if(isFetch) fetchData()
@@ -109,7 +88,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
         bind: {
             list, length, secondLength, hasMore, isFetch, filters, activeFilters, listFormat, isLoad
         },
-        getList, updateList, changeActiveFilter, changeListFormat
+        getList, updateList, changeListFormat
     }
 
 }

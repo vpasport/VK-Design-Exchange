@@ -4,8 +4,8 @@ import { designReducer } from './Design/reducers';
 import { designerListReducer } from './DesignerList/reducers';
 import { designerReducer } from './Designer/reducers';
 import { pathReducer } from './router/reducers';
-import { portfolioReducer } from './Designer/Portfolio/reducers';
-import { reviewsReducer } from './Designer/Reviews/reducers';
+import { portfolioReducer } from './Designer/DesignerListBlock/Portfolio/reducers';
+import { reviewsReducer } from './Designer/DesignerListBlock/Reviews/reducers';
 
 export default combineReducers({
     galleryList: galleryListReducer,

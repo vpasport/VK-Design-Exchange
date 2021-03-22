@@ -1,13 +1,10 @@
-import { DESIGN_CHANGE_ACTIVE_DESIGN_ID } from './actions';
+import { changeActiveDesignId } from './actions';
+import { handleActions } from 'redux-actions';
 
 const defaultState = {
     activeDesignId: null
 }
 
-export const designReducer = (state = defaultState, action) => {
-    switch (action.type){
-        case DESIGN_CHANGE_ACTIVE_DESIGN_ID: return { ...state, activeDesignId: action.payload }
-    }
-
-    return state;
-}
+export const designReducer = handleActions(new Map([
+    [changeActiveDesignId, (state, {payload}) => ({...state, activeDesignId: payload})],
+]), defaultState)

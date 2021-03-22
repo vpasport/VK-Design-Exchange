@@ -1,24 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ModalPage, Group, ModalPageHeader, PanelHeaderClose, Header, CellButton } from '@vkontakte/vkui';
 import { modalContext, sessionContext } from '../../App';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Icon20Check } from '@vkontakte/icons';
-import getActionsByType from '../../utils/useList/getActionsByType';
+import { changeActiveFilters, updateList } from '../../store/ListBlock/actions';
 
 const FiltersModal = ({ id, stateType }) => {
 
     const { setActiveModal } = modalContext();
     const { isDesktop } = sessionContext();
     const { filters, activeFilters } = useSelector(state => state[stateType]);
-    const { changeActiveFilters, changeLength, changeSecondLength, changeFromId, changeIsFetch } = getActionsByType(stateType);
+    const dispatch = useDispatch();
 
-    const updateList = () => {
-        changeLength(null);
-        changeFromId(null);
-        changeSecondLength(0);
-
-        changeIsFetch(true);
-    }
+    const dispatchActionType = useMemo(() => stateType.toUpperCase(), []);
 
     const changeTag = (id) => {
         const newFilter = [...(activeFilters.tags || [])];
@@ -27,8 +21,9 @@ const FiltersModal = ({ id, stateType }) => {
         if (findedActiveFilter == -1) newFilter.push(id);
         else newFilter.splice(findedActiveFilter, 1);
 
-        changeActiveFilters({...activeFilters, tags: newFilter});
-        updateList();
+
+        dispatch(changeActiveFilters(dispatchActionType)({...activeFilters, tags: newFilter}));
+        dispatch(updateList(dispatchActionType)());
     }
 
     return (
