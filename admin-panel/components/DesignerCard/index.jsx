@@ -99,11 +99,11 @@ const DesignerCard = ({ designer, edit, update }) => {
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer?.id}`}>Добавить</Link>
                 </Button>
-                {designer?.previews.length > 0 ?
+                {designer?.previews?.length > 0 ?
                     (<div
                         style={{ display: 'flex', flexWrap: 'wrap' }}
                     >
-                        {designer?.previews.map((el, i) => renderCard(el, i))}
+                        {designer?.previews?.map((el, i) => renderCard(el, i))}
                     </div>)
                     :
                     <p style={{ textAlign: 'center' }}>У этого дизайнера пока нет работ</p>
@@ -112,8 +112,8 @@ const DesignerCard = ({ designer, edit, update }) => {
             <div style={{ width: '70%', margin: 'auto' }}>
                 <h3 style={{ textAlign: 'center' }}>Отзывы:</h3>
                 <div>
-                    {designer?.reviews.length > 0 ?
-                        designer?.reviews.map((el, i) => renderReviews(el, i))
+                    {designer?.reviews?.length > 0 ?
+                        designer?.reviews?.map((el, i) => renderReviews(el, i))
                         :
                         <p style={{ textAlign: 'center' }}>У этого дизайнера пока нет отзывов</p>
                     }

@@ -118,7 +118,7 @@ async function getDesignerPreviews(id) {
 
     try {
         let previews = (await client.query(
-            `select p.id, p.title, p.preview, p.description
+            `select p.id, p.title, p.preview,
                 from portfolio as p, designers_portfolios as dp
             where 
                 p.id = dp.portfolio_id and dp.designer_id = $1`,
