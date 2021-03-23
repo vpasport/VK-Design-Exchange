@@ -9,24 +9,24 @@ const Previews = ({ previews }) => {
         const footer = (
             <span>
                 <Button>
-                    <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Редактировать</Link>
+                    <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>
                 </Button>
             </span>
         );
 
         const header = (
-            <img alt={data.description} src={`${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
+            <img alt={data.title} src={`${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
         );
 
         return (
             <Card
                 className='p-m-2'
                 style={{ width: 'calc(100%/3 - 1em)' }}
-                title={data.description}
+                title={data.title}
                 footer={footer}
                 header={header}
             >
-                <p className="p-m-0" style={{ lineHeight: '1.5' }}>{data.title}</p>
+                {/* <p className="p-m-0" style={{ lineHeight: '1.5' }}>{data.title}</p> */}
             </Card>
         );
     }

@@ -2,10 +2,16 @@ import Container from '../../../components/Container';
 import Header from '../../../components/Header';
 import { Button } from 'primereact/button';
 import { useEffect, useState } from 'react';
-import DesignerCard from '../../../components/DesignerCard';
 import { useRouter } from 'next/router';
 
 import { Dialog } from 'primereact/dialog';
+
+import dynamic from 'next/dynamic';
+
+const DesignerCard = dynamic(
+    () => import('../../../components/DesignerCard'),
+    { ssr: false }
+)
 
 const Designer = ({ user }) => {
     const router = useRouter();
@@ -16,7 +22,7 @@ const Designer = ({ user }) => {
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
 
-    useEffect(async () => {
+    const getPropfile = async () => {
         let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
             credentials: 'include'
         });
@@ -36,6 +42,10 @@ const Designer = ({ user }) => {
         designer.reviews = reviews;
 
         setDesigner(designer);
+    }
+
+    useEffect(() => {
+        getPropfile();
     }, [])
 
     const updateDesigner = async (_designer) => {
@@ -60,17 +70,7 @@ const Designer = ({ user }) => {
             return;
         }
 
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
-            credentials: 'include'
-        });
-        const { designer } = await response.json()
-
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}/previews`, {
-            credentials: 'include'
-        });
-        const { previews } = await response.json();
-
-        designer.previews = previews;
+        getPropfile();
 
         setEdit(false);
         setDesigner(designer);

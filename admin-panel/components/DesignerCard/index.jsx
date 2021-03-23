@@ -4,6 +4,7 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import Link from 'next/link';
 import { InputTextarea } from 'primereact/inputtextarea';
+import Quill from '../Quill';
 import { useEffect, useState } from 'react';
 
 const DesignerCard = ({ designer, edit, update }) => {
@@ -29,7 +30,7 @@ const DesignerCard = ({ designer, edit, update }) => {
         );
 
         const header = (
-            <img alt={data.description} src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
+            <img alt={data.title} src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
         );
 
         return (
@@ -37,11 +38,11 @@ const DesignerCard = ({ designer, edit, update }) => {
                 key={key}
                 className='p-m-2'
                 style={{ width: '48%' }}
-                title={data.description}
+                title={data.title}
                 footer={footer}
                 header={header}
             >
-                <p className="p-m-0" style={{ lineHeight: '1.5' }}>{data.title}</p>
+                {/* <p className="p-m-0" style={{ lineHeight: '1.5' }}>{data.title}</p> */}
             </Card>
         );
     }
@@ -58,7 +59,7 @@ const DesignerCard = ({ designer, edit, update }) => {
                         <Rating value={data.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                     </div>
                 </div>
-                <hr style={{width: '50%', marginLeft: '0'}}></hr>
+                <hr style={{ width: '50%', marginLeft: '0' }}></hr>
                 <p style={{ whiteSpace: 'pre-wrap' }}>{data.text}</p>
             </div>
         )
@@ -79,16 +80,14 @@ const DesignerCard = ({ designer, edit, update }) => {
                 <div>
                     <h3>О себе:</h3>
                     {edit ?
-                        <div className='p-inputgroup p-m-1'>
-                            <InputTextarea
-                                placeholder={'Осебе'}
-                                value={designerUpdated?.bio}
-                                style={{ height: '10vh' }}
-                                onChange={({ target: { value: bio } }) => setDesigner({ bio })}
-                            />
+                        <div style={{width:'100%', height: '300px'}}>
+                            <Quill
+                                text={designerUpdated?.bio}
+                                setText={(e) => setDesigner({ bio: e })}
+                            ></Quill>
                         </div>
                         :
-                        <p style={{ whiteSpace: 'pre-wrap' }}>{designer?.bio}</p>
+                        <div dangerouslySetInnerHTML={{ __html: designer?.bio }} />
                     }
                 </div>
                 <div className='p-m-3' style={{ textAlign: 'center' }}>
@@ -111,7 +110,7 @@ const DesignerCard = ({ designer, edit, update }) => {
                 }
             </div>
             <div style={{ width: '70%', margin: 'auto' }}>
-                <h3 style={{textAlign: 'center'}}>Отзывы:</h3>
+                <h3 style={{ textAlign: 'center' }}>Отзывы:</h3>
                 <div>
                     {designer?.reviews.length > 0 ?
                         designer?.reviews.map((el, i) => renderReviews(el, i))

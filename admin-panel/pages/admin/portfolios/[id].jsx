@@ -25,10 +25,7 @@ const Work = ({ user }) => {
     const [updateWork, setUpdateWork] = useState(
         {
             title: null,
-            description: null,
-            project_description: null,
-            task_description: null,
-            complited_work: null
+            project_description: null
         }
     );
     const [preview, setPreview] = useState(null);
@@ -48,10 +45,7 @@ const Work = ({ user }) => {
         setWork(work);
         setUpdateWork({
             title: work.title,
-            description: work.description,
-            project_description: work.project_description,
-            task_description: work.task_description,
-            completed_work: work.completed_work
+            project_description: work.project_description
         })
         setWorkUrl(`${process.env.NEXT_PUBLIC_API_URL}/${work.work_image}`);
         setPreviewUrl(`${process.env.NEXT_PUBLIC_API_URL}/${work.preview}`);
@@ -143,6 +137,30 @@ const Work = ({ user }) => {
                 ...updateWork
             })
         });
+
+        const k = (
+            <div>
+                <h2>Проект заказчика1:</h2>
+                <p>Специализированный баскетбольный магазин в центре Краснодара. Основной товар кроссовки. Есть доставка с примеркой перед покупкой. Магазин открылся недавно.</p>
+                <p><br /></p>
+                <p><br /></p>
+                <p><br /></p>
+                <p><br /></p>
+                <p><br /></p>
+                <h2>Задача заказчика:</h2>
+                <p>Сделать одностраничный сайт, на который в последующем пойдет реклама для привлечения новых клиентов. Заказчик не хочет запускать трафик просто на категорию баскетбольной обуви основного магазина, а хочет сделать одностраничный сайт с 15-20 моделями мужскими кроссовок, которые хорошо продаются в магазине.</p>
+                <p><br /></p>
+                <p><br /></p>
+                <p><br /></p>
+                <p><br /></p>
+                <p><br /></p>
+                <h2>Что было сделано:</h2>
+                <p>– Анализ целевой аудитории и конкурентов</p>
+                <p>– Прототип</p>
+                <p>– Мудборд</p>
+                <p>– Дизайн</p>
+            </div>
+        )
 
         if (response.status !== 204) {
             setError('Не удалось обновить описание работы. Обновление остановлено');

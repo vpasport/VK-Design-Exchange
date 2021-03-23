@@ -5,6 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { MultiSelect } from 'primereact/multiselect';
 import { InputTextarea } from 'primereact/inputtextarea';
 import FileUpload from '../FileUpload';
+import Quill from '../Quill';
 
 const WorkCard = ({
     work, edit,
@@ -58,7 +59,7 @@ const WorkCard = ({
                                     onChange={({ target: { value: title } }) => set({ title })}
                                 />
                             </div>
-                            <div className="p-inputgroup p-m-1">
+                            {/* <div className="p-inputgroup p-m-1">
                                 <p>Описание:</p>
                                 <InputText
                                     className='p-ml-3'
@@ -66,10 +67,10 @@ const WorkCard = ({
                                     value={updateWork.description}
                                     onChange={({ target: { value: description } }) => set({ description })}
                                 />
-                            </div>
+                            </div> */}
                         </>
                         :
-                        <p><b>{work?.title}.</b> {work?.description}</p>
+                        <p><b>{work?.title}</b></p>
                     }
                 </div>
             </div>
@@ -90,18 +91,22 @@ const WorkCard = ({
                 <div>
                     <h3>Описание проекта:</h3>
                     {!edit ?
-                        <p style={{ whiteSpace: 'pre-wrap' }}>{work?.project_description}</p>
+                        <div dangerouslySetInnerHTML={{__html: work?.project_description}} />
                         :
-                        <InputTextarea
-                            style={{ width: '100%', height: '15vh' }}
-                            label='Описание проекта'
-                            value={updateWork?.project_description}
-                            onChange={({ target: { value: project_description } }) => set({ project_description })}
-                        >
-                        </InputTextarea>
+                        <Quill
+                            text={updateWork?.project_description}
+                            setText={(e) => set({ project_description: e })}
+                        ></Quill>
+                        // <InputTextarea
+                        //     style={{ width: '100%', height: '15vh' }}
+                        //     label='Описание проекта'
+                        //     value={updateWork?.project_description}
+                        //     onChange={({ target: { value: project_description } }) => set({ project_description })}
+                        // >
+                        // </InputTextarea>
                     }
                 </div>
-                <div>
+                {/* <div>
                     <h3>Описание задачи:</h3>
                     {!edit ?
                         <p style={{ whiteSpace: 'pre-wrap' }}>{work?.task_description}</p>
@@ -114,8 +119,8 @@ const WorkCard = ({
                         >
                         </InputTextarea>
                     }
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                     <h3>Выполненная работа:</h3>
                     {!edit ?
                         <p style={{ whiteSpace: 'pre-wrap' }}>{work?.completed_work}</p>
@@ -128,7 +133,7 @@ const WorkCard = ({
                         >
                         </InputTextarea>
                     }
-                </div>
+                </div> */}
             </div>
             <div style={{ textAlign: 'center' }} className='p-mt-6 p-mb-6'>
                 {!edit ?

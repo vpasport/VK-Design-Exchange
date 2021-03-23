@@ -22,10 +22,7 @@ const Create = ({ user }) => {
     const [portfolio, setPortfolio] = useState(
         {
             title: null,
-            description: null,
-            project_description: null,
-            task_description: null,
-            complited_work: null
+            project_description: null
         }
     );
     const [preview, setPreview] = useState(null);
@@ -98,6 +95,7 @@ const Create = ({ user }) => {
             if (val === null) {
                 setError('Заполние все поля');
                 setDialog(true);
+                setCreation(false);
                 return;
             }
         }
@@ -105,11 +103,13 @@ const Create = ({ user }) => {
         if (preview === null) {
             setError('Вы не выбрали изображение для превью');
             setDialog(true);
+            setCreation(false);
             return;
         }
         if (workImage === null) {
             setError('Вы не выбрали изображение выполненной работы');
             setDialog(true);
+            setCreation(false);
             return;
         }
 
@@ -121,10 +121,7 @@ const Create = ({ user }) => {
         formData.append('preview', preview);
         formData.append('image', workImage);
         formData.append('title', portfolio.title);
-        formData.append('description', portfolio.description);
         formData.append('project_description', portfolio.project_description);
-        formData.append('task_description', portfolio.task_description);
-        formData.append('completed_work', portfolio.complited_work);
         formData.append('designer_id', designer_id);
         formData.append('tag_ids', tag_ids);
 
@@ -138,6 +135,7 @@ const Create = ({ user }) => {
         if (response.status !== 200) {
             setError('Не удалось создать портолио');
             setDialog(true);
+            setCreation(false);
             return;
         }
 
@@ -160,6 +158,7 @@ const Create = ({ user }) => {
                 workUrl={workUrl} uploadWork={uploadWork}
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
+                portfolio={portfolio}
             ></CreatePortfolio>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>

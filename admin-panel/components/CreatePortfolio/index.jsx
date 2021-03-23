@@ -1,9 +1,9 @@
 import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from 'primereact/inputtextarea';
 import { MultiSelect } from 'primereact/multiselect';
 import FileUpload from '../FileUpload';
+import Quill from '../Quill';
 import { Button } from 'primereact/button';
 
 const CreatePortfolio = ({
@@ -11,13 +11,15 @@ const CreatePortfolio = ({
     selectTags, setSelectTags,
     previewUrl, uploadPreview,
     uploadWork, workUrl,
-    set, save, creation, setCreation
+    set, save, creation, setCreation,
+    portfolio
 }) => {
     return (
         <div
         // style={{ margin: 'auto', width: '100%' }}
         >
             <div style={{ width: '80%', margin: 'auto' }}>
+                {/* <div dangerouslySetInnerHTML={{ __html: text }} /> */}
                 <div>
                     <h3>Автор:</h3>
                     <div className='p-d-flex p-ai-center'>
@@ -26,7 +28,7 @@ const CreatePortfolio = ({
                             <div>
                                 <b>{designer?.first_name} {designer?.last_name}</b>
                             </div>
-                            <Rating value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
+                            <Rating style={{PointerEvent : 'none'}} value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                         </div>
                     </div>
                 </div>
@@ -37,16 +39,16 @@ const CreatePortfolio = ({
                         placeholder='Название'
                         onChange={({ target: { value: title } }) => set({ title })}
                     ></InputText>
-                    <h3>Короткое описани (одна строка):</h3>
+                    {/* <h3>Короткое описани (одна строка):</h3>
                     <InputText
                         style={{ width: '100%' }}
                         placeholder='Описание'
                         onChange={({ target: { value: description } }) => set({ description })}
-                    ></InputText>
+                    ></InputText> */}
                 </div>
                 <div>
                     <div
-                    style={{ width: '100%' }}
+                        style={{ width: '100%' }}
                     >
                         <h3>Тэги:</h3>
                         <span className="p-float-label" style={{ width: '100%' }}>
@@ -66,7 +68,7 @@ const CreatePortfolio = ({
                     <h3>Превью:</h3>
                     <div
                         style={{
-                            width: '100%', 
+                            width: '100%',
                             textAlign: 'center'
                         }}
                     >
@@ -77,9 +79,13 @@ const CreatePortfolio = ({
                     </div>
                 </div>
                 <div>
-                    <div>
+                    <div style={{height: '300px'}}>
                         <h3>Описание проекта:</h3>
-                        <InputTextarea
+                        <Quill
+                            text={portfolio.project_description}
+                            setText={(e) => set({ project_description : e })}
+                        ></Quill>
+                        {/* <InputTextarea
                             style={{
                                 width: '100%',
                                 height: '10vh'
@@ -87,9 +93,9 @@ const CreatePortfolio = ({
                             label='Описание проекта'
                             onChange={({ target: { value: project_description } }) => set({ project_description })}
                         >
-                        </InputTextarea>
+                        </InputTextarea> */}
                     </div>
-                    <div>
+                    {/* <div>
                         <h3>Описание задачи:</h3>
                         <InputTextarea
                             style={{
@@ -105,14 +111,14 @@ const CreatePortfolio = ({
                         <h3>Проделанная работа:</h3>
                         <InputTextarea
                             style={{
-                                width: '100%', 
+                                width: '100%',
                                 height: '10vh'
                             }}
                             label='Проделанная работа'
                             onChange={({ target: { value: complited_work } }) => set({ complited_work })}
                         >
                         </InputTextarea>
-                    </div>
+                    </div> */}
                 </div>
                 <div>
                     <h3>Работа:</h3>
