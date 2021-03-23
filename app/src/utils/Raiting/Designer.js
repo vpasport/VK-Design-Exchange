@@ -8,16 +8,15 @@ const { REACT_APP_API_URL } = process.env;
 class Designer extends DesignerDefaultProps {
 
     constructor(item) {
+        //console.log(item)
         super(item.id, item.vk_id, item.rating, item.first_name, item.last_name, item.photo);
 
-        this._experience = item.experience;
-        this._specialisation = item.specialisation;
+        this._bio = item.bio;
         
         //this.setPortfolio();
     }
 
-    getExperience() { return this._experience }
-    getSpecialisation() { return this._specialisation }
+    getBio(){ return this._bio }
 
     async getPortfolio() {
         const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/previews`);

@@ -38,7 +38,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                             style={{ width: 50, height: 50, borderRadius: '100%' }}
                         />
                     </ScrollUpButton>
-                    {listHook.bind.list.length &&
+                    {Boolean(listHook.bind.list.length) &&
                         <FiltersList
                             filters={listHook.bind.filters}
                             size={listHook.bind.listFormat}

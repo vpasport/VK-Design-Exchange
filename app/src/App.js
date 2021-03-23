@@ -3,6 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { AdaptivityProvider, ConfigProvider } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import './styles/global.scss';
+//import 'react-quill/dist/quill.snow.css';
 import bridge from '@vkontakte/vk-bridge';
 
 import useAlertHook from './components/poputs/alert/useAlert';

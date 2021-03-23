@@ -31,8 +31,8 @@ const useRouter = () => {
 
     const getPrevRoute = () => {
         return {
-            panel: path[path.length - 2][1],
-            story: path[path.length - 2][0]
+            panel: path[path.length - 2] ? path[path.length - 2][1] : path[path.length - 1][1],
+            story: path[path.length - 2] ? path[path.length - 2][0] : path[path.length - 1][0],
         }
     }
 

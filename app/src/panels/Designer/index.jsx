@@ -13,6 +13,7 @@ import StarRatings from '../../components/StarRatings';
 
 import { Icon24Work } from '@vkontakte/icons';
 import { Icon24Advertising } from '@vkontakte/icons';
+import PreText from '../../components/PreText';
 
 const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }) => {
 
@@ -59,14 +60,17 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             <div className={styles.userBlock__info}>
                                 <Title weight='bold'>{`${activeDesigner.getFirstName()} ${activeDesigner.getLastName()}`}</Title>
                                 <StarRatings rating={activeDesigner.getRating()} className={styles.userBlock__raiting} />
-                                <Text className={styles.userBlock__status}>Занят до 21.12.2112</Text>
+                                {/* <Text className={styles.userBlock__status}>Занят до 21.12.2112</Text> */}
                             </div>
                         </Div>
                     </Group>
                     <Group>
                         <Div className={styles.specialisation}>
                             <Title level='3'>Биография</Title>
-                            <Text className={styles.specialisation__text}>{activeDesigner.getSpecialisation() || 'Нет данных'}</Text>
+                            <div 
+                                className={styles.specialisation__text} 
+                                dangerouslySetInnerHTML={{__html: activeDesigner.getBio() || 'Нет данных'}}
+                            />
                         </Div>
                     </Group>
                     <Group>

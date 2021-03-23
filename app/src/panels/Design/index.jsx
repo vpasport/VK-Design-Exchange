@@ -55,10 +55,14 @@ const Design = ({ id, activeDesignId, changeActiveDesignerId }) => {
             {designInfo ?
                 <Group>
                     <Div className={styles.cardBlock}>
-                        <Info title='Проект заказчика:' text={designInfo.getProjectDescription()} />
+                        {/* <Info title='Проект заказчика:' text={designInfo.getProjectDescription()} />
                         <Info title='Задача заказчика:' text={designInfo.getTaskDescription()} />
-                        <Info title='Что было сделано:' text={designInfo.getCompletedWork()} />
+                        <Info title='Что было сделано:' text={designInfo.getCompletedWork()} /> */}
 
+                        {designInfo.getProjectDescription() && 
+                            <div dangerouslySetInnerHTML={{__html: designInfo.getProjectDescription()}} />
+                        }
+                        
                         <div className={styles.cardBlock__group_image}>
                             <Title level='1'>Дизайн</Title>
                             <img src={designInfo.getWorkImage()} alt="test" />

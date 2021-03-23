@@ -28,12 +28,12 @@ const Panels = withAdaptivity(({ viewWidth }) => {
     const router = useRouter();
 
     const params = [
-        {
-            story: 'table',
-            name: 'О доске',
-            icon: <Icon24InfoCircleOutline />,
-            defaultPanel: 'table'
-        },
+        // {
+        //     story: 'table',
+        //     name: 'О доске',
+        //     icon: <Icon24InfoCircleOutline />,
+        //     defaultPanel: 'table'
+        // },
         {
             story: 'gallery',
             name: 'Галерея',
