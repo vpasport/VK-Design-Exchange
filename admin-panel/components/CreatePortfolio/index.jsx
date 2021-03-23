@@ -12,7 +12,8 @@ const CreatePortfolio = ({
     previewUrl, uploadPreview,
     uploadWork, workUrl,
     set, save, creation, setCreation,
-    portfolio
+    portfolio,
+    setProgress
 }) => {
     return (
         <div
@@ -28,7 +29,7 @@ const CreatePortfolio = ({
                             <div>
                                 <b>{designer?.first_name} {designer?.last_name}</b>
                             </div>
-                            <Rating style={{PointerEvent : 'none'}} value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
+                            <Rating style={{ PointerEvent: 'none' }} value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                         </div>
                     </div>
                 </div>
@@ -79,11 +80,11 @@ const CreatePortfolio = ({
                     </div>
                 </div>
                 <div>
-                    <div style={{height: '300px'}}>
+                    <div style={{ height: '300px' }}>
                         <h3>Описание проекта:</h3>
                         <Quill
                             text={portfolio.project_description}
-                            setText={(e) => set({ project_description : e })}
+                            setText={(e) => set({ project_description: e })}
                         ></Quill>
                         {/* <InputTextarea
                             style={{
@@ -136,12 +137,14 @@ const CreatePortfolio = ({
                     textAlign: 'center',
                     // width: '70%'
                 }}>
+                    <hr className='p-mt-4'/>
                     <Button
                         className='p-m-4'
                         label='Создать'
                         onClick={() => {
                             setCreation(true);
                             save();
+                            setProgress(true);
                         }}
                         disabled={creation}
                     >

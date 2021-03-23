@@ -3,6 +3,7 @@ import Container from '../../../components/Container';
 import Header from '../../../components/Header';
 import { useEffect, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 import dynamic from 'next/dynamic';
 
@@ -32,6 +33,7 @@ const Create = ({ user }) => {
 
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
+    const [progress, setProgress] = useState(false);
 
     const [creation, setCreation] = useState(false);
 
@@ -141,6 +143,8 @@ const Create = ({ user }) => {
 
         const { id } = await response.json();
 
+        setProgress(false);
+
         router.push(`/admin/portfolios/${id}`);
     }
 
@@ -158,12 +162,20 @@ const Create = ({ user }) => {
                 workUrl={workUrl} uploadWork={uploadWork}
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
-                portfolio={portfolio}
+                portfolio={portfolio} setProgress={setProgress}
             ></CreatePortfolio>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>
                     {error}
                 </p>
+            </Dialog>
+            <Dialog
+                header="Загрузка"
+                visible={progress}
+                style={{ width: '200px', textAlign: 'center' }}
+                closable={false}
+            >
+                <ProgressSpinner style={{ width: '30px', height: '30px' }} strokeWidth="4" animationDuration="1.5s" />
             </Dialog>
         </Container>
     )
