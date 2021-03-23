@@ -94,10 +94,7 @@ async function createWork({ files, body, session }, res) {
         let result = await createWork_(
             body.title,
             images[0].name,
-            body.description,
             body.project_description,
-            body.task_description,
-            body.completed_work,
             images[1].name,
             body.designer_id,
             body.tag_ids.split(',')
@@ -150,12 +147,12 @@ async function updateTags({ params: { id }, body: { tag_ids }, session }, res) {
 
 async function updateDescription({
     params: { id },
-    body: { title, description, project_description, task_description, completed_work },
+    body: { title, project_description },
     session
 }, res) {
     if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
         let result = await updateDescription_(
-            id, title, description, project_description, task_description, completed_work
+            id, title, project_description
         );
 
         if (result.isSuccess) {

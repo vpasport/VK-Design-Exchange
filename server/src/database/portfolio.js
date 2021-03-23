@@ -8,7 +8,7 @@ async function getAllPreviews() {
 
     try {
         let previews = (await client.query(
-            `select id, title, preview, description 
+            `select id, title, preview
                 from portfolio
             order by id desc`
         )).rows;
@@ -56,7 +56,7 @@ async function getPreviewsFromTo(from, to, from_id) {
 
         let { rows: previews } = await client.query(
             `with tmp as (
-                select id, title, preview, description, count( 1 ) over ()::int  
+                select id, title, preview, count( 1 ) over ()::int  
                     from portfolio
             )
             select * 
@@ -119,7 +119,7 @@ async function getPreviewsTags(from, to, from_id, tags) {
         params.push(tags);
 
         let { rows: previews } = await client.query(
-            `select distinct on (p.id) p.id, p.title, p.preview, p.description, count( 1 ) over ()::int  
+            `select distinct on (p.id) p.id, p.title, p.preview, count( 1 ) over ()::int  
                 from portfolio as p, tags_portfolios as tp
             where p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
             order by p.id desc
@@ -163,7 +163,7 @@ async function getWork(id, full) {
 
     try {
         let work = (await client.query(
-            `${full !== true ? 'select *' : 'select p.project_description, p.task_description, p.completed_work, p.work_image'}
+            `${full !== true ? 'select *' : 'select p.project_description, p.work_image'}
                 from portfolio as p
             where p.id = $1`,
             [id]
@@ -295,8 +295,8 @@ async function updateImagePaths(id, preview, work_image) {
 }
 
 async function createWork(
-    title, preview, description,
-    project_description, task_description, completed_work, work_image,
+    title, preview,
+    project_description, work_image,
     designer_id, tag_ids
 ) {
     const client = await pool.connect();
@@ -305,11 +305,11 @@ async function createWork(
     try {
         let id = (await client.query(
             `insert into
-                portfolio (title, preview, description, project_description, task_description, completed_work, work_image)
+                portfolio (title, preview, project_description, work_image)
             values 
-                ($1, $2, $3, $4, $5, $6, $7)
+                ($1, $2, $3, $4)
             returning id`,
-            [title, preview, description, project_description, task_description, completed_work, work_image]
+            [title, preview, project_description, work_image]
         )).rows[0].id;
 
         if (id !== undefined) {
@@ -443,7 +443,7 @@ async function updateTags(portfolio_id, tag_ids) {
 }
 
 async function updateDescription(
-    id, title, description, project_description, task_description, completed_work
+    id, title, project_description
 ) {
     const client = await pool.connect();
     await client.query('begin');
@@ -451,11 +451,10 @@ async function updateDescription(
     try {
         await client.query(
             `update portfolio
-                set title = $1, description = $2, project_description = $3,
-                    task_description = $4, completed_work = $5
+                set title = $1, project_description = $2
             where
-                id = $6`,
-            [title, description, project_description, task_description, completed_work, id]
+                id = $3`,
+            [title, project_description, id]
         )
 
         await client.query('commit');
