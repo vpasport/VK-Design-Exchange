@@ -68,7 +68,7 @@ const Design = ({ id, activeDesignId, changeActiveDesignerId }) => {
                             <img src={designInfo.getWorkImage()} alt="test" />
                         </div>
 
-                        {Boolean(designInfo.getDesignerId() && router.getPrevRoute().story !== 'raiting') && 
+                        {Boolean(designInfo.getDesignerId() && router.getPrevRoute().panel !== 'portfolio') && 
                             <Button 
                                 mode='outline' 
                                 stretched 
