@@ -251,6 +251,41 @@ async function getImagesNames(id) {
     }
 }
 
+async function getDesignerByPortfolio(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let designer = (await client.query(
+            `select designer_id  
+                from designers_portfolios
+            where portfolio_id = $1`,
+            [id]
+        )).rows[0];
+
+        if (designer !== undefined) {
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                designer: designer.designer_id
+            }
+        }
+
+        throw 'Portfolio not found'
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function updateImagePaths(id, preview, work_image) {
     const client = await pool.connect();
     await client.query('begin');
@@ -333,7 +368,7 @@ async function createWork(
                     [designer_id, id]
                 )).rows[0].id;
 
-                if (designer_id !== undefined) {
+                if (designer !== undefined) {
                     await client.query('commit');
                     client.release();
 
@@ -489,20 +524,24 @@ async function deleteWork(id) {
             [id]
         )).rows[0];
 
-        await client.query(
-            `delete from portfolio
-            where
-                id = $1`,
-            [id]
-        );
+        if (images !== undefined) {
+            await client.query(
+                `delete from portfolio
+                where
+                    id = $1`,
+                [id]
+            );
 
-        await client.query('commit');
-        client.release();
+            await client.query('commit');
+            client.release();
 
-        return {
-            isSuccess: true,
-            images
+            return {
+                isSuccess: true,
+                images
+            }
         }
+
+        throw 'Portfolio not found';
 
     } catch (e) {
         await client.query('rollback');
@@ -522,6 +561,7 @@ module.exports = {
     getPreviewsTags,
     getWork,
     getImagesNames,
+    getDesignerByPortfolio,
     createWork,
     addTags,
     updateTags,

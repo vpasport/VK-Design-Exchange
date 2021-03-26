@@ -1,4 +1,4 @@
-"use stricr";
+"use strict";
 
 require('dotenv').config();
 

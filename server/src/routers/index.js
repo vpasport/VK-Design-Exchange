@@ -6,6 +6,8 @@ const tags = require('./tags');
 const reviews = require('./reviews');
 const users = require('./users');
 const admins = require('./admins');
+const orders = require('./orders');
+const offers = require('./offers');
 
 const {
     getRoles
@@ -32,9 +34,16 @@ async function auth(response, req, res) {
 
     let roles = await getRoles(response.user_id);
 
+
     if (roles.isSuccess) {
         req.session.vk_id = response.user_id;
         req.session.role = roles.roles;
+        req.session.user = roles.user;
+        req.session.mainRole = roles.roles[0];
+
+        if (roles.roles.length === 1 && roles.roles.indexOf('designer') !== -1) {
+            res.redirect(`${process.env.CLIENT}/designer/profile`);
+        }
 
         res.redirect(req.query.state);
 
@@ -73,6 +82,10 @@ function index(server) {
     server.use('/users', users);
 
     server.use('/admins', admins);
+
+    server.use('/orders', orders);
+
+    server.use('/offers', offers);
 
     server.get('/logout', logout);
 

@@ -39,16 +39,28 @@ async function createAdmin({ body: { vk_id }, session }, res) {
     res.sendStatus(401);
 }
 
-async function deleteAdmin({ body: { id }, session }, res) {
+async function deleteAdmin({ body: { id }, session, sessionStore }, res) {
+    let status = 204;
+
     if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
         let result = await deleteAdmin_(id);
 
         if (result.isSuccess) {
-            res.sendStatus(204);
+            if (result.sessionId !== undefined) {
+                sessionStore.destroy(result.sessionId.sid, (err) => {
+                    if (err) {
+                        console.error(err);
+                        status = 520;
+                    }
+                })
+            }
+            
+            res.sendStatus(status);
             return;
         }
 
-        res.sendStatus(520);
+        status = 520;
+        res.sendStatus(status);
         return;
     }
 

@@ -120,19 +120,40 @@ async function deleteAdmin(id) {
     await client.query('begin');
 
     try {
-        await client.query(
+        let sid = (await client.query(
+            `select sid from ssids
+            where 
+                sess->>'vk_id' = (
+                    select vk_id::character varying
+                        from admins
+                    where id = $1
+                )`,
+            [id]
+        )).rows[0];
+
+        let count = (await client.query(
+            `select count(*)
+                from admins`
+        )).rows[0].count;
+
+        if(count > 1){
+            await client.query(
             `delete from admins
             where
-                id = $1`,
-            [id]
-        );
-
-        await client.query('commit');
-        client.release();
-
-        return {
-            isSuccess: true
+                    id = $1`,
+                [id]
+            );
+    
+            await client.query('commit');
+            client.release();
+    
+            return {
+                isSuccess: true,
+                sessionId: sid
+            }
         }
+
+        throw 'The last administrator cannot be deleted';
     } catch (e) {
         await client.query('rollback');
         client.release();

@@ -6,10 +6,10 @@ const {
     getUserInfo
 } = require('../helper/vk');
 
-async function getInfo(req, res){
+async function getInfo(req, res) {
     let result = await getUserInfo(req.session.vk_id);
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
         res.json(result);
         return;
     }
@@ -17,14 +17,14 @@ async function getInfo(req, res){
     res.sendStatus(511);
 }
 
-async function getInfoByLink({query: {link}}, res){
+async function getInfoByLink({ query: { link } }, res) {
     if (link.includes('https')) {
         link = link.match(/https?:\/\/.*\/(.*)\/?/)[1];
     }
 
     let result = await getUserInfo(link);
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
         res.json(result);
         return;
     }
@@ -32,10 +32,27 @@ async function getInfoByLink({query: {link}}, res){
     res.sendStatus(511);
 }
 
-async function getRole(req, res){
+async function getRole({ session }, res) {
     res.json({
-        role: req.session.role
+        role: session.role,
+        user: session.user,
+        mainRole: session.mainRole
     });
+}
+
+async function changeMainRole({ session }, res) {
+    for (const role of session.role) {
+        if (role !== session.mainRole) {
+            session.mainRole = role;
+            break;
+        }
+    }
+
+    res.json({
+        role: session.role,
+        user: session.user,
+        mainRole: session.mainRole
+    })
 }
 
 function index() {
@@ -43,7 +60,9 @@ function index() {
 
     router.get('/info', getInfo);
     router.get('/role', getRole);
-    router.get('/check?:link', getInfoByLink)
+    router.get('/check?:link', getInfoByLink);
+
+    router.put('/change_role', changeMainRole);
 
     return router;
 }

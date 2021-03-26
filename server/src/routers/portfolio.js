@@ -15,6 +15,7 @@ const {
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
     getImagesNames: getImagesNames_,
+    getDesignerByPortfolio: getDesignerByPortfolio_,
     createWork: createWork_,
     addTags: addTags_,
     deleteWork: deleteWork_,
@@ -70,7 +71,8 @@ async function getWork({ params: { id }, session }, res) {
 }
 
 async function createWork({ files, body, session }, res) {
-    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+    if (session.role !== undefined &&
+        (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && body.designer_id == session.user.did))) {
         if (files.preview === undefined || files.image === undefined) {
             res.sendStatus(520);
             return;
@@ -130,14 +132,18 @@ async function addTags({ body: { portfolio_id, tag_ids } }, res) {
 }
 
 async function updateTags({ params: { id }, body: { tag_ids }, session }, res) {
-    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
-        let result = await updateTags_(id, tag_ids);
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                let result = await updateTags_(id, tag_ids);
 
-        if (result.isSuccess) {
-            res.sendStatus(204);
-            return;
+                if (result.isSuccess) {
+                    res.sendStatus(204);
+                    return;
+                }
+            }
         }
-
         res.sendStatus(520);
         return;
     }
@@ -150,16 +156,20 @@ async function updateDescription({
     body: { title, project_description },
     session
 }, res) {
-    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
-        let result = await updateDescription_(
-            id, title, project_description
-        );
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                let result = await updateDescription_(
+                    id, title, project_description
+                );
 
-        if (result.isSuccess) {
-            res.sendStatus(204);
-            return;
+                if (result.isSuccess) {
+                    res.sendStatus(204);
+                    return;
+                }
+            }
         }
-
         res.sendStatus(520);
         return;
     }
@@ -168,83 +178,93 @@ async function updateDescription({
 }
 
 async function updateImages({ params: { id }, files, session }, res) {
-    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
-        try {
-            if (files.preview === undefined && files.image === undefined) {
-                res.sendStatus(520);
-                return;
-            }
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                try {
+                    if (files.preview === undefined && files.image === undefined) {
+                        res.sendStatus(520);
+                        return;
+                    }
 
-            let { imageNames } = await getImagesNames_(id);
+                    let { imageNames } = await getImagesNames_(id);
 
-            let images = [];
+                    let images = [];
 
-            if (files.preview !== undefined) {
-                images.push({
-                    type: 'preview',
-                    name: imageNames.preview,
-                    file: files.preview[0]
-                })
-            }
-            if (files.image !== undefined) {
-                images.push({
-                    type: 'work',
-                    name: imageNames.work_image,
-                    file: files.image[0]
-                })
-            }
+                    if (files.preview !== undefined) {
+                        images.push({
+                            type: 'preview',
+                            name: imageNames.preview,
+                            file: files.preview[0]
+                        })
+                    }
+                    if (files.image !== undefined) {
+                        images.push({
+                            type: 'work',
+                            name: imageNames.work_image,
+                            file: files.image[0]
+                        })
+                    }
 
-            let preview = undefined;
-            let work_image = undefined;
+                    let preview = undefined;
+                    let work_image = undefined;
 
-            for (const image of images) {
-                if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) || image.file.size >= 20971520) {
-                    res.sendStatus(422);
+                    for (const image of images) {
+                        if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) || image.file.size >= 20971520) {
+                            res.sendStatus(422);
+                            return;
+                        }
+
+                        let originalname = image.file.originalname;
+                        image.newName = `${image.name.slice(0, image.name.lastIndexOf('.'))}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
+
+                        if (image.type === 'preview') preview = image.newName;
+                        if (image.type === 'work') work_image = image.newName;
+                    }
+
+                    let update = await updateImagePaths_(id, preview, work_image)
+
+                    if (update.isSuccess) {
+                        for (const image of images) {
+                            await rename(`static/${image.name}`, `static/${image.newName}`);
+                            await writeFile(`static/${image.newName}`, image.file.buffer);
+                        }
+
+                        res.sendStatus(204);
+                        return;
+                    }
+                } catch (e) {
+                    console.error(e);
+
+                    res.sendStatus(520);
                     return;
                 }
-
-                let originalname = image.file.originalname;
-                image.newName = `${image.name.slice(0, image.name.lastIndexOf('.'))}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
-
-                if (image.type === 'preview') preview = image.newName;
-                if (image.type === 'work') work_image = image.newName;
             }
-
-            let update = await updateImagePaths_(id, preview, work_image)
-
-            if (update.isSuccess) {
-                for (const image of images) {
-                    await rename(`static/${image.name}`, `static/${image.newName}`);
-                    await writeFile(`static/${image.newName}`, image.file.buffer);
-                }
-            }
-
-            res.sendStatus(204);
-            return;
-        } catch (e) {
-            console.error(e);
-
-            res.sendStatus(520);
-            return;
         }
+        res.sendStatus(520);
+        return;
     }
 
     res.sendStatus(401);
 }
 
 async function deleteWork({ body: { id }, session }, res) {
-    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                let result = await deleteWork_(id);
 
-        let result = await deleteWork_(id);
+                if (result.isSuccess) {
+                    await unlink(`static/${result.images.preview}`);
+                    await unlink(`static/${result.images.work_image}`);
 
-        if (result.isSuccess) {
-            await unlink(`static/${result.images.preview}`);
-            await unlink(`static/${result.images.work_image}`);
-
-            res.sendStatus(204);
-            return;
+                    res.sendStatus(204);
+                    return;
+                }
+            }
         }
-
         res.sendStatus(520);
         return;
     }
