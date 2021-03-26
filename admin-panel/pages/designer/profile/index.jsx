@@ -1,59 +1,61 @@
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
-import { Button } from 'primereact/button';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
 import { Dialog } from 'primereact/dialog';
 
 import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 
 const DesignerCard = dynamic(
     () => import('../../../components/DesignerCard'),
     { ssr: false }
-)
+);
 
-const Designer = ({ user }) => {
-    const router = useRouter();
-    const id = router.query.id;
+const Profile = ({ user }) => {
+    const [designer, setDesigner] = useState();
 
-    const [designer, setDesigner] = useState(null);
     const [edit, setEdit] = useState(false);
+
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
 
-    const getPropfile = async () => {
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
+    const getProfile = async () => {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${user.db.did}`, {
             credentials: 'include'
         });
-        const { designer } = await response.json()
+        const { designer } = await response.json();
 
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}/previews`, {
-            credentials: 'include'
-        });
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${user.db.did}/previews`);
         const { previews } = await response.json();
 
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}/reviews`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${user.db.did}/reviews`, {
             credentials: 'include'
         });
         const { reviews } = await response.json();
 
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${user.db.did}/offers`, {
+            credentials: 'include'
+        });
+        const { offers } = await response.json();
+
+
         designer.previews = previews;
         designer.reviews = reviews;
+        designer.offers = offers;
 
         setDesigner(designer);
     }
 
     useEffect(() => {
-        getPropfile();
-    }, [])
+        getProfile();
+    }, []);
 
-    const updateDesigner = async (_designer) => {
+    const update = async (_designer) => {
         if (_designer.specialization === null) _designer.specialization = designer.specialization;
         if (_designer.experience === null) _designer.experience = designer.experience;
 
         setError('');
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${user.db.did}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -70,41 +72,40 @@ const Designer = ({ user }) => {
             return;
         }
 
-        getPropfile();
+        getProfile();
 
         setEdit(false);
         setDesigner(designer);
     }
 
-    const deleteDesigner = async () => {
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/`, {
-            method: 'DELETE',
+    const updateEngaged = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer.id}/engaged`, {
+            method: 'PUT',
             credentials: 'include',
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                id
+                engaged: !designer.engaged,
             })
         })
 
-        router.push('/admin/designers');
+        getProfile();
     }
 
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/designers'
+                url='/designer/profile'
             />
-            <div style={{ textAlign: 'center' }} className='p-mt-6'>
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deleteDesigner()}></Button>
-            </div>
             <DesignerCard
                 designer={designer}
+                admin={false}
                 edit={edit} setEdit={setEdit}
-                update={updateDesigner}
-            />
+                update={update}
+                user={user} updateEngaged={updateEngaged}
+            ></DesignerCard>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>
                     {error}
@@ -122,7 +123,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',
@@ -149,4 +150,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Designer;
+export default Profile;

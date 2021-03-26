@@ -1,22 +1,34 @@
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
+import Container from "../../../components/Container";
+import Header from "../../../components/Header";
+
+import { Button } from 'primereact/button';
 
 import dynamic from 'next/dynamic';
+import { useRouter } from "next/router";
 
-const Previews = dynamic(
-    () => import('../../../components/Previews'),
+const MyOffers = dynamic(
+    () => import('../../../components/Offers'),
     { ssr: false }
-)
+);
 
-const Portfolios = ({ user }) => {
+const Offers = ({ user }) => {
+    const router = useRouter();
+
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/portfolios'
+                url='/designer/offers'
             />
-            <Previews 
+            <div className='p-m-4' style={{ textAlign: 'center' }}>
+                <Button
+                    label='Добавить работу'
+                    icon='pi pi-plus'
+                    onClick={() => router.push('/designer/offers/create')}
+                >
+                </Button>
+            </div>
+            <MyOffers
                 user={user}
             />
         </Container>
@@ -31,7 +43,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',
@@ -58,4 +70,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Portfolios;
+export default Offers;

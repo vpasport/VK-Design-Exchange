@@ -1,13 +1,14 @@
 import Container from '../../components/Container';
 import Header from '../../components/Header';
 
-function Panel({ user }) {
+const Main = ({user}) => {
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin'
-            />
+                url='/designer'
+            >
+            </Header>
         </Container>
     )
 }
@@ -20,7 +21,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',
@@ -46,4 +47,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Panel;
+export default Main;

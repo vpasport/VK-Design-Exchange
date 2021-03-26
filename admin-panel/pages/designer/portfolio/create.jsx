@@ -1,22 +1,25 @@
-import { useRouter } from 'next/router';
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
-import { Dialog } from 'primereact/dialog';
+import Container from "../../../components/Container";
+import Header from "../../../components/Header";
+
+import { Dialog } from "primereact/dialog";
 import { ProgressSpinner } from 'primereact/progressspinner';
 
+import { useEffect, useState } from "react";
 import dynamic from 'next/dynamic';
+import { useRouter } from "next/router";
 
 const CreatePortfolio = dynamic(
     () => import('../../../components/CreatePortfolio'),
     { ssr: false }
-)
+);
 
 const Create = ({ user }) => {
     const router = useRouter();
-    const designer_id = router.query.designer_id;
 
-    const [designer, setDesigner] = useState(null);
+    const [error, setError] = useState();
+    const [dialog, setDialog] = useState(false);
+    const [progress, setProgress] = useState(false);
+
     const [tags, setTags] = useState(null);
 
     const [selectTags, setSelectTags] = useState([]);
@@ -31,10 +34,6 @@ const Create = ({ user }) => {
     const [workImage, setWorkImage] = useState(null);
     const [workUrl, setWorkUrl] = useState(null);
 
-    const [error, setError] = useState();
-    const [dialog, setDialog] = useState(false);
-    const [progress, setProgress] = useState(false);
-
     const [creation, setCreation] = useState(false);
 
     const set = (json) => {
@@ -43,21 +42,16 @@ const Create = ({ user }) => {
         }));
     }
 
-    useEffect(async () => {
-        let response;
-
-        if (designer_id !== undefined) {
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer_id}`);
-            const { designer } = await response.json();
-
-            setDesigner(designer);
-        }
-
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
+    const getTags = async () => {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
         const { tags } = await response.json();
 
         setTags(tags);
-    }, [])
+    }
+
+    useEffect(() => {
+        getTags();
+    }, []);
 
     const setSelectedTags = (val) => {
         setSelectTags(val);
@@ -124,7 +118,7 @@ const Create = ({ user }) => {
         formData.append('image', workImage);
         formData.append('title', portfolio.title);
         formData.append('project_description', portfolio.project_description);
-        formData.append('designer_id', designer_id);
+        formData.append('designer_id', user.db.did);
         formData.append('tag_ids', tag_ids);
 
 
@@ -146,17 +140,16 @@ const Create = ({ user }) => {
 
         setProgress(false);
 
-        router.push(`/admin/portfolios/${id}`);
+        router.push(`/designer/profile`);
     }
 
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/portfolios'
+                url='/designer/portfolio'
             />
             <CreatePortfolio
-                designer={designer}
                 tags={tags}
                 selectTags={selectTags} setSelectTags={setSelectedTags}
                 previewUrl={previewUrl} uploadPreview={uploadPreview}
@@ -164,7 +157,7 @@ const Create = ({ user }) => {
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
                 portfolio={portfolio} setProgress={setProgress}
-            ></CreatePortfolio>
+            />
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>
                     {error}
@@ -190,7 +183,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',

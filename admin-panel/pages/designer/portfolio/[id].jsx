@@ -1,13 +1,12 @@
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
+import Container from "../../../components/Container";
+import Header from "../../../components/Header";
 
+import { useRouter } from "next/router";
 import dynamic from 'next/dynamic';
-import { ProgressSpinner } from 'primereact/progressspinner';
+import { Dialog } from "primereact/dialog";
+import { useEffect, useState } from "react";
+import { Button } from "primereact/button";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 const WorkCard = dynamic(
     () => import('../../../components/WorkCard'),
@@ -15,7 +14,7 @@ const WorkCard = dynamic(
 )
 
 const Work = ({ user }) => {
-    const router = useRouter();
+    const router = useRouter()
     const id = router.query.id;
 
     const [work, setWork] = useState(null);
@@ -145,8 +144,8 @@ const Work = ({ user }) => {
 
         if (response.status !== 204) {
             setError('Не удалось обновить описание работы. Обновление остановлено');
-            setChange(false);
             setDialog(true);
+            setChange(false);
             return;
         }
 
@@ -195,17 +194,17 @@ const Work = ({ user }) => {
             return;
         }
 
-        router.push('/admin/portfolios');
+        router.push('/designer/profile');
     }
 
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/portfolios'
+                url='/designer/portfolio'
             />
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
-                <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
+                <Button label='Редактировать' className='p-m-2' icon='pi pi-pencil' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
                 <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deletePortfolio()}></Button>
             </div>
@@ -244,7 +243,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from 'primereact/button';
 
 export default function Home() {
-  const uri = encodeURIComponent(`${process.env.NEXT_PUBLIC_SELF_URL}/admin`);
+  const uri = encodeURIComponent(`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios`);
 
   return (
     <div className={styles.container}>

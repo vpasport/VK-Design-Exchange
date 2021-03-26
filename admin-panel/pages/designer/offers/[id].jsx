@@ -1,38 +1,33 @@
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
+import Container from "../../../components/Container"
+import Header from "../../../components/Header"
+
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react";
+import { Button } from "primereact/button";
 
 import dynamic from 'next/dynamic';
-import { ProgressSpinner } from 'primereact/progressspinner';
+import { Dialog } from "primereact/dialog";
+import { ProgressSpinner } from "primereact/progressspinner";
 
-const WorkCard = dynamic(
-    () => import('../../../components/WorkCard'),
+const OfferCard = dynamic(
+    () => import('../../../components/OfferCard'),
     { ssr: false }
 )
 
-const Work = ({ user }) => {
+const Offer = ({ user }) => {
     const router = useRouter();
     const id = router.query.id;
 
-    const [work, setWork] = useState(null);
     const [edit, setEdit] = useState(false);
 
-    const [tags, setTags] = useState(null);
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [updateWork, setUpdateWork] = useState(
-        {
-            title: null,
-            project_description: null
-        }
-    );
-    const [preview, setPreview] = useState(null);
+    const [offer, setOffer] = useState(null);
+    const [updateOffer, setUpdateOffer] = useState({
+        title: null,
+        description: null,
+        price: null
+    })
     const [previewUrl, setPreviewUrl] = useState(null);
-    const [workImage, setWorkImage] = useState(null);
-    const [workUrl, setWorkUrl] = useState(null);
+    const [preview, setPreview] = useState(null);
 
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
@@ -40,43 +35,25 @@ const Work = ({ user }) => {
 
     const [change, setChange] = useState(false);
 
-    const getWork = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}`, {
-            credentials: 'include'
-        });
-        const { work } = await response.json()
+    const getOffer = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/${id}`)
+        const { offer } = await response.json();
 
-        setWork(work);
-        setUpdateWork({
-            title: work.title,
-            project_description: work.project_description
+        setOffer(offer);
+        setUpdateOffer({
+            title: offer.title,
+            description: offer.description,
+            price: offer.price
         })
-        setWorkUrl(`${process.env.NEXT_PUBLIC_API_URL}/${work.work_image}`);
-        setPreviewUrl(`${process.env.NEXT_PUBLIC_API_URL}/${work.preview}`);
+        setPreviewUrl(`${process.env.NEXT_PUBLIC_API_URL}/${offer.preview}`)
     }
 
     useEffect(() => {
-        getWork()
-    }, [])
-
-    useEffect(async () => {
-        if (!edit) return;
-
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
-        const { tags } = await response.json();
-
-        let tmp = []
-
-        work?.tags.forEach(el => {
-            tmp.push({ id: el.tag_id, name: el.name })
-        })
-
-        setTags(tags);
-        setSelectedTags(tmp);
-    }, [edit]);
+        getOffer();
+    }, []);
 
     const set = (json) => {
-        setUpdateWork(prev => ({
+        setUpdateOffer(prev => ({
             ...prev, ...json
         }));
     }
@@ -94,69 +71,33 @@ const Work = ({ user }) => {
         }
     }
 
-    const uploadWork = ({ target }) => {
-        const file = target.files[0];
-
-        if (file) {
-            if (file.size / 1024 / 1024 / 20 > 1) {
-                target.value = "";
-            } else {
-                setWorkUrl(URL.createObjectURL(file));
-                setWorkImage(file);
-            }
-        }
-    }
-
     const save = async () => {
         setError('');
 
-        let tags = [];
-
-        selectedTags.forEach(el => tags.push(el.id));
-
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/tags`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/${offer.id}/description`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                tag_ids: tags
-            })
-        });
-
-        if (response.status !== 204) {
-            setError('Не удалось обновить тэги. Обновление остановлено');
-            setChange(false);
-            setDialog(true);
-            return;
-        }
-
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/description`, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ...updateWork
+                ...updateOffer
             })
         });
 
         if (response.status !== 204) {
             setError('Не удалось обновить описание работы. Обновление остановлено');
-            setChange(false);
             setDialog(true);
+            setChange(false);
             return;
         }
 
         const formData = new FormData();
 
         if (preview !== null) formData.append('preview', preview);
-        if (workImage !== null) formData.append('image', workImage);
 
         if (preview !== null || workImage !== null) {
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/images`, {
+            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/${offer.id}/preview`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: formData
@@ -170,15 +111,15 @@ const Work = ({ user }) => {
             }
         }
 
-        getWork();
+        getOffer();
         setEdit();
         setProgress(false);
     }
 
-    const deletePortfolio = async () => {
+    const deleteOffer = async () => {
         setError('');
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/`, {
             method: 'DELETE',
             credentials: 'include',
             headers: {
@@ -195,26 +136,23 @@ const Work = ({ user }) => {
             return;
         }
 
-        router.push('/admin/portfolios');
+        router.push('/designer/offers');
     }
 
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/portfolios'
+                url='/designer/offers'
             />
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
-                <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
+                <Button label='Редактировать' className='p-m-2' icon='pi pi-pencil' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deletePortfolio()}></Button>
+                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deleteOffer()}></Button>
             </div>
-            <WorkCard
-                work={work}
-                edit={edit}
-                tags={tags} selectedTags={selectedTags} setSelectedTags={setSelectedTags}
-                updateWork={updateWork} set={set}
-                uploadWork={uploadWork} workUrl={workUrl}
+            <OfferCard
+                offer={offer} edit={edit}
+                set={set} updateOffer={updateOffer}
                 uploadPreview={uploadPreview} previewUrl={previewUrl}
                 save={save} setProgress={setProgress}
                 change={change} setChange={setChange}
@@ -244,7 +182,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',
@@ -271,4 +209,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Work;
+export default Offer;

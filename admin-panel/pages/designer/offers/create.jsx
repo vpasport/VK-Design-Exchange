@@ -1,67 +1,39 @@
-import { useRouter } from 'next/router';
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
-import { Dialog } from 'primereact/dialog';
-import { ProgressSpinner } from 'primereact/progressspinner';
+import { Dialog } from "primereact/dialog";
+import { ProgressSpinner } from "primereact/progressspinner";
+
+import Container from "../../../components/Container";
+import Header from "../../../components/Header";
 
 import dynamic from 'next/dynamic';
+import { useState } from "react";
+import { useRouter } from "next/router";
 
-const CreatePortfolio = dynamic(
-    () => import('../../../components/CreatePortfolio'),
+const CreateOffer = dynamic(
+    () => import('../../../components/CreateOffer'),
     { ssr: false }
 )
 
 const Create = ({ user }) => {
     const router = useRouter();
-    const designer_id = router.query.designer_id;
-
-    const [designer, setDesigner] = useState(null);
-    const [tags, setTags] = useState(null);
-
-    const [selectTags, setSelectTags] = useState([]);
-    const [portfolio, setPortfolio] = useState(
-        {
-            title: null,
-            project_description: null
-        }
-    );
-    const [preview, setPreview] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
-    const [workImage, setWorkImage] = useState(null);
-    const [workUrl, setWorkUrl] = useState(null);
 
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
     const [progress, setProgress] = useState(false);
 
+    const [offer, setOffer] = useState({
+        title: null,
+        description: null,
+        price: null
+    });
+    const [preview, setPreview] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+
     const [creation, setCreation] = useState(false);
 
     const set = (json) => {
-        setPortfolio(prev => ({
+        setOffer(prev => ({
             ...prev, ...json
         }));
-    }
-
-    useEffect(async () => {
-        let response;
-
-        if (designer_id !== undefined) {
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer_id}`);
-            const { designer } = await response.json();
-
-            setDesigner(designer);
-        }
-
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
-        const { tags } = await response.json();
-
-        setTags(tags);
-    }, [])
-
-    const setSelectedTags = (val) => {
-        setSelectTags(val);
-        set({ tags: val });
     }
 
     const uploadPreview = ({ target }) => {
@@ -77,23 +49,10 @@ const Create = ({ user }) => {
         }
     }
 
-    const uploadWork = ({ target }) => {
-        const file = target.files[0];
-
-        if (file) {
-            if (file.size / 1024 / 1024 / 20 > 1) {
-                target.value = "";
-            } else {
-                setWorkUrl(URL.createObjectURL(file));
-                setWorkImage(file);
-            }
-        }
-    }
-
     const save = async () => {
         setError('');
 
-        for (const val of Object.values(portfolio)) {
+        for (const val of Object.values(offer)) {
             if (val === null) {
                 setError('Заполние все поля');
                 setDialog(true);
@@ -108,34 +67,23 @@ const Create = ({ user }) => {
             setCreation(false);
             return;
         }
-        if (workImage === null) {
-            setError('Вы не выбрали изображение выполненной работы');
-            setDialog(true);
-            setCreation(false);
-            return;
-        }
 
         const formData = new FormData();
 
-        let tag_ids = [];
-        selectTags.forEach(element => tag_ids.push(element.id));
-
         formData.append('preview', preview);
-        formData.append('image', workImage);
-        formData.append('title', portfolio.title);
-        formData.append('project_description', portfolio.project_description);
-        formData.append('designer_id', designer_id);
-        formData.append('tag_ids', tag_ids);
+        formData.append('title', offer.title);
+        formData.append('description', offer.description);
+        formData.append('price', offer.price)
+        formData.append('designer_id', user.db.did);
 
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers`, {
             method: 'POST',
             credentials: 'include',
             body: formData
         });
 
         if (response.status !== 200) {
-            setError('Не удалось создать портолио');
+            setError('Не удалось создать предложение');
             setDialog(true);
             setCreation(false);
             setProgress(false);
@@ -146,25 +94,22 @@ const Create = ({ user }) => {
 
         setProgress(false);
 
-        router.push(`/admin/portfolios/${id}`);
+        router.push(`/designer/profile`);
     }
 
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/portfolios'
+                url='/designer/offers'
             />
-            <CreatePortfolio
-                designer={designer}
-                tags={tags}
-                selectTags={selectTags} setSelectTags={setSelectedTags}
+            <CreateOffer
                 previewUrl={previewUrl} uploadPreview={uploadPreview}
-                workUrl={workUrl} uploadWork={uploadWork}
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
-                portfolio={portfolio} setProgress={setProgress}
-            ></CreatePortfolio>
+                offer={offer}
+                setProgress={setProgress}
+            />
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>
                     {error}
@@ -190,7 +135,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('admin') === -1) {
+    if (role === undefined || role.indexOf('designer') === -1) {
         return {
             redirect: {
                 destination: '/',

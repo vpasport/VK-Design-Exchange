@@ -13,7 +13,8 @@ const WorkCard = ({
     updateWork, set,
     uploadWork, workUrl,
     uploadPreview, previewUrl,
-    save
+    save, setProgress,
+    change, setChange
 }) => {
     return (
         <>
@@ -91,7 +92,7 @@ const WorkCard = ({
                 <div>
                     <h3>Описание проекта:</h3>
                     {!edit ?
-                        <div dangerouslySetInnerHTML={{__html: work?.project_description}} />
+                        <div dangerouslySetInnerHTML={{ __html: work?.project_description }} />
                         :
                         <Quill
                             text={updateWork?.project_description}
@@ -150,9 +151,15 @@ const WorkCard = ({
             </div>
             {edit &&
                 <div className='p-m-4' style={{ textAlign: 'center' }}>
+                    <hr className='p-m-4' />
                     <Button
                         label='Сохранить'
-                        onClick={save}
+                        onClick={() => {
+                            setChange(true);
+                            setProgress(true);
+                            save();
+                        }}
+                        disabled={change}
                     >
                     </Button>
                 </div>

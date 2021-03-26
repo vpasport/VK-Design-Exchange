@@ -7,7 +7,7 @@ import Quill from '../Quill';
 import { Button } from 'primereact/button';
 
 const CreatePortfolio = ({
-    designer, tags,
+    designer = undefined, tags,
     selectTags, setSelectTags,
     previewUrl, uploadPreview,
     uploadWork, workUrl,
@@ -21,18 +21,20 @@ const CreatePortfolio = ({
         >
             <div style={{ width: '80%', margin: 'auto' }}>
                 {/* <div dangerouslySetInnerHTML={{ __html: text }} /> */}
-                <div>
-                    <h3>Автор:</h3>
-                    <div className='p-d-flex p-ai-center'>
-                        <Avatar shape="circle" image={designer?.photo} size="xlarge" />
-                        <div className='p-ml-3'>
-                            <div>
-                                <b>{designer?.first_name} {designer?.last_name}</b>
+                {designer !== undefined &&
+                    <div>
+                        <h3>Автор:</h3>
+                        <div className='p-d-flex p-ai-center'>
+                            <Avatar shape="circle" image={designer?.photo} size="xlarge" />
+                            <div className='p-ml-3'>
+                                <div>
+                                    <b>{designer?.first_name} {designer?.last_name}</b>
+                                </div>
+                                <Rating style={{ PointerEvent: 'none' }} value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                             </div>
-                            <Rating style={{ PointerEvent: 'none' }} value={designer?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                         </div>
                     </div>
-                </div>
+                }
                 <div>
                     <h3>Название:</h3>
                     <InputText
@@ -137,7 +139,7 @@ const CreatePortfolio = ({
                     textAlign: 'center',
                     // width: '70%'
                 }}>
-                    <hr className='p-mt-4'/>
+                    <hr className='p-mt-4' />
                     <Button
                         className='p-m-4'
                         label='Создать'

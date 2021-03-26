@@ -1,45 +1,46 @@
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react";
+import Link from 'next/link';
 import { DataView } from 'primereact/dataview';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
-const Previews = ({ user }) => {
+const Offers = ({ user }) => {
     const router = useRouter();
     const route = router.route;
 
-    const [previews, setPreviews] = useState(null);
+    const [offers, setOffers] = useState(null);
+
     const [totalRecords, setTotalRecords] = useState(0);
     const [rows, setRows] = useState(9);
     const [first, setFirst] = useState(0);
 
-    const getPreviews = async (from, to) => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route === '/admin/portfolios' ? 'portfolio/previews/' : `designers/${user.db.did}/previews/`}?from=${from}&to=${to}`);
+    const getOffers = async (from, to) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route === '/admin/offers' ? 'offers/' : `designers/${user.db.did}/offers/`}?from=${from}&to=${to}`);
+        const { offers, count } = await response.json();
 
-        const { previews, count } = await res.json();
-
-        for (let i = previews.length; i < rows; i++) {
-            previews.push({})
+        for (let i = offers.length; i < rows; i++) {
+            offers.push({});
         }
 
         setFirst(from);
-        setPreviews(previews);
+        setOffers(offers);
         setTotalRecords(count);
     }
 
     useEffect(() => {
-        getPreviews(0, 9);
-    }, [])
+        getOffers(0, 9);
+    }, []);
 
     const renderGridItem = (data) => {
         const footer = (
-            <span>
+            <div className='p-d-flex p-ai-center p-jc-between p-pl-1 p-pr-1'>
+                <h3>Стоимость: {data.price}₽</h3>
                 <Button>
-                    {user.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>}
-                    {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/portfolio/${data.id}`}>Обзор</Link>}
+                    {user.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/offers/${data.id}`}>Обзор</Link>}
+                    {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/offers/${data.id}`}>Обзор</Link>}
                 </Button>
-            </span>
+            </div>
         );
 
         const header = (
@@ -72,7 +73,7 @@ const Previews = ({ user }) => {
     const header = () => {
         return (
             <div style={{ textAlign: 'center' }}>
-                <h3>Список работ</h3>
+                <h3>Список моих предложений</h3>
             </div>
         );
     }
@@ -86,7 +87,7 @@ const Previews = ({ user }) => {
             <DataView
                 header={header()}
                 className='p-mt-4'
-                value={previews}
+                value={offers}
                 layout='grid'
                 itemTemplate={itemTemplate}
                 paginator
@@ -100,4 +101,4 @@ const Previews = ({ user }) => {
     )
 }
 
-export default Previews;
+export default Offers;

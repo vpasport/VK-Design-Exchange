@@ -129,7 +129,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
             cookie
         }
     });
-    const { role } = await response.json();
+    const { role, user: _user, mainRole } = await response.json();
 
     if (role === undefined || role.indexOf('admin') === -1) {
         return {
@@ -146,6 +146,10 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
         }
     });
     const { user } = await response.json();
+
+    user.role = role;
+    user.db = _user;
+    user.mainRole = mainRole;
 
     return {
         props: {
