@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Design from './Gallery/Design';
 import Designer from './Raiting/Designer';
+import Offer from './Raiting/Designer/Offer';
 
 const { REACT_APP_API_URL } = process.env;
 
@@ -56,10 +57,20 @@ const getDesignerInfoById = async (id) => {
     else throw new Error('Не удалось получать данные дизайнера')
 }
 
+const getOfferInfoById = async (id) => {
+    const { data } = await axios.get(`${REACT_APP_API_URL}/offers/${id}`);
+
+    if(data.isSuccess){
+        return new Offer(data.offer);
+    }
+    else throw new Error('Не удалось загрузить услугу');
+}
+
 export {
     sleep,
     getCardHeightBySize,
     getUrlByJson,
     getDesignInfoById,
-    getDesignerInfoById
+    getDesignerInfoById,
+    getOfferInfoById
 }

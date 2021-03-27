@@ -20,7 +20,7 @@ const Reviews = ({ id }) => {
             <Group>
                 <UserListBlock
                     actionType='reviews'
-                    loadList={(activeDesigner) => activeDesigner.getReviews.call(activeDesigner)}
+                    loadList='getReviews'
                     nullText='Отзывы отсутствуют'
                 >
                     {el => (

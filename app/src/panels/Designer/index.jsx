@@ -1,4 +1,4 @@
-import { Avatar, Div, Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, SimpleCell, Text, Title } from '@vkontakte/vkui';
+import { Avatar, Button, Div, Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, SimpleCell, Text, Title } from '@vkontakte/vkui';
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { alertContext } from '../../App';
@@ -28,7 +28,6 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
         const fetchData = async () => {
             try {
                 const activeDesigner = await getDesignerInfoById(activeDesignerId);
-                //await activeDesigner.setPortfolio();
                 changeActiveDesigner(activeDesigner)
             }
             catch (error) {
@@ -88,6 +87,16 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                         >
                             Отзывы
                         </SimpleCell>
+                        <Div>
+                            <Button 
+                                stretched 
+                                mode='outline' 
+                                size='l'
+                                onClick={() => router.setActivePanel('offers')}
+                            >
+                                Выбрать дизайнера
+                            </Button>
+                        </Div>
                     </Group>
                 </>
             :

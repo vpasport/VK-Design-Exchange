@@ -1,5 +1,5 @@
 import axios from 'axios';
-import DesignerCard from './DesignerCard';
+import DesignerCard from './Designer/DesignerCard';
 
 const { REACT_APP_API_URL } = process.env;
 

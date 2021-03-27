@@ -1,5 +1,5 @@
 import DesignDefaultProps from './DesignDefaultProps';
-import Design from './Design';
+import Design from '.';
 
 import axios from 'axios';
 
@@ -8,7 +8,7 @@ const { REACT_APP_API_URL } = process.env;
 class DesignCard extends DesignDefaultProps {
 
     constructor(item) {
-        super(item.title, item.description, item.id);
+        super(item.title, item.id);
 
         this._preview = `${REACT_APP_API_URL}/${item.preview}`;
     }

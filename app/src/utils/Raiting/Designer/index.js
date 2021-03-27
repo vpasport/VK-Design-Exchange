@@ -1,31 +1,35 @@
 import DesignerDefaultProps from "./DesignerDefaultProps";
 import axios from 'axios';
-import DesignCard from "../Gallery/DesignCard";
-import ReviewCard from './ReviewCard';
+import DesignCard from "../../Gallery/Design/DesignCard";
+import ReviewCard from './Review/ReviewCard';
+import OfferCard from "./Offer/OfferCard";
+import { getUrlByJson } from "../../helpers";
 
 const { REACT_APP_API_URL } = process.env;
 
 class Designer extends DesignerDefaultProps {
 
     constructor(item) {
-        //console.log(item)
         super(item.id, item.vk_id, item.rating, item.first_name, item.last_name, item.photo);
 
         this._bio = item.bio;
-        
-        //this.setPortfolio();
     }
 
     getBio(){ return this._bio }
 
-    async getPortfolio() {
-        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/previews`);
+    async getPortfolio(params) {
+
+        const allParams = getUrlByJson(params)
+
+        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/previews${allParams}`);
 
         if (data.isSuccess) {
             const portfolioCards = data.previews.map(el => new DesignCard(el));
 
             return {
-                list: portfolioCards
+                list: portfolioCards,
+                count: data.count,
+                fromId: data.from_id
             }
         }
         else throw new Error('Ошибка при загрузке дизайнера')
@@ -42,6 +46,24 @@ class Designer extends DesignerDefaultProps {
             }
         }
         else throw new Error('Не удалось загрузить отзывы');
+    }
+
+    async getOffers(params) {
+
+        const allParams = getUrlByJson(params);
+
+        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/offers${allParams}`);
+
+        if(data.isSuccess){
+            const offerCards = data.offers.map(el => new OfferCard(el));
+
+            return {
+                list: offerCards,
+                count: data.count,
+                fromId: data.from_id
+            }
+        }
+        else throw new Error('Не удалось загрузить услуги');
     }
 
     // async getNewPortfolio(){

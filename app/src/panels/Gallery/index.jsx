@@ -7,8 +7,8 @@ import PropTypes from 'prop-types';
 import { Group } from '@vkontakte/vkui';
 
 import ListBlock from '../../components/ListBlock';
-import GalleryClass from '../../utils/Gallery/Gallery';
-import GalleryItem from '../../components/Gallery/GalleryItem';
+import GalleryClass from '../../utils/Gallery';
+import GalleryItem from '../../components/DesignCard';
 import { connect } from 'react-redux';
 
 const Gallery = ({ id, listFormat }) => {

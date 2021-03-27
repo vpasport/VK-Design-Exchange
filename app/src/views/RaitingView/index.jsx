@@ -8,6 +8,8 @@ import useRouter from '../../utils/useRouter';
 import Portfolio from '../../panels/Portfolio';
 import Reviews from '../../panels/Reviews';
 import modal from '../GalleryView/Modal';
+import Offers from '../../panels/Offers';
+import Offer from '../../panels/Offer';
 
 const RaitingView = ({id}) => {
 
@@ -20,6 +22,8 @@ const RaitingView = ({id}) => {
             <Designer id='designer' />
             <Portfolio id='portfolio' />
             <Reviews id='reviews' />
+            <Offers id='offers' />
+            <Offer id='offer' />
         </View>
     )
 }

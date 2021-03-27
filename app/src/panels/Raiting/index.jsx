@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ListBlock from '../../components/ListBlock';
 import DesignerItem from '../../components/Designers/DesignerItem';
 
-import RaitingClass from '../../utils/Raiting/Raiting';
+import RaitingClass from '../../utils/Raiting';
 
 const Raiting = ({id}) => {
 

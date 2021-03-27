@@ -1,4 +1,4 @@
-import DesignCard from './DesignCard';
+import DesignCard from './Design/DesignCard';
 import axios from 'axios';
 import { getUrlByJson } from '../helpers';
 
@@ -13,7 +13,6 @@ class Gallery {
         const allParams = getUrlByJson(params);
 
         const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews${allParams}`);
-
 
         if (data.isSuccess){
             let designCards = data.previews.map(el => new DesignCard(el));

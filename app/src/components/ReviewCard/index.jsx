@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, Card, RichCell } from '@vkontakte/vkui';
 import StarRatings from '../StarRatings';
-import ReviewCardClass from '../../utils/Raiting/ReviewCard';
+import ReviewCardClass from '../../utils/Raiting/Designer/Review/ReviewCard';
 
 const ReviewCard = ({reviewCard}) => {
     

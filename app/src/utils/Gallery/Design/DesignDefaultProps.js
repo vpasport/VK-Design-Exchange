@@ -1,6 +1,6 @@
 class DesignDefaultProps {
 
-    constructor(title, description, id){
+    constructor(title, id){
         this._title = title;
         this._id = id;
     }

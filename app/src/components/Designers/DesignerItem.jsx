@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import StarRatings from '../StarRatings';
 
-import DesignerCardClass from '../../utils/Raiting/DesignerCard';
+import DesignerCardClass from '../../utils/Raiting/Designer/DesignerCard';
 import { useDispatch } from 'react-redux';
 import { changeActiveDesignerId } from '../../store/Designer/actions';
 import useRouter from '../../utils/useRouter';

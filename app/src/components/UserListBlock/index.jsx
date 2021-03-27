@@ -15,7 +15,7 @@ const UserListBlock = ({ children, loadList, loadFilters, from = null, to = null
             {userListParams.bind.isShowList &&
                 <ListBlock
                     actionType={actionType}
-                    loadList={loadList.bind(activeDesigner, activeDesigner)}
+                    loadList={activeDesigner[loadList].bind(activeDesigner)}
                     loadingCondition={userListParams.checkId}
                     isChangeSize={isChangeSize}
                     nullText={nullText}
@@ -32,12 +32,12 @@ const UserListBlock = ({ children, loadList, loadFilters, from = null, to = null
 }
 
 UserListBlock.propTypes = {
-    loadList: PropTypes.func.isRequired,
+    loadList: PropTypes.string.isRequired,
     loadFilters: PropTypes.func,
     from: PropTypes.number,
     to: PropTypes.number,
     loadCount: PropTypes.number,
-    actionType: PropTypes.oneOf(['galleryList', 'designerList', 'portfolio', 'reviews']).isRequired,
+    actionType: PropTypes.string.isRequired,
     size: PropTypes.oneOf(['s', 'm', 'l']),
     isChangeSize: PropTypes.bool,
     nullText: PropTypes.string

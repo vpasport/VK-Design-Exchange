@@ -5,7 +5,7 @@ import { ContentCard } from '@vkontakte/vkui';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeActiveDesignId } from '../../store/Design/actions';
 
-import DesignCardClass from '../../utils/Gallery/DesignCard';
+import DesignCardClass from '../../utils/Gallery/Design/DesignCard';
 
 import styles from './style.module.scss';
 import { getCardHeightBySize } from '../../utils/helpers';
@@ -15,7 +15,7 @@ import useRouter from '../../utils/useRouter';
 const GalleryItem = ({ designCard, listFormat }) => {
 
     const dispatch = useDispatch();
-    const router = useRouter()
+    const router = useRouter();
 
     const handleDesignChange = () => {
         
