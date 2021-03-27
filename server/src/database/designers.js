@@ -145,16 +145,19 @@ async function getDesignerPreviews(id, from, to) {
             [...params]
         )).rows;
 
-        let count = previews[0].count;
-        previews.forEach(element => delete element.count);
+        let count = 0;
+        if(previews.length > 0){
+            count = previews[0].count;
+            previews.forEach(element => delete element.count);
+        }
 
         await client.query('commit');
         client.release();
 
         return {
             isSuccess: true,
-            previews,
-            count
+            count,
+            previews
         }
     } catch (e) {
         await client.query('rollback');
@@ -188,8 +191,11 @@ async function getDesignerOffers(id, from, to) {
             [...params]
         )).rows;
 
-        let count = offers[0].count;
-        offers.forEach(element => delete element.count);
+        let count = 0;
+        if (offers.length > 0) {
+            count = offers[0].count;
+            offers.forEach(element => delete element.count);
+        }
 
         await client.query('commit');
         client.release();

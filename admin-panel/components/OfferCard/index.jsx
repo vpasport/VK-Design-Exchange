@@ -78,7 +78,7 @@ const OfferCard = ({
             </div>
             <div style={{ width: '70%', margin: 'auto' }}>
                 <div>
-                    <h3>Описание проекта:</h3>
+                    <h3>Описание:</h3>
                     {!edit ?
                         <div dangerouslySetInnerHTML={{ __html: offer?.description }} />
                         :

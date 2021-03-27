@@ -96,7 +96,7 @@ const Offer = ({ user }) => {
 
         if (preview !== null) formData.append('preview', preview);
 
-        if (preview !== null || workImage !== null) {
+        if (preview !== null) {
             response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/${offer.id}/preview`, {
                 method: 'PUT',
                 credentials: 'include',
