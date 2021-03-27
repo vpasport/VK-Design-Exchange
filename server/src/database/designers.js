@@ -131,8 +131,17 @@ async function getDesignerPreviews(id, from, to) {
 
     try {
         let params = [id];
-        if (from !== undefined) params.push(from);
-        if (to !== undefined) params.push(to - from);
+        let offset = ''
+        let limit = ''
+
+        if (from !== undefined) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to !== undefined) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
 
         let previews = (await client.query(
             `select p.id, p.title, p.preview, count( 1 ) over ()::int
@@ -140,13 +149,13 @@ async function getDesignerPreviews(id, from, to) {
             where 
                 p.id = dp.portfolio_id and dp.designer_id = $1
             order by p.id desc
-            ${from !== undefined ? 'offset $2' : ''}
-            ${to !== undefined ? 'limit $3' : ''}`,
+            ${offset}
+            ${limit}`,
             [...params]
         )).rows;
 
         let count = 0;
-        if(previews.length > 0){
+        if (previews.length > 0) {
             count = previews[0].count;
             previews.forEach(element => delete element.count);
         }
@@ -177,8 +186,17 @@ async function getDesignerOffers(id, from, to) {
 
     try {
         let params = [id];
-        if (from !== undefined) params.push(from);
-        if (to !== undefined) params.push(to - from);
+        let offset = ''
+        let limit = ''
+
+        if (from !== undefined) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to !== undefined) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
 
         let offers = (await client.query(
             `select o.id, o.title, o.preview, o.price, count( 1 ) over ()::int
@@ -186,8 +204,8 @@ async function getDesignerOffers(id, from, to) {
             where
                 o.id = od.offer_id and od.designer_id = $1
             order by o.id desc
-            ${from !== undefined ? 'offset $2' : ''}
-            ${to !== undefined ? 'limit $3' : ''}`,
+            ${offset}
+            ${limit}`,
             [...params]
         )).rows;
 
