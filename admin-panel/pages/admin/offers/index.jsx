@@ -1,38 +1,27 @@
 import Container from "../../../components/Container";
 import Header from "../../../components/Header";
 
-import { Button } from 'primereact/button';
+import { Button } from "primereact/button";
 
 import dynamic from 'next/dynamic';
-import { useRouter } from "next/router";
 
-const MyOffers = dynamic(
+const AllOffers = dynamic(
     () => import('../../../components/Offers').then(o => {
-        const { Offers } = o;
-        Offers.__webpackChunkName = o.__webpackChunkName;
-        return Offers;
+        const { AllOffers } = o;
+        AllOffers.__webpackChunkName = o.__webpackChunkName;
+        return AllOffers;
     }),
-    { ssr: false }
-);
+    {ssr: false}
+)
 
 const Offers = ({ user }) => {
-    const router = useRouter();
-
     return (
         <Container>
             <Header
                 user={user}
-                url='/designer/offers'
+                url='/admin/offers'
             />
-            <div className='p-m-4' style={{ textAlign: 'center' }}>
-                <Button
-                    label='Добавить предложение'
-                    icon='pi pi-plus'
-                    onClick={() => router.push('/designer/offers/create')}
-                >
-                </Button>
-            </div>
-            <MyOffers
+            <AllOffers
                 user={user}
             />
         </Container>

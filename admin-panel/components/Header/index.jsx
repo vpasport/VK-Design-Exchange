@@ -21,6 +21,7 @@ const Header = ({ url, user }) => {
             { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: '/admin/designers' },
             { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: '/admin/tags' },
             { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: '/admin/admins' },
+            { label: 'Предложения', icon: 'pi pi-fw pi-list', url: '/admin/offers' },
         ])
     }
     if (user.mainRole === 'designer') {
@@ -28,7 +29,7 @@ const Header = ({ url, user }) => {
             // { label: 'Главная', url: '/designer' },
             { label: 'Мой профиль', icon: 'pi pi-fw pi-user', url: '/designer/profile' },
             { label: 'Моё портфолио', icon: 'pi pi-fw pi-desktop', url: '/designer/portfolio' },
-            { label: 'Мои предложения', icon: 'pi pi-fw pi-desktop', url: '/designer/offers' },        
+            { label: 'Мои предложения', icon: 'pi pi-fw pi-list', url: '/designer/offers' },        
         ])
     }
 
@@ -57,7 +58,7 @@ const Header = ({ url, user }) => {
     }
 
     return (
-        <div className='p-d-flex p-jc-between p-ai-center'>
+        <div className='p-d-flex p-jc-between p-ai-center p-shadow-3 p-p-2' style={{borderRadius: '5px'}}>
             <TabMenu model={items}
                 activeItem={items.find(el => el.url === url)}
                 onTabChange={(e) => router.push(e.value.url)}

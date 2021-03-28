@@ -38,8 +38,14 @@ const Designer = ({ user }) => {
         });
         const { reviews } = await response.json();
 
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}/offers`, {
+            credentials: 'include'
+        });
+        const { offers } = await response.json();
+
         designer.previews = previews;
         designer.reviews = reviews;
+        designer.offers = offers;
 
         setDesigner(designer);
     }
@@ -102,6 +108,7 @@ const Designer = ({ user }) => {
             </div>
             <DesignerCard
                 designer={designer}
+                user={user}
                 edit={edit} setEdit={setEdit}
                 update={updateDesigner}
             />

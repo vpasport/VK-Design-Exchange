@@ -14,13 +14,14 @@ const DesignerCard = ({
     user, updateEngaged
 }) => {
     const [designerUpdated, setDesignerUpdated] = useState(designer);
-    const [date, setDate] = useState();
 
     const setDesigner = (json) => {
         setDesignerUpdated(prev => ({
             ...prev, ...json
         }));
     }
+
+    console.log(user)
 
     useEffect(() => {
         setDesignerUpdated(designer);
@@ -30,14 +31,19 @@ const DesignerCard = ({
         const footer = (
             <span key={key}>
                 <Button>
-                    {user.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>}
-                    {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/portfolio/${data.id}`}>Обзор</Link>}
+                    {user?.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>}
+                    {user?.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/portfolio/${data.id}`}>Обзор</Link>}
                 </Button>
             </span>
         );
 
         const header = (
-            <img alt={data.title} src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
+            <img
+                style={{ maxHeight: '530px' }}
+                alt={data.title}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`}
+                onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'}
+            />
         );
 
         return (
@@ -49,7 +55,6 @@ const DesignerCard = ({
                 footer={footer}
                 header={header}
             >
-                {/* <p className="p-m-0" style={{ lineHeight: '1.5' }}>{data.title}</p> */}
             </Card>
         );
     }
@@ -59,14 +64,19 @@ const DesignerCard = ({
             <div key={key} className='p-d-flex p-ai-center p-jc-between p-pl-4 p-pr-4'>
                 <h3>Стоимость: {data.price}₽</h3>
                 <Button>
-                    {user.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/offers/${data.id}`}>Обзор</Link>}
-                    {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/offers/${data.id}`}>Обзор</Link>}
+                    {user?.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/offers/${data.id}`}>Обзор</Link>}
+                    {user?.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/offers/${data.id}`}>Обзор</Link>}
                 </Button>
             </div>
         );
 
         const header = (
-            <img alt={data.title} src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} />
+            <img
+                style={{ maxHeight: '330px' }}
+                alt={data.title}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.preview}`}
+                onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'}
+            />
         );
 
         return (
@@ -117,7 +127,6 @@ const DesignerCard = ({
                         <h3>Занят:</h3>
                     </span>
                     <InputSwitch checked={designer?.engaged} onChange={updateEngaged} />
-                    {/* <Calendar value={date} onChange={({ value }) => setDate(value)} inline showWeek /> */}
                 </div>
                 <div>
                     <h3>О себе:</h3>
@@ -163,7 +172,7 @@ const DesignerCard = ({
                 <h3>Предложения:</h3>
                 {admin &&
                     <Button>
-                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/create?designer_id=${designer?.id}`}>Добавить</Link>
+                        <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/offers/create?designer_id=${designer?.id}`}>Добавить</Link>
                     </Button>
                 }
                 {designer?.offers?.length > 0 ?
@@ -173,7 +182,7 @@ const DesignerCard = ({
                         {designer?.offers?.map((el, i) => renderOfferCard(el, i))}
                     </div>)
                     :
-                    <p style={{ textAlign: 'center' }}>У этого дизайнера пока нет работ</p>
+                    <p style={{ textAlign: 'center' }}>У этого дизайнера пока нет предложений</p>
                 }
             </div>
             <div style={{ width: '70%', margin: 'auto' }}>

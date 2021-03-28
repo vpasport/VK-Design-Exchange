@@ -5,15 +5,38 @@ const {
     getUserInfo
 } = require('../helper/vk')
 
-async function getDesigners() {
+async function getDesigners(from, to) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
+        let params = [];
+        let offset = '';
+        let limit = '';
+
+        if (from !== undefined) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to !== undefined) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
         let designers = (await client.query(
-            `select d.id, d.vk_id, d.rating, d.first_name, d.last_name, d.photo
-                from designers as d`
+            `select d.id, d.vk_id, d.rating, d.first_name, d.last_name, d.photo, count( 1 ) over ()::int 
+                from designers as d
+            order by d.rating desc
+            ${offset}
+            ${limit}`,
+            [...params]
         )).rows;
+
+        let count = 0;
+        if (designers.length > 0) {
+            count = designers[0].count;
+            designers.forEach(element => delete element.count);
+        }
 
         await client.query('commit');
         client.release();
@@ -22,11 +45,14 @@ async function getDesigners() {
 
         return {
             isSuccess: true,
+            count,
             designers
         }
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        console.error(e);
 
         return {
             isSuccess: false

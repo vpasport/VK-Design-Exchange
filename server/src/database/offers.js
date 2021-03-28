@@ -2,6 +2,60 @@
 
 const pool = require('./pg/pool').getPool();
 
+async function getOffers(from, to) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let params = [];
+        let offset = '';
+        let limit = '';
+
+        if (from !== undefined) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to !== undefined) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
+        let offers = (await client.query(
+            `select *, count( 1 ) over ()::int
+                from offers
+            order by id desc
+            ${offset}
+            ${limit}`,
+            [...params]
+        )).rows;
+
+        let count = 0;
+        if (offers.length > 0) {
+            count = offers[0].count;
+            offers.forEach(element => delete element.count);
+        }
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            count,
+            offers
+        }
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function getOffer(id) {
     const client = await pool.connect();
     await client.query('begin');
@@ -284,6 +338,7 @@ async function deleteOffer(id) {
 }
 
 module.exports = {
+    getOffers,
     getOffer,
     getDesignerByOffer,
     getPreviewName,

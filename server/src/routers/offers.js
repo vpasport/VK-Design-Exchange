@@ -11,6 +11,7 @@ const { promises: {
 } } = require('fs');
 
 const {
+    getOffers: getOffers_,
     getOffer: getOffer_,
     getDesignerByOffer: getDesignerByOffer_,
     getPreviewName: getPreviewName_,
@@ -19,6 +20,22 @@ const {
     updatePreviewPath: updatePreviewPath_,
     deleteOffer: deleteOffer_
 } = require('../database/offers');
+
+async function getOffers({ query: { from, to }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await getOffers_(from, to);
+
+        if (result.isSuccess) {
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
 
 async function getOffer({ params: { id } }, res) {
     let result = await getOffer_(id);
@@ -172,6 +189,7 @@ function index() {
 
     const upload = multer();
 
+    router.get('/', getOffers);
     router.get('/:id', getOffer);
 
     router.post('/', upload.fields([{ name: 'preview', maxCount: 1 }]), createOffer);

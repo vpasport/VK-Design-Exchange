@@ -16,15 +16,15 @@ const {
     getUsersInfo
 } = require('../helper/vk');
 
-async function getDesigners(req, res) {
-    let result = await getDesigners_();
+async function getDesigners({query: {from, to}}, res) {
+    let result = await getDesigners_(from, to);
 
     if (result.isSuccess) {
         res.json(result);
         return;
     }
 
-    res.sendStatus(204);
+    res.sendStatus(520);
 }
 
 async function getDesigner({ params: { id } }, res) {

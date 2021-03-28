@@ -1,8 +1,11 @@
-import { InputText } from "primereact/inputtext";
-import { InputNumber } from 'primereact/inputnumber';
 import FileUpload from "../FileUpload";
 import Quill from "../Quill";
+
+import { InputText } from "primereact/inputtext";
+import { InputNumber } from 'primereact/inputnumber';
 import { Button } from "primereact/button";
+import { Avatar } from "primereact/avatar";
+import { Rating } from "primereact/rating";
 
 const CreateOffer = ({
     designer = undefined,
