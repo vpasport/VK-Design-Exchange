@@ -17,6 +17,9 @@ const getCardHeightBySize = (size) => {
 }
 
 const getUrlByJson = (obj) => {
+
+    if(!obj) return '';
+
     const url = new URLSearchParams();
 
     const generateUrl = (obj) => {

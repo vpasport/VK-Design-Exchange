@@ -9,7 +9,7 @@ class Offer extends OfferDefaultProps {
         this._author = item.author;
     }
 
-    getDesctiption() { return this._description }
+    getDescription() { return this._description }
     getAuthor() {return this._author} 
 
 }

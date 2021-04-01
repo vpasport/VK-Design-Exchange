@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 
-import { AdaptivityProvider, ConfigProvider } from '@vkontakte/vkui';
+import { AdaptivityProvider, ConfigProvider, PanelSpinner } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import './styles/global.scss';
 //import 'react-quill/dist/quill.snow.css';
@@ -26,6 +26,7 @@ const App = () => {
 	const [poput, setPoput] = useState(null);
 	const [isDesktop, setIsDesktop] = useState(false);
 	const [activeModal, setActiveModal] = useState(null);
+	const [ isLoad, setIsLoad ] = useState(true);
 
 	const useAlert = useAlertHook(setPoput);
 	const useSpinner = useSpinnerHook(setPoput);
@@ -42,10 +43,13 @@ const App = () => {
 		const fetchData = async () => {
 
 			try {
+				const urlParams = new URLSearchParams(window.location.search);
 				const userInfo = await bridge.send('VKWebAppGetUserInfo');
 
-				if (!('error_type' in userInfo))
-					setUserInfo(new User(userInfo));
+				if (!('error_type' in userInfo)){
+					setUserInfo(new User(userInfo, urlParams.get('sign')));
+					setIsLoad(false);
+				}
 				else
 					throw new Error('Ошибка API');
 			}
@@ -68,7 +72,11 @@ const App = () => {
 				<AlertContext.Provider value={alertContextValue}>
 					<SessionContext.Provider value={sessionContextValue}>
 						<ModalContext.Provider value={modalContextValue}>
-							<Panels />
+							{!isLoad ?
+								<Panels />
+								:
+								<PanelSpinner size='large' />
+							}
 						</ModalContext.Provider>
 					</SessionContext.Provider>
 				</AlertContext.Provider>

@@ -17,6 +17,7 @@ const Raiting = ({id}) => {
                 <ListBlock
                     loadList={raiting.getRaiting}
                     actionType='designerList'
+                    loadCount={10}
                 >
                     {el => (
                         <DesignerItem
