@@ -2,28 +2,93 @@
 
 const pool = require('./pg/pool').getPool();
 
-async function create(designer_vk_id, rating, text, user_vk_id) {
+async function getOfferByOrder(id) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
-        let designer_id = (await client.query(
-            `select d.id
-                from designers as d
+        let offer = (await client.query(
+            `select offers.* 
+            from 
+                orders,
+                offers
             where
-                d.vk_id = $1`,
-            [designer_vk_id]
-        )).rows[0].id;
+                orders.offer_id = offers.id and
+                orders.id = $1`,
+            [id]
+        )).rows[0];
 
-        if (designer_id === undefined) throw "designer id not found";
+        if (offer !== undefined) {
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                offer
+            }
+        }
+
+        throw 'Order not found';
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function create(order_id, rating, text, user_vk_id, image) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let order = (await client.query(
+            `select o.id
+                from orders as o
+            where
+                o.id = $1`,
+            [order_id]
+        )).rows[0];
+
+        if (order === undefined) throw "Order id not found";
+        order = order.id;
+
+        let designer = (await client.query(
+            `select 
+                od.designer_id as id
+            from
+                orders as o,
+                designers_offers as od
+            where
+                o.offer_id = od.offer_id and
+                o.id = $1`,
+            [order_id]
+        )).rows[0];
+
+        if (designer === undefined) throw 'Designer not found';
+        designer = designer.id
 
         let reviewId = (await client.query(
+            `select id
+            from reviews
+            where
+                order_id = $1`,
+            [order_id]
+        )).rows[0];
+
+        if (reviewId !== undefined) throw 'Review already exists';
+
+        reviewId = (await client.query(
             `insert into reviews
-                (rating, text, user_vk_id)
+                (rating, text, user_vk_id, order_id, image)
             values
-                ($1, $2, $3)
+                ($1, $2, $3, $4, $5)
             returning id`,
-            [rating, text, user_vk_id]
+            [rating, text, user_vk_id, order_id, image]
         )).rows[0].id;
 
         if (reviewId !== undefined) {
@@ -33,7 +98,7 @@ async function create(designer_vk_id, rating, text, user_vk_id) {
                 values
                     ($1, $2)
                 returning id`,
-                [designer_id, reviewId]
+                [designer, reviewId]
             )).rows[0].id;
 
             if (rdId !== undefined) {
@@ -54,7 +119,7 @@ async function create(designer_vk_id, rating, text, user_vk_id) {
                         rating = (select ar.avg from avg_rating as ar)
                     where
                         id = $1`,
-                    [designer_id]
+                    [designer]
                 )
 
                 await client.query('commit');
@@ -72,13 +137,15 @@ async function create(designer_vk_id, rating, text, user_vk_id) {
         await client.query('rollback');
         client.release();
 
+        console.error(e);
+
         return {
             isSuccess: false
         }
     }
 }
 
-async function deleteReview(id){
+async function deleteReview(id) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -96,7 +163,7 @@ async function deleteReview(id){
         return {
             isSuccess: true
         }
-    } catch(e){
+    } catch (e) {
         await client.query('rollback');
         client.release();
 
@@ -107,6 +174,7 @@ async function deleteReview(id){
 }
 
 module.exports = {
+    getOfferByOrder,
     create,
     deleteReview
 }

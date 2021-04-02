@@ -1,4 +1,19 @@
-const FileUpload = ({ onChange, preview }) => {
+const FileUpload = ({ type, onChange, preview }) => {
+    const renderText = () => {
+        let text;
+
+        switch (type) {
+            case 'work':
+                text = preview ? 'Заменить макет сайта' : 'Загрузить макет сайта'
+                break;
+            case 'preview':
+                text = preview ? 'Заменить изображение' : 'Загрузить изображение'
+                break;
+        }
+
+        return text;
+    }
+
     return (
         <>
             <div
@@ -9,8 +24,8 @@ const FileUpload = ({ onChange, preview }) => {
                     userSelect: 'none'
                 }}
             >
-                Выбрать файл
-            <input
+                {renderText()}
+                <input
                     type="file"
                     onChange={onChange}
                     style={{

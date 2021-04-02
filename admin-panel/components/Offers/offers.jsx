@@ -45,7 +45,7 @@ const Offers = ({ user }) => {
 
         const header = (
             <img
-                style={{ maxHeight: '330px' }}
+                style={{ maxHeight: '250px' }}
                 alt={data.title}
                 src={`${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`}
                 onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'}

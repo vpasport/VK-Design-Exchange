@@ -59,7 +59,7 @@ const OfferCard = ({
                             </div>
                         </>
                         :
-                        <p><b>{offer?.price}</b></p>
+                        <p><b>{offer?.price} ₽</b></p>
                     }
                 </div>
             </div>
@@ -71,6 +71,7 @@ const OfferCard = ({
                     </img>
                     :
                     <FileUpload
+                        type='preview'
                         onChange={uploadPreview}
                         preview={previewUrl}
                     />

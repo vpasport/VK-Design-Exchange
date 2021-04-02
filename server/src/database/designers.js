@@ -2,7 +2,8 @@
 
 const pool = require('./pg/pool').getPool();
 const {
-    getUserInfo
+    getUserInfo,
+    getUsersInfo
 } = require('../helper/vk')
 
 async function getDesigners(from, to) {
@@ -261,6 +262,92 @@ async function getDesignerOffers(id, from, to) {
     }
 }
 
+async function getOrders(id, from, to) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let params = [id];
+        let offset = '';
+        let limit = '';
+
+        if (from !== undefined) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to !== undefined) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
+        let orders = (await client.query(
+            `select 
+                o.id, 
+                o.customer, 
+                o.offer_id, 
+                os.name as status, 
+                o.status as status_id,
+                ofs.title, 
+                count( 1 ) over ()::int
+            from
+                orders as o,
+                designers_offers as od,
+                orders_statuses as os,
+                offers as ofs
+            where
+                od.designer_id = $1 and
+                od.offer_id = o.offer_id and
+                o.status = os.id and
+                ofs.id = o.offer_id
+            order by id desc
+            ${offset}
+            ${limit}`,
+            [...params]
+        )).rows;
+
+        let count = 0;
+        let users = []
+
+        if (orders.length > 0) {
+            count = orders[0].count;
+            orders.forEach(element => {
+                users.push(element.customer);
+                delete element.count
+            });
+
+            users = await getUsersInfo(users);
+
+            if (users.isSuccess) {
+                let customers = users.users;
+
+                orders.forEach(element => {
+                    let customer = customers.find(el => el.id === element.customer);
+                    element.customer = customer;
+                })
+            }
+        }
+
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            count,
+            orders
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function createDesigner(vk_id) {
     const client = await pool.connect();
     await client.query('begin');
@@ -416,6 +503,7 @@ module.exports = {
     getReviews,
     getDesignerPreviews,
     getDesignerOffers,
+    getOrders,
     createDesigner,
     deleteDesigner,
     updateInfo,

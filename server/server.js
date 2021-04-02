@@ -58,9 +58,8 @@ server.use((req, res, next) => {
 //     updaetInfo
 // } = require('./src/helper/vk');
 
-// server.get('/', (req, res) => {
-//     updaetInfo()
-// })
+server.post('/', ({ body: { vk_id, sign } }, res) => {
+})
 
 initRouters(server);
 

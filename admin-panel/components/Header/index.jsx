@@ -17,7 +17,7 @@ const Header = ({ url, user }) => {
     if (user.mainRole === 'admin') {
         items.push(...[
             // { label: 'Главная', url: '/admin' },
-            { label: 'Все работы', icon: 'pi pi-fw pi-desktop', url: '/admin/portfolios' },
+            { label: 'Все работы', icon: 'pi pi-fw pi-briefcase', url: '/admin/portfolios' },
             { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: '/admin/designers' },
             { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: '/admin/tags' },
             { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: '/admin/admins' },
@@ -28,8 +28,9 @@ const Header = ({ url, user }) => {
         items.push(...[
             // { label: 'Главная', url: '/designer' },
             { label: 'Мой профиль', icon: 'pi pi-fw pi-user', url: '/designer/profile' },
-            { label: 'Моё портфолио', icon: 'pi pi-fw pi-desktop', url: '/designer/portfolio' },
-            { label: 'Мои предложения', icon: 'pi pi-fw pi-list', url: '/designer/offers' },        
+            { label: 'Моё портфолио', icon: 'pi pi-fw pi-briefcase', url: '/designer/portfolio' },
+            { label: 'Мои предложения', icon: 'pi pi-fw pi-list', url: '/designer/offers' },
+            { label: 'Мои заказы', icon: 'pi pi-fw pi-shopping-cart', url: '/designer/orders' },
         ])
     }
 
@@ -58,12 +59,20 @@ const Header = ({ url, user }) => {
     }
 
     return (
-        <div className='p-d-flex p-jc-between p-ai-center p-shadow-3 p-p-2' style={{borderRadius: '5px'}}>
-            <TabMenu model={items}
+        <div
+            className='p-d-flex p-jc-between p-ai-center p-shadow-3 p-p-2'
+            style={{
+                // borderRadius: '5px',
+                // width: '100vw',
+            }}
+        >
+            <TabMenu
+                className='p-ml-4'
+                model={items}
                 activeItem={items.find(el => el.url === url)}
                 onTabChange={(e) => router.push(e.value.url)}
             />
-            <div className='p-d-flex p-ai-center'>
+            <div className='p-d-flex p-ai-center p-mr-4'>
                 {user.role.length === 2 &&
                     <div className='p-d-flex p-ai-center p-mr-3'>
                         <span className='p-mr-2'>

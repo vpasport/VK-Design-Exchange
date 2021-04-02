@@ -112,9 +112,9 @@ async function getDesignerByOffer(id) {
     try {
         let designer = (await client.query(
             `select designer_id
-            from designers_offers as fo
-        where	
-            fo.offer_id = $1`,
+                from designers_offers as fo
+            where	
+                fo.offer_id = $1`,
             [id]
         )).rows[0];
 

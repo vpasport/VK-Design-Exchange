@@ -158,7 +158,12 @@ const Create = ({ user }) => {
                 creation={creation} setCreation={setCreation}
                 portfolio={portfolio} setProgress={setProgress}
             />
-            <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
+            <Dialog
+                header="Ошибка"
+                visible={dialog}
+                style={{ width: '50vw' }}
+                onHide={() => setDialog(false)}
+            >
                 <p>
                     {error}
                 </p>

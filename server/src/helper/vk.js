@@ -1,27 +1,30 @@
 "use strict";
 
-const {API} = require('vk-io');
+const crypto = require('crypto');
+const qs = require('querystring');
+
+const { API } = require('vk-io');
 const pool = require('../database/pg/pool').getPool();
 
 const api = new API({
-    token : process.env.APP_TOKEN
+    token: process.env.APP_TOKEN
 })
 
-async function getUserInfo(vk_id){
+async function getUserInfo(vk_id) {
     try {
         let user = await api.users.get(
             {
                 user_ids: vk_id,
-                fields : 'photo_max',
+                fields: 'photo_max',
                 name_case: 'nom'
             }
         )
-        
+
         return {
             isSuccess: true,
             user: user[0]
         }
-    } catch (e){
+    } catch (e) {
         console.error(e);
 
         return {
@@ -30,8 +33,8 @@ async function getUserInfo(vk_id){
     }
 }
 
-async function getUsersInfo(vk_ids){
-    try{
+async function getUsersInfo(vk_ids) {
+    try {
         let users = await api.users.get(
             {
                 user_ids: vk_ids,
@@ -44,7 +47,7 @@ async function getUsersInfo(vk_ids){
             isSuccess: true,
             users
         }
-    } catch (e){
+    } catch (e) {
         console.error(e);
 
         return {
@@ -53,7 +56,7 @@ async function getUsersInfo(vk_ids){
     }
 }
 
-async function updaetInfo(){
+async function updaetInfo() {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -81,8 +84,36 @@ async function updaetInfo(){
     client.release();
 }
 
+function checkSign(query) {
+    const ordered = {};
+    let sign;
+
+    Object.keys(query).sort().forEach((key) => {
+        if (key === 'sign') sign = query[key];
+
+        if (/^vk_/.test(key)) {
+            ordered[key] = query[key];
+        }
+    });
+
+    let hash =
+        crypto.createHmac(
+            'sha256',
+            process.env.APP_SECRET
+        )
+            .update(qs.stringify(ordered))
+            .digest()
+            .toString('base64')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=$/, '');
+
+    return sign === hash;
+}
+
 module.exports = {
     getUserInfo,
-    getUsersInfo
+    getUsersInfo,
+    checkSign
     // updaetInfo
 }

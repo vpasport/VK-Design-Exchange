@@ -128,22 +128,23 @@ async function getPreviewsTags(from, to, from_id, tags) {
             params
         );
 
+        let count = 0;
+
         if (previews.length > 0) {
-            let count = previews[0].count;
+            count = previews[0].count;
             previews.forEach(element => delete element.count);
-
-            await client.query('commit');
-            client.release();
-
-            return {
-                isSuccess: true,
-                count,
-                from_id: from_id === undefined ? previews[0].id : Number(from_id),
-                previews
-            }
         }
 
-        throw 'Preveiws not found';
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            count,
+            from_id: from_id === undefined ? previews[0].id : Number(from_id),
+            previews
+        }
+
     } catch (e) {
         await client.query('rollback');
         client.release();

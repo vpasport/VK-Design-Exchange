@@ -20,9 +20,10 @@ const CreatePortfolio = ({
         // style={{ margin: 'auto', width: '100%' }}
         >
             <div style={{ width: '80%', margin: 'auto' }}>
+                <h1>Редактор сайта:</h1>
                 {/* <div dangerouslySetInnerHTML={{ __html: text }} /> */}
                 {designer !== undefined &&
-                    <div>
+                    <div className='p-mt-3'>
                         <h3>Автор:</h3>
                         <div className='p-d-flex p-ai-center'>
                             <Avatar shape="circle" image={designer?.photo} size="xlarge" />
@@ -36,24 +37,10 @@ const CreatePortfolio = ({
                     </div>
                 }
                 <div>
-                    <h3>Название:</h3>
-                    <InputText
-                        style={{ width: '100%' }}
-                        placeholder='Название'
-                        onChange={({ target: { value: title } }) => set({ title })}
-                    ></InputText>
-                    {/* <h3>Короткое описани (одна строка):</h3>
-                    <InputText
-                        style={{ width: '100%' }}
-                        placeholder='Описание'
-                        onChange={({ target: { value: description } }) => set({ description })}
-                    ></InputText> */}
-                </div>
-                <div>
                     <div
                         style={{ width: '100%' }}
                     >
-                        <h3>Тэги:</h3>
+                        <h3>Область работы:</h3>
                         <span className="p-float-label" style={{ width: '100%' }}>
                             <MultiSelect
                                 style={{ width: '100%' }}
@@ -67,8 +54,16 @@ const CreatePortfolio = ({
                         </span>
                     </div>
                 </div>
+                <div className='p-mt-3'>
+                    <h3>Название проекта:</h3>
+                    <InputText
+                        style={{ width: '100%' }}
+                        placeholder='Название'
+                        onChange={({ target: { value: title } }) => set({ title })}
+                    ></InputText>
+                </div>
                 <div>
-                    <h3>Превью:</h3>
+                    <h3>Обложка:</h3>
                     <div
                         style={{
                             width: '100%',
@@ -76,6 +71,7 @@ const CreatePortfolio = ({
                         }}
                     >
                         <FileUpload
+                            type='preview'
                             onChange={uploadPreview}
                             preview={previewUrl}
                         />
@@ -88,48 +84,16 @@ const CreatePortfolio = ({
                             text={portfolio.project_description}
                             setText={(e) => set({ project_description: e })}
                         ></Quill>
-                        {/* <InputTextarea
-                            style={{
-                                width: '100%',
-                                height: '10vh'
-                            }}
-                            label='Описание проекта'
-                            onChange={({ target: { value: project_description } }) => set({ project_description })}
-                        >
-                        </InputTextarea> */}
                     </div>
-                    {/* <div>
-                        <h3>Описание задачи:</h3>
-                        <InputTextarea
-                            style={{
-                                width: '100%',
-                                height: '10vh'
-                            }}
-                            label='Описание задачи'
-                            onChange={({ target: { value: task_description } }) => set({ task_description })}
-                        >
-                        </InputTextarea>
-                    </div>
-                    <div>
-                        <h3>Проделанная работа:</h3>
-                        <InputTextarea
-                            style={{
-                                width: '100%',
-                                height: '10vh'
-                            }}
-                            label='Проделанная работа'
-                            onChange={({ target: { value: complited_work } }) => set({ complited_work })}
-                        >
-                        </InputTextarea>
-                    </div> */}
                 </div>
                 <div>
-                    <h3>Работа:</h3>
+                    <h3>Дизайн:</h3>
                     <div style={{
                         // width: '70%',
                         textAlign: 'center'
                     }}>
                         <FileUpload
+                            type='work'
                             onChange={uploadWork}
                             preview={workUrl}
                         />
@@ -142,7 +106,7 @@ const CreatePortfolio = ({
                     <hr className='p-mt-4' />
                     <Button
                         className='p-m-4'
-                        label='Создать'
+                        label='Опубликовать работу'
                         onClick={() => {
                             setCreation(true);
                             save();
