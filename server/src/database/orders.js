@@ -33,30 +33,76 @@ async function getStatuses() {
     }
 }
 
-async function getOrders() {
+async function getOrders(from, to) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
+        const params = [];
+        let offset = '';
+        let limit = '';
+
+        if (from) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
         let orders = (await client.query(
             `select 
-                ord.id, 
-                ord.customer, 
-                ord.offer_id, 
+                o.id, 
+                o.customer, 
+                o.offer_id, 
                 os.name as status, 
-                ord.status as status_id
-            from 
-                orders as ord, 
-                orders_statuses as os
-            where 
-                ord.status = os.id`
+                o.status as status_id,
+                ofs.title, 
+                count( 1 ) over ()::int
+            from
+                orders as o,
+                designers_offers as od,
+                orders_statuses as os,
+                offers as ofs
+            where
+                od.offer_id = o.offer_id and
+                o.status = os.id and
+                ofs.id = o.offer_id
+            order by id desc
+            ${offset}
+            ${limit}`,
+            [...params]
         )).rows;
+
+        let count = 0;
+        let users = []
+
+        if (orders.length > 0) {
+            count = orders[0].count;
+            orders.forEach(element => {
+                users.push(element.customer);
+                delete element.count
+            });
+
+            users = await getUsersInfo(users);
+
+            if (users.isSuccess) {
+                let customers = users.users;
+
+                orders.forEach(element => {
+                    let customer = customers.find(el => el.id === element.customer);
+                    element.customer = customer;
+                })
+            }
+        }
 
         await client.query('commit');
         client.release();
 
         return {
             isSuccess: true,
+            count,
             orders
         }
     } catch (e) {
@@ -143,7 +189,7 @@ async function getOrderFull(id) {
                 [order.offer_id]
             )).rows[0];
 
-            if(offer !== undefined){
+            if (offer !== undefined) {
                 order.offer = offer;
             }
 
@@ -160,16 +206,24 @@ async function getOrderFull(id) {
                 order.comments = comments;
             }
 
+
             let users = [order.customer, order.designer];
+
+            if (order.comments !== undefined)
+                order.comments.forEach(el => {
+                    if (users.indexOf(el.from_vk_id) === -1) users.push(el.from_vk_id);
+                })
 
             users = await getUsersInfo(users);
 
-            if(users.isSuccess){
+            if (users.isSuccess) {
                 users = users.users;
+                order.commentators = [];
 
                 users.forEach(el => {
-                    if(el.id === order.customer) order.customer = el;
-                    if(el.id === order.designer) order.designer = el;
+                    if (el.id === order.customer) order.customer = el;
+                    if (el.id === order.designer) order.designer = el;
+                    else order.commentators.push(el)
                 })
             }
 
@@ -492,7 +546,17 @@ async function cancelOrder(id, comment, from_vk_id) {
         )).rows[0];
 
         if (order !== undefined) {
-            if (order.customer === from_vk_id || order.designer_vk_id === from_vk_id) {
+            let admin = (await client.query(
+                `select * 
+                from admins
+                where vk_id = $1`,
+                [from_vk_id]
+            )).rows[0];
+
+            if (order.customer === from_vk_id ||
+                order.designer_vk_id === from_vk_id ||
+                (admin !== undefined && admin.vk_id === from_vk_id)
+            ) {
                 await client.query(
                     `update orders
                         set status = 1

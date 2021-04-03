@@ -59,6 +59,7 @@ const CreateOffer = ({
                         }}
                     >
                         <FileUpload
+                            type='preview'
                             onChange={uploadPreview}
                             preview={previewUrl}
                         />

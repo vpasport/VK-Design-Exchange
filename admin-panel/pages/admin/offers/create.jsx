@@ -92,7 +92,7 @@ const Create = ({ user }) => {
         formData.append('title', offer.title);
         formData.append('description', offer.description);
         formData.append('price', offer.price)
-        formData.append('designer_id', user.db.did);
+        formData.append('designer_id', designer_id);
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers`, {
             method: 'POST',
@@ -112,7 +112,7 @@ const Create = ({ user }) => {
 
         setProgress(false);
 
-        router.push(`/designer/profile`);
+        router.push(`/admin/designers/${designer.id}`);
     }
 
     return (
@@ -154,7 +154,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('designer') === -1) {
+    if (role === undefined || role.indexOf('admin') === -1) {
         return {
             redirect: {
                 destination: '/',

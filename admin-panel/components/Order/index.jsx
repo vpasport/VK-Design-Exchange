@@ -1,20 +1,21 @@
 import { Avatar } from "primereact/avatar";
 
 const Order = ({ order }) => {
-    console.log(order)
-
+    
     const renderComment = (el, key) => {
         let user;
 
         if (el.from_vk_id === order.customer.id) user = order.customer;
         if (el.from_vk_id === order.designer.id) user = order.designer;
+        else user = order.commentators.find(el1 => el.from_vk_id === el1.id)
+
         return (
             <div key={key} className='p-m-4'>
                 <div className='p-d-flex p-ai-center'>
-                    <Avatar shape="circle" image={user.photo_max} size="xlarge" />
+                    <Avatar shape="circle" image={user?.photo_max} size="xlarge" />
                     <div className='p-ml-3'>
                         <div>
-                            <b>{user.first_name} {user.last_name}</b>
+                            <b>{user?.first_name} {user?.last_name}</b>
                         </div>
                     </div>
                 </div>

@@ -327,7 +327,6 @@ async function getOrders(id, from, to) {
             }
         }
 
-
         await client.query('commit');
         client.release();
 

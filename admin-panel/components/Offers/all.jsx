@@ -12,7 +12,7 @@ const AllOffers = ({ user }) => {
     const [offers, setOffers] = useState(null);
 
     const [count, setCount] = useState(0);
-    const [rows, setRows] = useState(10);
+    const [rows, setRows] = useState(20);
     const [first, setFirst] = useState(0);
 
     const getOffers = async (from, to) => {
@@ -26,8 +26,23 @@ const AllOffers = ({ user }) => {
         setCount(count);
     }
 
+    const deleteOffer = async (id) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id
+            })
+        })
+        
+        getOffers(first, first+rows);
+    }
+
     useEffect(() => {
-        getOffers(0, 10);
+        getOffers(first, first+rows);
     }, [])
 
     const imageBodyTemplate = (rowData) => {
@@ -46,7 +61,7 @@ const AllOffers = ({ user }) => {
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/offers/${offer.id}`}>Редактировать</Link>
                 </Button>
-                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => deleteDesigner(offer.id)} />
+                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => deleteOffer(offer.id)} />
             </div>
         )
     }

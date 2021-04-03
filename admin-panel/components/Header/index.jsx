@@ -22,6 +22,7 @@ const Header = ({ url, user }) => {
             { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: '/admin/tags' },
             { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: '/admin/admins' },
             { label: 'Предложения', icon: 'pi pi-fw pi-list', url: '/admin/offers' },
+            { label: 'Заказы', icon: 'pi pi-fw pi-shopping-cart', url: '/admin/orders' }
         ])
     }
     if (user.mainRole === 'designer') {
@@ -30,7 +31,7 @@ const Header = ({ url, user }) => {
             { label: 'Мой профиль', icon: 'pi pi-fw pi-user', url: '/designer/profile' },
             { label: 'Моё портфолио', icon: 'pi pi-fw pi-briefcase', url: '/designer/portfolio' },
             { label: 'Мои предложения', icon: 'pi pi-fw pi-list', url: '/designer/offers' },
-            { label: 'Мои заказы', icon: 'pi pi-fw pi-shopping-cart', url: '/designer/orders' },
+            { label: 'Мои заказы', icon: 'pi pi-fw pi-shopping-cart', url: '/designer/orders' }
         ])
     }
 

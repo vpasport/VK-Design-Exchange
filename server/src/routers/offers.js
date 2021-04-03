@@ -173,6 +173,7 @@ async function deleteOffer({ body: { id }, session }, res) {
                     await unlink(`static/${result.preview}`);
 
                     res.sendStatus(204);
+                    return;
                 }
             }
         }

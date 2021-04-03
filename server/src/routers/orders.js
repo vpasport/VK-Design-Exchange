@@ -29,8 +29,7 @@ async function getStatuses(req, res) {
     res.sendStatus(520);
 }
 
-async function getOrders({ query }, res) {
-    console.log(query)
+async function getOrders({ query, session }, res) {
     let customer_vk_id = query.vk_user_id;
     let result;
 
@@ -38,8 +37,8 @@ async function getOrders({ query }, res) {
         result = await getOrdersByCustomer_(customer_vk_id)
     if (query.designer_id !== undefined)
         result = await getOrdersByDesigner_(designer_id)
-    if (customer_vk_id === undefined && query.designer_id === undefined)
-        result = await getOrders_();
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1)
+        result = await getOrders_(query.from, query.to);
 
     if (result !== undefined && result.isSuccess) {
         res.json(result);
@@ -53,7 +52,10 @@ async function getOrder({ params: { id }, session }, res) {
     let designer = await getDesignerByOrder_(id);
 
     if (designer.isSuccess) {
-        if (session.role !== undefined && session.role.indexOf('designer') !== -1 && session.user.did === designer.designer) {
+        if (session.role !== undefined &&
+            ((session.role.indexOf('designer') !== -1 && session.user.did === designer.designer)
+                || (session.role.indexOf('admin') !== -1))
+        ) {
             let result = await getOrderFull_(id);
 
             if (result.isSuccess) {
@@ -100,7 +102,11 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
 
     if (designer.isSuccess && order.isSuccess) {
         if (order.order.status === 2) {
-            if (from_vk_id === designer.vk_id || (session.role !== undefined && session.role.indexOf('designer') !== -1 && session.user.did === designer.designer)) {
+            if (from_vk_id === designer.vk_id ||
+                (session.role !== undefined &&
+                    (session.role.indexOf('admin') !== -1 ||
+                        session.role.indexOf('designer') !== -1 && session.user.did === designer.designer))
+            ) {
                 result = await inProcess_(id);
 
                 if (result.isSuccess) {
@@ -115,17 +121,20 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
 
         if (order.order.status === 3) {
             if (session.role !== undefined) {
-                if (session.role.indexOf('designer') !== -1 && (designer.designer === session.user.did || from_vk_id === session.user.vk_id)) {
+                if (session.role.indexOf('admin') !== -1 ||
+                    (session.role.indexOf('designer') !== -1 &&
+                        (designer.designer === session.user.did || from_vk_id === session.user.vk_id))
+                ) {
                     result = await readyToCheck_(id);
 
                     if (result.isSuccess) {
                         res.sendStatus(204);
                         return;
                     }
-
-                    res.sendStatus(403);
-                    return;
                 }
+
+                res.sendStatus(403);
+                return;
             }
 
             res.sendStatus(401);
@@ -138,7 +147,10 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
 
 async function cancelOrder({ params: { id }, body: { comment, from_vk_id }, session }, res) {
     let designer = await getDesignerByOrder_(id);
-    if (session.role !== undefined && session.role.indexOf('designer') !== -1 && designer.designer === session.user.did) from_vk_id = session.vk_id;
+    if (session.role !== undefined) {
+        if (session.role.indexOf('admin') !== -1) from_vk_id = session.vk_id;
+        if (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did) from_vk_id = session.vk_id;
+    }
 
     if (from_vk_id !== undefined) {
         let result = await cancelOrder_(id, comment, from_vk_id);
@@ -152,16 +164,32 @@ async function cancelOrder({ params: { id }, body: { comment, from_vk_id }, sess
     res.sendStatus(520);
 }
 
-async function finishOrder({ params: { id }, body: { url_params } }, res) {
+async function finishOrder({ params: { id }, body: { url_params }, session }, res) {
+    let result;
+
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        result = await finishOrder_(id);
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
     let params = JSON.parse('{"' + decodeURI(url_params).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
 
-    if (checkSign(params)) {
+    if (checkSign(params) || session.role) {
         let order = await getOrder_(id);
         let customer = Number(params.vk_user_id);
 
         if (order.isSuccess) {
-            if (order.order.customer === customer && (order.order.status === 4 || order.order.status === 3)) {
-                let result = await finishOrder_(id);
+            if (order.order.customer === customer &&
+                (order.order.status === 4 || order.order.status === 3)
+            ) {
+                result = await finishOrder_(id);
 
                 if (result.isSuccess) {
                     res.sendStatus(204);

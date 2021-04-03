@@ -136,7 +136,7 @@ const Offer = ({ user }) => {
             return;
         }
 
-        router.push('/designer/offers');
+        router.push('/admin/offers');
     }
 
     return (
@@ -182,7 +182,7 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     });
     const { role, user: _user, mainRole } = await response.json();
 
-    if (role === undefined || role.indexOf('designer') === -1) {
+    if (role === undefined || role.indexOf('admin') === -1) {
         return {
             redirect: {
                 destination: '/',

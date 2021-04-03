@@ -1,28 +1,36 @@
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Container from "../../../components/Container";
 import Header from "../../../components/Header";
+import MyOrder from '../../../components/Order';
 
-import { Button } from "primereact/button";
+const Order = ({ user }) => {
+    const router = useRouter();
+    const id = router.query.id;
 
-import dynamic from 'next/dynamic';
+    const [order, setOrder] = useState(null);
 
-const AllOffers = dynamic(
-    () => import('../../../components/Offers').then(o => {
-        const { AllOffers } = o;
-        AllOffers.__webpackChunkName = o.__webpackChunkName;
-        return AllOffers;
-    }),
-    {ssr: false}
-)
+    const getOrder = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${id}`, {
+            credentials: 'include'
+        })
+        const { order } = await response.json();
 
-const Offers = ({ user }) => {
+        setOrder(order);
+    }
+
+    useEffect(() => {
+        getOrder();
+    }, [])
+
     return (
         <Container>
             <Header
                 user={user}
-                url='/admin/offers'
+                url='/admin/orders'
             />
-            <AllOffers
-                user={user}
+            <MyOrder 
+                order={order}
             />
         </Container>
     )
@@ -63,4 +71,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Offers;
+export default Order;

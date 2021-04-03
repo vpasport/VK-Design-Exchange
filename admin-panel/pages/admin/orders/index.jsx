@@ -1,27 +1,21 @@
 import Container from "../../../components/Container";
 import Header from "../../../components/Header";
 
-import { Button } from "primereact/button";
-
 import dynamic from 'next/dynamic';
 
-const AllOffers = dynamic(
-    () => import('../../../components/Offers').then(o => {
-        const { AllOffers } = o;
-        AllOffers.__webpackChunkName = o.__webpackChunkName;
-        return AllOffers;
-    }),
-    {ssr: false}
+const OrdersList = dynamic(
+    () => import('../../../components/OrdersList'),
+    { ssr: false }
 )
 
-const Offers = ({ user }) => {
+const Orders = ({ user }) => {
     return (
         <Container>
             <Header
+                url='/admin/orders'
                 user={user}
-                url='/admin/offers'
             />
-            <AllOffers
+            <OrdersList
                 user={user}
             />
         </Container>
@@ -63,4 +57,4 @@ export async function getServerSideProps({ req: { headers: { cookie } }, res }) 
     }
 }
 
-export default Offers;
+export default Orders;

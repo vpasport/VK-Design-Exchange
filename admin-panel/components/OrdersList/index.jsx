@@ -29,16 +29,20 @@ const OrdersList = ({ user }) => {
     const [comment, setComment] = useState('');
     const [commentError, setCommnetError] = useState(null);
 
+    const [finish, setFinish] = useState(false);
+
     const getOrders = async (from, to) => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route === '/admin/offers' ? 'orders/' : `designers/${user.db.did}/orders/`}?from=${from}&to=${to}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route === '/admin/orders' ? 'orders/' : `designers/${user.db.did}/orders/`}?from=${from}&to=${to}`, {
             credentials: 'include'
         })
         const { orders, count } = await response.json();
 
+        console.log(orders, count)
         setFirst(from);
-        setOrders(orders);
         setCount(count);
+        setOrders(orders);
     }
+
 
     useEffect(() => {
         getOrders(first, rows);
@@ -96,6 +100,16 @@ const OrdersList = ({ user }) => {
                         }}
                     />
                 }
+                {(user.mainRole && data.status_id === 4) &&
+                    < Button
+                        className='p-mr-2'
+                        label='Завершить заказа'
+                        onClick={() => {
+                            setId(data.id);
+                            setFinish(true);
+                        }}
+                    />
+                }
                 {(data.status_id !== 1 && data.status_id !== 5) &&
                     <Button
                         className='p-button-danger'
@@ -106,9 +120,9 @@ const OrdersList = ({ user }) => {
                         }}
                     />
                 }
-                {data.status_id === 1 &&
+                {(data.status_id === 1 || data.status_id === 5) &&
                     <Link
-                        href={`/designer/orders/${data.id}`}
+                        href={`${route === '/admin/orders' ? `/admin/orders/${data.id}` : `/designer/orders/${data.id}`}`}
                     >
                         <Button
                             label='Просмотр'
@@ -166,6 +180,24 @@ const OrdersList = ({ user }) => {
         setError(true);
     }
 
+    const finishOrder = async (id) => {
+        setErrorText('');
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${id}/finish`, {
+            method: 'PUT',
+            credentials: 'include'
+        })
+
+        if (response.ok) {
+            getOrders(first, first + rows)
+            setFinish(false);
+            return;
+        }
+
+        setErrorText('Что-то пошло не так');
+        setError(true);
+    }
+
     return (
         <>
             <DataTable
@@ -183,7 +215,7 @@ const OrdersList = ({ user }) => {
                 <Column header="Заказ" body={offer}></Column>
                 <Column header="Заказчик" body={customer}></Column>
                 <Column field="status" header="Статус"></Column>
-                <Column header='Обновление статуса' bodyStyle={{textAlign: 'center'}} headerStyle={{ width: '30%', textAlign: 'center' }} body={statuses}></Column>
+                <Column header='Обновление статуса' bodyStyle={{ textAlign: 'center' }} headerStyle={{ width: '30%', textAlign: 'center' }} body={statuses}></Column>
             </DataTable>
             <Dialog
                 header='Внимание!'
@@ -197,6 +229,20 @@ const OrdersList = ({ user }) => {
                     className='p-mt-4'
                     label='Да!'
                     onClick={() => updateStatus(id)}
+                />
+            </Dialog>
+            <Dialog
+                header='Внимание!'
+                visible={finish}
+                style={{ width: '50vw' }}
+                onHide={() => setFinish(false)}
+            >
+                Ты уверен? После подтверждения нельзя будет отменить эти изменения или отменить заказ
+                <br />
+                <Button
+                    className='p-mt-4'
+                    label='Да!'
+                    onClick={() => finishOrder(id)}
                 />
             </Dialog>
             <Dialog

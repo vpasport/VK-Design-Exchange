@@ -97,6 +97,8 @@ const Designer = ({ user }) => {
         router.push('/admin/designers');
     }
 
+    console.log(designer)
+
     return (
         <Container>
             <Header
