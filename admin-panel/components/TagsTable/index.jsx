@@ -61,15 +61,24 @@ const DesignersTable = ({ tags, deleteTag, updateTag }) => {
         )
     }
 
+    const header = () => {
+        return (
+            <div style={{ textAlign: 'center' }}>
+                <h3>Список тэгов</h3>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="card">
                 <DataTable
+                    header={header()}
                     value={tags}
                     className="p-datatable-customers"
                     dataKey="id"
                     rowHover
-                    rows={tags.length}
+                    rows={tags?.length}
                     emptyMessage="No customers found"
                 >
                     <Column body={name} headerStyle={{ textAlign: 'center' }} bodyStyle={{ overflow: 'visible' }} header="Название" sortable filter filterPlaceholder="Search" />

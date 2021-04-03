@@ -50,7 +50,7 @@ const OrdersList = ({ user }) => {
     const header = () => {
         return (
             <div style={{ textAlign: 'center' }}>
-                <h3>Список моих предложений</h3>
+                <h3>Список заказов</h3>
             </div>
         );
     }

@@ -39,10 +39,19 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
         )
     }
 
+    const header = () => {
+        return (
+            <div style={{ textAlign: 'center' }}>
+                <h3>Список дизайнеров</h3>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="card">
                 <DataTable
+                    header={header()}
                     value={designers}
                     className="p-datatable-customers"
                     dataKey="id"

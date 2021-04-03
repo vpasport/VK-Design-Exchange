@@ -24,16 +24,25 @@ const AdminTable = ({ admins, deleteAdmin }) => {
         )
     }
 
+    const header = () => {
+        return (
+            <div style={{ textAlign: 'center' }}>
+                <h3>Список администраторов</h3>
+            </div>
+        );
+    }
+
     return (
         <div className="card p-m-6">
             <DataTable
+                header={header()}
                 value={admins}
                 className="p-datatable-customers"
                 dataKey="id"
                 rowHover
-                rows={admins.length}
+                rows={admins?.length}
                 emptyMessage="No customers found"
-                >
+            >
                 <Column field="vk_id" headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="VK" sortable filter filterPlaceholder="Search" />
                 <Column field='photo' headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="Фото" body={photo} />
                 <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Search" />
