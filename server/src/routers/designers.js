@@ -17,8 +17,8 @@ const {
     getUsersInfo
 } = require('../helper/vk');
 
-async function getDesigners({ query: { from, to } }, res) {
-    let result = await getDesigners_(from, to);
+async function getDesigners({ query: { from, to, engaged, from_id } }, res) {
+    let result = await getDesigners_(from, to, engaged, from_id);
 
     if (result.isSuccess) {
         res.json(result);

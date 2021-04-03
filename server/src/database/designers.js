@@ -6,7 +6,7 @@ const {
     getUsersInfo
 } = require('../helper/vk')
 
-async function getDesigners(from, to) {
+async function getDesigners(from, to, engaged, from_id) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -14,6 +14,10 @@ async function getDesigners(from, to) {
         let params = [];
         let offset = '';
         let limit = '';
+        let _engaged = '';
+        let filter = '';
+
+        let date = Math.floor(new Date() / 1000) - (new Date().getTimezoneOffset() * 60);
 
         if (from !== undefined) {
             params.push(from);
@@ -23,10 +27,32 @@ async function getDesigners(from, to) {
             params.push(to);
             limit = `limit $${params.length}`;
         }
+        if (engaged !== undefined) {
+            params.push(date);
+            _engaged = `where d.engaged_date < $${params.length}`;
+        }
+        if (from_id !== undefined) {
+            params.push(from_id);
+            if (_engaged !== '') {
+                filter = `and d.id > $${params.length}`;
+            } else {
+                filter = `where d.id > $${params.length}`;
+            }
+        }
 
         let designers = (await client.query(
-            `select d.id, d.vk_id, d.rating, d.first_name, d.last_name, d.photo, count( 1 ) over ()::int 
-                from designers as d
+            `select 
+                d.id, 
+                d.vk_id, 
+                d.rating, 
+                d.first_name, 
+                d.last_name, 
+                d.photo,
+                d.engaged_date,
+                count( 1 ) over ()::int 
+            from 
+                designers as d
+            ${_engaged} ${filter}
             order by d.rating desc
             ${offset}
             ${limit}`,
@@ -36,7 +62,11 @@ async function getDesigners(from, to) {
         let count = 0;
         if (designers.length > 0) {
             count = designers[0].count;
-            designers.forEach(element => delete element.count);
+            designers.forEach(element => {
+                element.engaged = element.engaged_date < date;
+                element.engaged_date = Number(element.engaged_date);
+                delete element.count
+            });
         }
 
         await client.query('commit');
@@ -79,7 +109,7 @@ async function getDesigner(id, vk_id) {
         }
 
         let designer = (await client.query(
-            `select d.id, d.vk_id, d.rating, d.bio, d.photo, d.first_name, d.last_name, d.engaged
+            `select d.id, d.vk_id, d.rating, d.bio, d.photo, d.first_name, d.last_name, d.engaged_date
                 from designers as d
             where 
                 ${where}`,
@@ -87,6 +117,12 @@ async function getDesigner(id, vk_id) {
         )).rows[0];
 
         if (designer !== undefined) {
+            if (designer.engaged_date !== null) {
+                designer.engaged_date = Number(designer.engaged_date);
+                let date = new Date();
+                designer.engaged = designer.engaged_date > (date.getTime() / 1000 + date.getTimezoneOffset() * 60);
+            }
+
             await client.query('commit');
             client.release();
 
@@ -472,7 +508,7 @@ async function updateEngaged(id, engaged) {
     try {
         await client.query(
             `update designers
-            set engaged = $2
+            set engaged_date = $2
             where id = $1`,
             [id, engaged]
         )

@@ -11,6 +11,10 @@ import { Galleria } from 'primereact/galleria';
 import { Dialog } from 'primereact/dialog';
 import { useRouter } from 'next/router';
 
+import { addLocale } from 'primereact/api';
+
+import styles from './style.module.scss';
+
 const DesignerCard = ({
     designer, edit, setEdit,
     update, admin = true,
@@ -19,6 +23,9 @@ const DesignerCard = ({
     const router = useRouter();
 
     const galleria = useRef();
+
+    const [date, setDate] = useState(null);
+    const [engagedInput, setEngagedInput] = useState(false);
 
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -42,6 +49,17 @@ const DesignerCard = ({
             numVisible: 1
         }
     ];
+
+    addLocale('ru', {
+        firstDayOfWeek: 1,
+        dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+        dayNamesShort: ['Воск', 'Пон', 'Вт', 'Ср', 'Четв', 'Пят', 'Суб'],
+        dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+        monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+        monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+        today: 'Сегодня',
+        clear: 'Очистить'
+    })
 
     const setDesigner = (json) => {
         setDesignerUpdated(prev => ({
@@ -194,6 +212,31 @@ const DesignerCard = ({
         setErrorText('Что-то пошло не так')
     }
 
+
+    const changeEngaged = async () => {
+        let engaged = (date.getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer.id}/engaged`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                engaged
+            })
+        })
+
+        if (response.ok) {
+            setEngagedInput(false);
+            router.reload();
+            return;
+        }
+
+        setErrorText('Что-то пошло не так');
+        setEngagedInput(false);
+    }
+
     return (
         <>
             <div style={{ width: '60%', margin: 'auto' }}>
@@ -212,10 +255,38 @@ const DesignerCard = ({
                         </div>
                         <div className='p-d-flex p-ai-center'>
                             <span className='p-mr-3'>
-                                <p>Занят:</p>
+                                {designer?.engaged ?
+                                    <p>Освободится {new Date((designer?.engaged_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU")}</p>
+                                    :
+                                    <p>Свободен</p>
+                                }
                             </span>
-                            <InputSwitch checked={designer?.engaged} onChange={updateEngaged} />
                         </div>
+                        <Button
+                            label='Изменить статус активности'
+                            onClick={() => setEngagedInput(true)}
+                        />
+                        <Dialog
+                            className={styles.dialog}
+                            header='Когда освободишься?'
+                            visible={engagedInput}
+                            onHide={() => setEngagedInput(false)}
+                            contentStyle={{ overflow: 'visible' }}
+                        >
+                            <Calendar
+                                value={date}
+                                onChange={(e) => setDate(e.value)}
+                                mask="99.99.9999"
+                                dateFormat='dd.mm.yy'
+                                locale='ru'
+                            />
+                            <br />
+                            <Button
+                                className='p-mt-4'
+                                label='Подтведить'
+                                onClick={() => changeEngaged()}
+                            />
+                        </Dialog>
                     </div>
                 </div>
                 <div>

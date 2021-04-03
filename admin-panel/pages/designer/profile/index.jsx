@@ -43,6 +43,8 @@ const Profile = ({ user }) => {
         designer.reviews = reviews;
         designer.offers = offers;
 
+        console.log(designer)
+
         setDesigner(designer);
     }
 
