@@ -163,6 +163,13 @@ async function deleteReview(id) {
         if (designer !== undefined) {
             designer = designer.id;
 
+            let image = (await client.query(
+                `select image 
+                from reviews
+                where id = $1`,
+                [id]
+            )).rows[0].image;
+
             await client.query(
                 `delete from reviews
                 where
@@ -184,7 +191,7 @@ async function deleteReview(id) {
                 update
                     designers
                 set 
-                    rating = (select ar.avg from avg_rating as ar)
+                    rating = (select coalesce(ar.avg, 0) from avg_rating as ar)
                 where
                     id = $1`,
                 [designer]
@@ -194,7 +201,8 @@ async function deleteReview(id) {
             client.release();
 
             return {
-                isSuccess: true
+                isSuccess: true,
+                image
             }
         }
 
@@ -202,6 +210,8 @@ async function deleteReview(id) {
     } catch (e) {
         await client.query('rollback');
         client.release();
+
+        console.error(e)
 
         return {
             isSuccess: false

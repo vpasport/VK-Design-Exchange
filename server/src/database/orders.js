@@ -292,9 +292,23 @@ async function getOrdersByCustomer(vk_id) {
 
     try {
         let orders = (await client.query(
-            `select ord.id, ord.customer, ord.offer_id, os.name as status, ord.status as ststus_id
-                from orders as ord, orders_statuses as os
-            where ord.status = os.id and ord.customer = $1`,
+            `select 
+                ord.id, 
+                ord.customer, 
+                ord.offer_id, 
+                os.name as status, 
+                ord.status as ststus_id,
+                o.title,
+                o.preview,
+                o.price
+            from 
+                orders as ord, 
+                orders_statuses as os,
+                offers as o
+            where 
+                ord.status = os.id and
+                o.id = ord.offer_id and
+                ord.customer = $1`,
             [vk_id]
         )).rows;
 

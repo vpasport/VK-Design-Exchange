@@ -3,7 +3,8 @@
 const multer = require('multer');
 const { v4: uuid } = require('uuid');
 const { promises: {
-    writeFile
+    writeFile,
+    unlink
 } } = require('fs');
 
 const { Router } = require('express');
@@ -94,6 +95,10 @@ async function deleteReview({ params: { id }, session }, res) {
         let result = await deleteReview_(id);
 
         if (result.isSuccess) {
+            if (result.image.indexOf('reviews') !== -1) {
+                await unlink(`static/${result.image}`);
+            }
+
             res.json(result);
             return;
         }
