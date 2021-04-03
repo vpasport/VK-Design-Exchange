@@ -89,15 +89,20 @@ async function create({ body: { url_params, order_id, rating, text }, files: { i
     res.sendStatus(401);
 }
 
-async function deleteReview({ params: { id } }, res) {
-    let result = await deleteReview_(id);
+async function deleteReview({ params: { id }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await deleteReview_(id);
 
-    if (result.isSuccess) {
-        res.json(result);
+        if (result.isSuccess) {
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
         return;
     }
 
-    res.sendStatus(204);
+    res.sendStatus(401);
 }
 
 function index() {

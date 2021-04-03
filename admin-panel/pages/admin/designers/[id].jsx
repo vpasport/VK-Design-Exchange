@@ -22,6 +22,8 @@ const Designer = ({ user }) => {
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
 
+    const [deleteDesignerId, setDeleteDesignerId] = useState(null);
+
     const getPropfile = async () => {
         let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${id}`, {
             credentials: 'include'
@@ -94,10 +96,14 @@ const Designer = ({ user }) => {
             })
         })
 
-        router.push('/admin/designers');
-    }
+        if (response.ok) {
+            router.push('/admin/designers');
+            return;
+        }
 
-    console.log(designer)
+        setError('Что-то пошло не так');
+        setDialog(true);
+    }
 
     return (
         <Container>
@@ -106,7 +112,11 @@ const Designer = ({ user }) => {
                 url='/admin/designers'
             />
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deleteDesigner()}></Button>
+                <Button
+                    label='Удалить'
+                    className='p-m-2 p-button-danger'
+                    onClick={() => setDeleteDesignerId(id)}
+                />
             </div>
             <DesignerCard
                 designer={designer}
@@ -118,6 +128,26 @@ const Designer = ({ user }) => {
                 <p>
                     {error}
                 </p>
+            </Dialog>
+            <Dialog
+                header='Внимание!'
+                visible={!(deleteDesignerId === null)}
+                style={{ width: '50vw' }}
+                onHide={() => setDeleteDesignerId(null)}
+            >
+                Вы уверены, что хотите удалить дизайнера?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={deleteDesigner}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setDeleteDesignerId(null)}
+                    />
+                </div>
             </Dialog>
         </Container>
     )

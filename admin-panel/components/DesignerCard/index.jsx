@@ -8,15 +8,25 @@ import Quill from '../Quill';
 import { useEffect, useRef, useState } from 'react';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Galleria } from 'primereact/galleria';
+import { Dialog } from 'primereact/dialog';
+import { useRouter } from 'next/router';
 
 const DesignerCard = ({
     designer, edit, setEdit,
     update, admin = true,
     user, updateEngaged
 }) => {
+    const router = useRouter();
+
+    const galleria = useRef();
+
     const [activeIndex, setActiveIndex] = useState(0);
 
     const [designerUpdated, setDesignerUpdated] = useState(designer);
+
+    const [deleteReviewId, setDeleteReviewId] = useState(null);
+
+    const [errorText, setErrorText] = useState(null);
 
     const responsiveOptions = [
         {
@@ -38,7 +48,7 @@ const DesignerCard = ({
             ...prev, ...json
         }));
     }
-    
+
     useEffect(() => {
         setDesignerUpdated(designer);
     }, [designer]);
@@ -112,8 +122,6 @@ const DesignerCard = ({
         return <img src={`${process.env.NEXT_PUBLIC_API_URL}/${item}`} alt='Отзыв' style={{ width: '100%', display: 'block' }} />;
     }
 
-    const galleria = useRef();
-
     const renderReviews = (data, key) => {
         return (
             <div key={key} className='p-m-4'>
@@ -125,6 +133,15 @@ const DesignerCard = ({
                         </div>
                         <Rating value={data.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                     </div>
+                    {admin &&
+                        <div className='p-ml-6'>
+                            <Button
+                                className='p-button-danger'
+                                label='Удалить отзыв'
+                                onClick={() => setDeleteReviewId(data.id)}
+                            />
+                        </div>
+                    }
                 </div>
                 <hr style={{ width: '50%', marginLeft: '0' }}></hr>
                 <Galleria
@@ -158,6 +175,23 @@ const DesignerCard = ({
                 <p style={{ whiteSpace: 'pre-wrap' }}>{data.text}</p>
             </div>
         )
+    }
+
+    const deleteReview = async () => {
+        setErrorText(null);
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${deleteReviewId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+
+        if (response.ok) {
+            setDeleteReviewId(null);
+            router.reload();
+            return;
+        }
+
+        setErrorText('Что-то пошло не так')
     }
 
     return (
@@ -251,6 +285,34 @@ const DesignerCard = ({
                     }
                 </div>
             </div>
+            <Dialog
+                header='Внимание!'
+                visible={!(deleteReviewId === null)}
+                style={{ with: '50vw' }}
+                onHide={() => setDeleteReviewId(null)}
+            >
+                Вы уверены, что хотите удалить отзыв?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={deleteReview}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setDeleteReviewId(null)}
+                    />
+                </div>
+            </Dialog>
+            <Dialog
+                header='Ошибка!'
+                visible={!errorText === null}
+                style={{ width: '50vw' }}
+                onHide={() => setErrorText(null)}
+            >
+                {errorText}
+            </Dialog>
         </>
     )
 }

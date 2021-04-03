@@ -6,6 +6,8 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { Rating } from "primereact/rating";
+import { Dialog } from "primereact/dialog";
+import { useState } from "react";
 
 const CreateOffer = ({
     designer = undefined,
@@ -14,6 +16,8 @@ const CreateOffer = ({
     offer,
     setProgress
 }) => {
+    const [dialog, setDialog] = useState(false);
+
     return (
         <div>
             <div style={{ width: '80%', margin: 'auto' }}>
@@ -82,16 +86,37 @@ const CreateOffer = ({
                     <Button
                         className='p-m-4'
                         label='Создать'
-                        onClick={() => {
-                            setCreation(true);
-                            save();
-                            setProgress(true);
-                        }}
+                        onClick={() => setDialog(true)}
                         disabled={creation}
                     >
                     </Button>
                 </div>
             </div>
+            <Dialog
+                header='Опубликовать'
+                visible={dialog}
+                style={{ width: '50vw' }}
+                onHide={() => setDialog(false)}
+            >
+                <h3>Публикуем?</h3>
+                <br />
+                <div>
+                    <Button
+                        label='Конечно'
+                        onClick={() => {
+                            setDialog(false);
+                            setCreation(true);
+                            setProgress(true);
+                            save();
+                        }}
+                    />
+                    <Button
+                        className='p-ml-4 p-button-secondary'
+                        label='Еще подумаю'
+                        onClick={() => setDialog(false)}
+                    />
+                </div>
+            </Dialog>
         </div>
     )
 }

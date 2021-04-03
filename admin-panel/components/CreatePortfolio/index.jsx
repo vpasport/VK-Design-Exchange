@@ -5,6 +5,8 @@ import { MultiSelect } from 'primereact/multiselect';
 import FileUpload from '../FileUpload';
 import Quill from '../Quill';
 import { Button } from 'primereact/button';
+import { useState } from 'react';
+import { Dialog } from 'primereact/dialog';
 
 const CreatePortfolio = ({
     designer = undefined, tags,
@@ -15,6 +17,8 @@ const CreatePortfolio = ({
     portfolio,
     setProgress
 }) => {
+    const [dialog, setDialog] = useState(false);
+
     return (
         <div
         // style={{ margin: 'auto', width: '100%' }}
@@ -107,16 +111,37 @@ const CreatePortfolio = ({
                     <Button
                         className='p-m-4'
                         label='Опубликовать работу'
-                        onClick={() => {
-                            setCreation(true);
-                            save();
-                            setProgress(true);
-                        }}
+                        onClick={() => setDialog(true)}
                         disabled={creation}
                     >
                     </Button>
                 </div>
             </div>
+            <Dialog
+                header='Опубликовать'
+                visible={dialog}
+                style={{ width: '50vw' }}
+                onHide={() => setDialog(false)}
+            >
+                <h3>Публикуем?</h3>
+                <br />
+                <div>
+                    <Button
+                        label='Конечно'
+                        onClick={() => {
+                            setDialog(false);
+                            setCreation(true);
+                            setProgress(true);
+                            save();
+                        }}
+                    />
+                    <Button
+                        className='p-ml-4 p-button-secondary'
+                        label='Еще подумаю'
+                        onClick={() => setDialog(false)}
+                    />
+                </div>
+            </Dialog>
         </div>
     )
 }

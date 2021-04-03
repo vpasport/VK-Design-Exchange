@@ -2,8 +2,12 @@ import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Avatar } from 'primereact/avatar';
+import { Dialog } from 'primereact/dialog';
+import { useState } from 'react';
 
 const AdminTable = ({ admins, deleteAdmin }) => {
+    const [adminId, setAdminId] = useState(null);
+
     const photo = (admin) => {
         return (
             <div className="p-multiselect-representative-option">
@@ -15,7 +19,7 @@ const AdminTable = ({ admins, deleteAdmin }) => {
     const buttons = (admin) => {
         return (
             <div style={{ display: 'inline-block' }}>
-                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => deleteAdmin(admin.id)} />
+                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => setAdminId(admin.id)} />
             </div>
         )
     }
@@ -27,20 +31,41 @@ const AdminTable = ({ admins, deleteAdmin }) => {
                 className="p-datatable-customers"
                 dataKey="id"
                 rowHover
-                paginator
-                rows={8}
+                rows={admins.length}
                 emptyMessage="No customers found"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" rowsPerPageOptions={[10, 25, 50]}>
+                >
                 <Column field="vk_id" headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="VK" sortable filter filterPlaceholder="Search" />
                 <Column field='photo' headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="Фото" body={photo} />
                 <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Search" />
                 <Column field='last_name' header='Фамилия' sortable filter filterPlaceholder="Search" />
-                { admins?.length > 1 &&
+                {admins?.length > 1 &&
                     <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
 
                 }
             </DataTable>
+            <Dialog
+                header='Внимание!'
+                visible={!(adminId === null)}
+                style={{ with: '50vw' }}
+                onHide={() => setAdminId(null)}
+            >
+                Вы уверены, что хотите удалить администратора?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={() => {
+                            deleteAdmin(adminId);
+                            setAdminId(null);
+                        }}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setAdminId(null)}
+                    />
+                </div>
+            </Dialog>
         </div>
     )
 }

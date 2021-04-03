@@ -37,7 +37,6 @@ const OrdersList = ({ user }) => {
         })
         const { orders, count } = await response.json();
 
-        console.log(orders, count)
         setFirst(from);
         setCount(count);
         setOrders(orders);

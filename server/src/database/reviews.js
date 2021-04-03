@@ -150,19 +150,55 @@ async function deleteReview(id) {
     await client.query('begin');
 
     try {
-        await client.query(
-            `delete from reviews
+        let designer = (await client.query(
+            `select 
+                designer_id as id
+            from
+                reviews_designers
             where
-                id = $1`,
+                review_id = $1`,
             [id]
-        )
+        )).rows[0];
 
-        await client.query('commit');
-        client.release();
+        if (designer !== undefined) {
+            designer = designer.id;
 
-        return {
-            isSuccess: true
+            await client.query(
+                `delete from reviews
+                where
+                    id = $1`,
+                [id]
+            )
+
+            await client.query(
+                `with reviews_id as (
+                    select rd.review_id
+                        from reviews_designers as rd
+                    where 
+                        rd.designer_id = $1
+                ), avg_rating as (
+                    select avg(r.rating)
+                        from reviews as r
+                    where r.id = any(select review_id from reviews_id)
+                )
+                update
+                    designers
+                set 
+                    rating = (select ar.avg from avg_rating as ar)
+                where
+                    id = $1`,
+                [designer]
+            )
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true
+            }
         }
+
+        throw 'Review not found';
     } catch (e) {
         await client.query('rollback');
         client.release();

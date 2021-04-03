@@ -4,10 +4,13 @@ import { Button } from 'primereact/button';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
+import { Dialog } from 'primereact/dialog';
 
 const DesignersTable = ({ tags, deleteTag, updateTag }) => {
     const [tagUpdated, setTagUpdated] = useState('');
     const [edit, setEdit] = useState(false);
+
+    const [tagId, setTagId] = useState(null);
 
     const setTag = (json) => {
         setTagUpdated(prev => ({
@@ -33,12 +36,10 @@ const DesignersTable = ({ tags, deleteTag, updateTag }) => {
                     onClick={() => !edit ? (setEdit(true), setTagUpdated(tag)) : setEdit(false)}
                 >
                 </Button>
-                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => deleteTag(tag.id)} />
+                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => setTagId(tag.id)} />
             </div>
         )
     }
-
-    // console.log(updatedTag)
 
     const name = (tag) => {
         return (
@@ -68,16 +69,36 @@ const DesignersTable = ({ tags, deleteTag, updateTag }) => {
                     className="p-datatable-customers"
                     dataKey="id"
                     rowHover
-                    paginator
-                    rows={8}
+                    rows={tags.length}
                     emptyMessage="No customers found"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" rowsPerPageOptions={[10, 25, 50]}>
-                    {/* <Column field="name" headerStyle={{ textAlign: 'center' }} bodyStyle={{ overflow: 'visible' }} header="Название" sortable filter filterPlaceholder="Search" /> */}
+                >
                     <Column body={name} headerStyle={{ textAlign: 'center' }} bodyStyle={{ overflow: 'visible' }} header="Название" sortable filter filterPlaceholder="Search" />
                     <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
                 </DataTable>
             </div>
+            <Dialog
+                header='Внимание!'
+                visible={!(tagId === null)}
+                style={{ with: '50vw' }}
+                onHide={() => setTagId(null)}
+            >
+                Вы уверены, что хотите удалить тэг?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={() => {
+                            deleteTag(tagId);
+                            setTagId(null);
+                        }}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setTagId(null)}
+                    />
+                </div>
+            </Dialog>
         </>
     )
 }

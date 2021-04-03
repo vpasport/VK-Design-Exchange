@@ -40,6 +40,8 @@ const Work = ({ user }) => {
 
     const [change, setChange] = useState(false);
 
+    const [deleteWork, setDeleteWork] = useState(false);
+
     const getWork = async () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}`, {
             credentials: 'include'
@@ -129,6 +131,7 @@ const Work = ({ user }) => {
             setError('Не удалось обновить тэги. Обновление остановлено');
             setChange(false);
             setDialog(true);
+            setProgress(false);
             return;
         }
 
@@ -147,6 +150,7 @@ const Work = ({ user }) => {
             setError('Не удалось обновить описание работы. Обновление остановлено');
             setChange(false);
             setDialog(true);
+            setProgress(false);
             return;
         }
 
@@ -166,6 +170,7 @@ const Work = ({ user }) => {
                 setError('Не удалось обновить превью или изображение работы. Обновление остановлено');
                 setChange(false);
                 setDialog(true);
+                setProgress(false);
                 return;
             }
         }
@@ -207,7 +212,7 @@ const Work = ({ user }) => {
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
                 <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deletePortfolio()}></Button>
+                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>
             </div>
             <WorkCard
                 work={work}
@@ -231,6 +236,26 @@ const Work = ({ user }) => {
                 closable={false}
             >
                 <ProgressSpinner style={{ width: '30px', height: '30px' }} strokeWidth="4" animationDuration="1.5s" />
+            </Dialog>
+            <Dialog
+                header='Внимание!'
+                visible={deleteWork}
+                style={{ width: '50vw' }}
+                onHide={() => setDeleteWork(false)}
+            >
+                Вы уверены, что хотите удалить работу?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={() => deletePortfolio()}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setDeleteWork(false)}
+                    />
+                </div>
             </Dialog>
         </Container>
     )

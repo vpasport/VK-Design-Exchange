@@ -35,6 +35,8 @@ const Offer = ({ user }) => {
 
     const [change, setChange] = useState(false);
 
+    const [deleteOfferConf, setDeleteOfferConf] = useState(false);
+
     const getOffer = async () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/${id}`)
         const { offer } = await response.json();
@@ -148,7 +150,7 @@ const Offer = ({ user }) => {
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
                 <Button label='Редактировать' className='p-m-2' icon='pi pi-pencil' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => deleteOffer()}></Button>
+                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteOfferConf(true)}></Button>
             </div>
             <OfferCard
                 offer={offer} edit={edit}
@@ -169,6 +171,26 @@ const Offer = ({ user }) => {
                 closable={false}
             >
                 <ProgressSpinner style={{ width: '30px', height: '30px' }} strokeWidth="4" animationDuration="1.5s" />
+            </Dialog>
+            <Dialog
+                header='Внимание!'
+                visible={deleteOfferConf}
+                style={{ width: '50vw' }}
+                onHide={() => setDeleteOfferConf(false)}
+            >
+                Вы уверены, что хотите удалить работу?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={() => deleteOffer()}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setDeleteOfferConf(false)}
+                    />
+                </div>
             </Dialog>
         </Container>
     )

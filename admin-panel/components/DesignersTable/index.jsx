@@ -4,13 +4,16 @@ import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { Button } from 'primereact/button';
 import Link from 'next/link';
+import { useState } from 'react';
+import { Dialog } from 'primereact/dialog';
 
 const DesignersTable = ({ designers, deleteDesigner }) => {
+    const [deleteId, setDeleteId] = useState(null);
 
     const photo = (designer) => {
         return (
             <div className="p-multiselect-representative-option">
-                <Avatar shape="circle" image={designer.photo} size='xlarge'/>
+                <Avatar shape="circle" image={designer.photo} size='xlarge' />
                 {/* <img alt='Аватар' src={designer.photo !== null && designer.photo} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width="32" style={{verticalAlign: 'middle'}} /> */}
             </div>
         );
@@ -27,11 +30,11 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
 
     const buttons = (designer) => {
         return (
-            <div style={{display: 'inline-block'}}>
+            <div style={{ display: 'inline-block' }}>
                 <Button>
                     <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/designers/${designer.id}`}>Редактировать</Link>
                 </Button>
-                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => deleteDesigner(designer.id)}/>
+                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => setDeleteId(designer.id)} />
             </div>
         )
     }
@@ -57,6 +60,29 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
                     <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
                 </DataTable>
             </div>
+            <Dialog
+                header='Внимание!'
+                visible={!(deleteId === null)}
+                style={{ with: '50vw' }}
+                onHide={() => setDeleteId(null)}
+            >
+                Вы уверены, что хотите удалить дизайнера?
+                <br />
+                <div className='p-mt-4'>
+                    <Button
+                        label='Да'
+                        onClick={() => {
+                            deleteDesigner(deleteId);
+                            setDeleteId(null);
+                        }}
+                    />
+                    <Button
+                        className='p-ml-4'
+                        label='Отмена'
+                        onClick={() => setDeleteId(null)}
+                    />
+                </div>
+            </Dialog>
         </>
     )
 }

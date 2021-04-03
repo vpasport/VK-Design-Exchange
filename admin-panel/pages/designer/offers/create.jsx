@@ -57,6 +57,7 @@ const Create = ({ user }) => {
                 setError('Заполние все поля');
                 setDialog(true);
                 setCreation(false);
+                setProgress(false);
                 return;
             }
         }
@@ -65,6 +66,7 @@ const Create = ({ user }) => {
             setError('Вы не выбрали изображение для превью');
             setDialog(true);
             setCreation(false);
+            setProgress(false);
             return;
         }
 

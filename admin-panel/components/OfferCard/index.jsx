@@ -5,6 +5,8 @@ import { Rating } from "primereact/rating";
 import FileUpload from "../FileUpload";
 import Quill from "../Quill";
 import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { useState } from "react";
 
 const OfferCard = ({
     offer, edit,
@@ -13,6 +15,8 @@ const OfferCard = ({
     save, setProgress,
     change, setChange
 }) => {
+    const [dialog, setDialog] = useState(false);
+
     return (
         <>
             <div style={{ width: '70%', margin: 'auto' }} className='p-mt-6'>
@@ -95,16 +99,37 @@ const OfferCard = ({
                     <hr className='p-m-4' />
                     <Button
                         label='Сохранить'
-                        onClick={() => {
-                            setChange(true);
-                            setProgress(true);
-                            save();
-                        }}
+                        onClick={() => setDialog(true)}
                         disabled={change}
                     >
                     </Button>
                 </div>
             }
+            <Dialog
+                header='Опубликовать'
+                visible={dialog}
+                style={{ width: '50vw' }}
+                onHide={() => setDialog(false)}
+            >
+                <h3>Публикуем?</h3>
+                <br />
+                <div>
+                    <Button
+                        label='Конечно'
+                        onClick={() => {
+                            setDialog(false);
+                            setChange(true);
+                            setProgress(true);
+                            save();
+                        }}
+                    />
+                    <Button
+                        className='p-ml-4 p-button-secondary'
+                        label='Еще подумаю'
+                        onClick={() => setDialog(false)}
+                    />
+                </div>
+            </Dialog>
         </>
     )
 }
