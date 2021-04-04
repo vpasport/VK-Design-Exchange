@@ -1,1 +1,9 @@
 /node_modules
+/package-lock.json
+
+.env
+
+/static/uploads/reviews/*
+/static/uploads/previews/*
+/static/uploads/works/*
+/static/uploads/offers/*

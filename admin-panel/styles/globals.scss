@@ -1,0 +1,45 @@
+@import './params.scss';
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.eventsList{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  list-style: none;
+  padding: 0;
+}
+
+.container{
+  width: $container;
+}
+
+.center-field{
+  width: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.dialog-overflow-hidden{
+
+  .p-dialog-content{
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+}
