@@ -391,12 +391,35 @@ async function createOrder(offer, customer) {
         )).rows[0].id;
 
         if (order !== undefined) {
+            order = (await client.query(
+                `select 
+                    o.id, 
+                    o.customer, 
+                    o.offer_id, 
+                    os.name as status, 
+                    o.status as status_id,
+                    ofs.title,
+                    ofs.preview,
+                    ofs.price
+                from
+                    orders as o,
+                    designers_offers as od,
+                    orders_statuses as os,
+                    offers as ofs
+                where
+                    od.offer_id = o.offer_id and
+                    o.status = os.id and
+                    ofs.id = o.offer_id and
+                    o.id = $1`,
+                [order]
+            )).rows[0];
+
             await client.query('commit');
             client.release();
 
             return {
                 isSuccess: true,
-                id: order
+                order
             }
         }
 
