@@ -69,7 +69,7 @@ async function getOrders(from, to) {
                 od.offer_id = o.offer_id and
                 o.status = os.id and
                 ofs.id = o.offer_id
-            order by id desc
+            order by o.id desc
             ${offset}
             ${limit}`,
             [...params]
@@ -308,7 +308,8 @@ async function getOrdersByCustomer(vk_id) {
             where 
                 ord.status = os.id and
                 o.id = ord.offer_id and
-                ord.customer = $1`,
+                ord.customer = $1
+            order by ord.id desc`,
             [vk_id]
         )).rows;
 
@@ -348,7 +349,8 @@ async function getDesignerByOrder(id) {
             where 
                 o.id = $1 and 
                 o.offer_id = od.offer_id and
-                d.id = od.designer_id`,
+                d.id = od.designer_id
+            order by o.id desc`,
             [id]
         )).rows[0];
 

@@ -92,7 +92,6 @@ async function createOrder({ body: { offer_id, url_params } }, res) {
     }
 
     res.sendStatus(401);
-
 }
 
 async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session }, res) {

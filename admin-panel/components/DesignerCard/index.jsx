@@ -68,6 +68,11 @@ const DesignerCard = ({
     }
 
     useEffect(() => {
+        let date = new Date((designer?.engaged_date + new Date().getTimezoneOffset() * 60) * 1000);
+
+        if (date < new Date()) date = new Date();
+
+        setDate(date);
         setDesignerUpdated(designer);
     }, [designer]);
 
@@ -279,6 +284,7 @@ const DesignerCard = ({
                                 mask="99.99.9999"
                                 dateFormat='dd.mm.yy'
                                 locale='ru'
+                                minDate={new Date()}
                             />
                             <br />
                             <Button
