@@ -193,6 +193,20 @@ async function getOrderFull(id) {
                 order.offer = offer;
             }
 
+            if (order.status_id === 5) {
+                let review = (await client.query(
+                    `select *
+                    from 
+                        reviews
+                    where
+                        order_id = $1`,
+                    [id]
+                )).rows[0];
+
+                if (review !== undefined)
+                    order.review = review;
+            }
+
             if (order.status_id === 1) {
                 let comments = (await client.query(
                     `select * 
@@ -205,7 +219,6 @@ async function getOrderFull(id) {
 
                 order.comments = comments;
             }
-
 
             let users = [order.customer, order.designer];
 
@@ -222,7 +235,7 @@ async function getOrderFull(id) {
 
                 users.forEach(el => {
                     if (el.id === order.customer) order.customer = el;
-                    if (el.id === order.designer) order.designer = el;
+                    else if (el.id === order.designer) order.designer = el;
                     else order.commentators.push(el)
                 })
             }
