@@ -48,15 +48,24 @@ async function getOrders({ query, session }, res) {
     res.sendStatus(520);
 }
 
-async function getOrder({ params: { id }, session }, res) {
+async function getOrder({ params: { id }, query, session }, res) {
     let designer = await getDesignerByOrder_(id);
 
+    let check = checkSign(query);
+
     if (designer.isSuccess) {
-        if (session.role !== undefined &&
+        if ((session.role !== undefined &&
             ((session.role.indexOf('designer') !== -1 && session.user.did === designer.designer)
-                || (session.role.indexOf('admin') !== -1))
+                || (session.role.indexOf('admin') !== -1)) || checkSign(query))
         ) {
+            let customer = query.vk_user_id;
             let result = await getOrderFull_(id);
+
+            if (customer !== undefined && result.isSuccess)
+                if (customer === result.order.customer.id) {
+                    res.json(result);
+                    return;
+                }
 
             if (result.isSuccess) {
                 res.json(result);
