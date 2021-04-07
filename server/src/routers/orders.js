@@ -153,11 +153,22 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
     res.sendStatus(520);
 }
 
-async function cancelOrder({ params: { id }, body: { comment, from_vk_id }, session }, res) {
+async function cancelOrder({ params: { id }, body: { comment, from_vk_id, url_params }, session }, res) {
     let designer = await getDesignerByOrder_(id);
     if (session.role !== undefined) {
         if (session.role.indexOf('admin') !== -1) from_vk_id = session.vk_id;
         if (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did) from_vk_id = session.vk_id;
+    }
+
+    if (session.role === undefined) {
+        let params = JSON.parse('{"' + decodeURI(url_params).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+
+        if (checkSign(params)) {
+            from_vk_id = Number(params.vk_user_id);
+        } else {
+            res.sendStatus(401);
+            return;
+        }
     }
 
     if (from_vk_id !== undefined) {
@@ -167,9 +178,12 @@ async function cancelOrder({ params: { id }, body: { comment, from_vk_id }, sess
             res.sendStatus(204);
             return;
         }
+
+        res.sendStatus(520);
+        return;
     }
 
-    res.sendStatus(520);
+    res.sendStatus(401);
 }
 
 async function finishOrder({ params: { id }, body: { url_params }, session }, res) {
