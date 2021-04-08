@@ -1,0 +1,12 @@
+.imgBlock{
+    > img{
+        object-fit: cover;
+        object-position: top center;
+        height: 250px;
+        width: 100%;
+    }
+}
+
+.card{
+    overflow: hidden;
+}

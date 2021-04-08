@@ -4,10 +4,17 @@ import { Avatar, Card, RichCell } from '@vkontakte/vkui';
 import StarRatings from '../StarRatings';
 import ReviewCardClass from '../../utils/Raiting/Designer/Review/ReviewCard';
 
+import styles from './style.module.scss';
+
 const ReviewCard = ({reviewCard}) => {
     
     return (
-        <Card mode='shadow'>
+        <Card mode='shadow' className={styles.card}>
+            {reviewCard.getImage() && 
+                <div className={styles.imgBlock}>
+                    <img src={reviewCard.getImage()} alt='превью' />
+                </div>
+            }
             <RichCell
                 before={<Avatar src={reviewCard.getAuthor().photo} />}
                 text={reviewCard.getText()}

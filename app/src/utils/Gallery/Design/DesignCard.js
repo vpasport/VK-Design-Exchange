@@ -1,7 +1,4 @@
 import DesignDefaultProps from './DesignDefaultProps';
-import Design from '.';
-
-import axios from 'axios';
 
 const { REACT_APP_API_URL } = process.env;
 

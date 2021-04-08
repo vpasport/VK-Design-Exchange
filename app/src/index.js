@@ -5,8 +5,12 @@ import WrappedMainComponent from "./App";
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './store/reducers';
+import axios from 'axios';
 
-const store = createStore(rootReducer);
+const { REACT_APP_API_URL } = process.env;
+
+export const store = createStore(rootReducer);
+axios.defaults.baseURL = REACT_APP_API_URL;
 
 // Init VK  Mini App
 bridge.send("VKWebAppInit");

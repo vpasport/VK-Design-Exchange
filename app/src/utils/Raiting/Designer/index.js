@@ -5,23 +5,25 @@ import ReviewCard from './Review/ReviewCard';
 import OfferCard from "./Offer/OfferCard";
 import { getUrlByJson } from "../../helpers";
 
-const { REACT_APP_API_URL } = process.env;
-
 class Designer extends DesignerDefaultProps {
 
     constructor(item) {
         super(item.id, item.vk_id, item.rating, item.first_name, item.last_name, item.photo);
 
         this._bio = item.bio;
+        this._engaged = item.engaged;
+        this._engagedDate = item.engaged_date && new Date((item.engaged_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU");
     }
 
     getBio(){ return this._bio }
+    getEngaged(){ return this._engaged }
+    getEngagedDate(){ return this._engagedDate }
 
     async getPortfolio(params) {
 
         const allParams = getUrlByJson(params)
 
-        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/previews${allParams}`);
+        const { data } = await axios.get(`designers/${this.getId()}/previews${allParams}`);
 
         if (data.isSuccess) {
             const portfolioCards = data.previews.map(el => new DesignCard(el));
@@ -36,7 +38,7 @@ class Designer extends DesignerDefaultProps {
     }
 
     async getReviews() {
-        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/reviews`);
+        const { data } = await axios.get(`designers/${this.getId()}/reviews`);
 
         if(data.isSuccess){
             const reviewCards = data.reviews.map(el => new ReviewCard(el));
@@ -52,7 +54,7 @@ class Designer extends DesignerDefaultProps {
 
         const allParams = getUrlByJson(params);
 
-        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${this.getId()}/offers${allParams}`);
+        const { data } = await axios.get(`designers/${this.getId()}/offers${allParams}`);
 
         if(data.isSuccess){
             const offerCards = data.offers.map(el => new OfferCard(el));

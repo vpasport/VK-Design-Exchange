@@ -4,18 +4,22 @@ import PropTypes from 'prop-types';
 
 import styles from './style.module.scss';
 
-const StarRatings = ({rating, className, style}) => {
+const StarRatings = ({rating, className, style, changeRating = () => {}, showRatingNumber = true, starDimension = '15px', starSpacing='2px'}) => {
 
     return (
         <div className={`${styles.raitingBlock} ${className}`} style={style}>
             <StarRatingsC
                 rating={rating}
                 starRatedColor='#FEDA5B'
+                starHoverColor='#FEDA5B'
                 numberOfStars={5}
-                starDimension='15px'
-                starSpacing='2px'
+                starDimension={starDimension}
+                starSpacing={starSpacing}
+                changeRating={changeRating}
             />
-            <span className={styles.raitingBlock__number}>{rating || 0}</span>
+            {showRatingNumber && 
+                <span className={styles.raitingBlock__number}>{rating || 0}</span>
+            }
         </div>
     )
 }

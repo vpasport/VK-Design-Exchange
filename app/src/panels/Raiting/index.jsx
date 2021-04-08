@@ -18,6 +18,7 @@ const Raiting = ({id}) => {
                     loadList={raiting.getRaiting}
                     actionType='designerList'
                     loadCount={10}
+                    loadFilters={raiting.getFilters}
                 >
                     {el => (
                         <DesignerItem

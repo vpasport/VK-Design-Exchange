@@ -8,6 +8,10 @@ import { portfolioReducer } from './Designer/DesignerListBlock/Portfolio/reducer
 import { reviewsReducer } from './Designer/DesignerListBlock/Reviews/reducers';
 import { offersReducer } from './Designer/DesignerListBlock/Offers/reducers';
 import { offerReducer } from './Designer/DesignerListBlock/Offers/Offer/reducers';
+import { ordersListReducer } from './OrdersList/reducer';
+import { orderReducer } from './Order/reducers';
+import { userReducer } from './User/reducers';
+import { selectModalReducer } from './selectModal/reducer';
 
 export default combineReducers({
     galleryList: galleryListReducer,
@@ -18,5 +22,9 @@ export default combineReducers({
     portfolio: portfolioReducer,
     reviews: reviewsReducer,
     offers: offersReducer,
-    offer: offerReducer
+    offer: offerReducer,
+    ordersList: ordersListReducer,
+    order: orderReducer,
+    user: userReducer,
+    selectModal: selectModalReducer
 })

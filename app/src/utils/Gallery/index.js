@@ -2,8 +2,6 @@ import DesignCard from './Design/DesignCard';
 import axios from 'axios';
 import { getUrlByJson } from '../helpers';
 
-const { REACT_APP_API_URL } = process.env;
-
 class Gallery {
 
     constructor() { }
@@ -12,7 +10,7 @@ class Gallery {
 
         const allParams = getUrlByJson(params);
 
-        const { data } = await axios.get(`${REACT_APP_API_URL}/portfolio/previews${allParams}`);
+        const { data } = await axios.get(`portfolio/previews${allParams}`);
 
         if (data.isSuccess){
             let designCards = data.previews.map(el => new DesignCard(el));
@@ -32,7 +30,7 @@ class Gallery {
 
     async getFilters(){
         
-        const { data } = await axios.get(`${REACT_APP_API_URL}/tags`);
+        const { data } = await axios.get(`tags`);
 
         if(data.isSuccess) return data;
         else throw new Error ('Ошибка при загрузке тегов');

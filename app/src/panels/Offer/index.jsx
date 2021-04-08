@@ -1,18 +1,20 @@
 import { Div, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Text, Title, Group, Button } from '@vkontakte/vkui';
 import React, { useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { alertContext } from '../../App';
+import { alertContext, modalContext } from '../../App';
 import useRouter from '../../utils/useRouter';
 
 import { changeActiveOffer } from '../../store/Designer/DesignerListBlock/Offers/Offer/actions';
 import { getOfferInfoById } from '../../utils/helpers';
 
 import styles from './style.module.scss';
+import HeaderImage from '../../components/HeaderImage';
 
 const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
 
     const router = useRouter();
     const { useAlert } = alertContext();
+    const { setActiveModal } = modalContext();
 
     const isFetchOffer = useMemo(() => Boolean(!activeOffer || activeOffer.getId() !== activeOfferId), [activeOffer]);
 
@@ -33,7 +35,7 @@ const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
 
         if (isFetchOffer)
             fetchData();
-    }, [])
+    }, []);
 
     return (
         <Panel id={id}>
@@ -44,18 +46,22 @@ const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
             </PanelHeader>
             {!isFetchOffer ?
                 <>
-                    <div className={styles.gradientBlock}>
-                        <img src={activeOffer.getPreview()} alt={activeOffer.getTitle()} />
-                        <Div className={styles.gradientBlock__info}>
-                            <Title className={styles.gradientBlock__title} level='2' >{activeOffer.getTitle()}</Title>
-                            <Title className={styles.gradientBlock__price} level='1'>{activeOffer.getPrice()}₽</Title>
-                        </Div>
-                    </div>
+                    <HeaderImage
+                        image={activeOffer.getPreview()}
+                        left={activeOffer.getTitle()}
+                        right={`${activeOffer.getPrice()}₽`}
+                    />
                     <Div>
                         <Group>
                             <Title level='2'>Описание услуги</Title>
                             <div dangerouslySetInnerHTML={{__html: activeOffer.getDescription()}} />
-                            <Button stretched size='l'>Заказать услугу</Button>
+                            <Button 
+                                stretched 
+                                size='l'
+                                onClick={() => setActiveModal('offer')}
+                            >
+                                Заказать услугу
+                            </Button>
                         </Group>
                     </Div>
                 </>

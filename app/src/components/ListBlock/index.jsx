@@ -81,7 +81,7 @@ ListBlock.propTypes = {
     from: PropTypes.number,
     to: PropTypes.number,
     loadCount: PropTypes.number,
-    actionType: PropTypes.oneOf(['galleryList', 'designerList', 'portfolio', 'reviews']).isRequired,
+    actionType: PropTypes.string.isRequired,
     size: PropTypes.oneOf(['s', 'm', 'l']),
     isChangeSize: PropTypes.bool,
     loadingCondition: PropTypes.func,

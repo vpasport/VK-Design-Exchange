@@ -2,8 +2,6 @@ import axios from 'axios';
 import { getUrlByJson } from '../helpers';
 import DesignerCard from './Designer/DesignerCard';
 
-const { REACT_APP_API_URL } = process.env;
-
 class Raiting {
 
     constructor(){}
@@ -12,7 +10,7 @@ class Raiting {
 
         const allParams = getUrlByJson(params);
 
-        const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${allParams}`);
+        const { data } = await axios.get(`designers/${allParams}`);
 
         if( data.isSuccess ){
 
@@ -26,6 +24,37 @@ class Raiting {
         }
         else throw new Error('Ошибка при загрузке пользователей')
 
+    }
+
+    async getFilters(){
+        const filters = {
+            engaged: [
+                {
+                    status: 'Все дизайнеры',
+                    type: null
+                },
+                {
+                    status: 'Свободные',
+                    type: 1
+                },
+                {
+                    status: 'Занятые',
+                    type: 2
+                }
+            ],
+            order: [
+                {
+                    status: 'По убыванию рейтинга',
+                    type: 'desc'
+                },
+                {
+                    status: 'По возрастанию рейтинга',
+                    type: 'asc'
+                }
+            ]
+        }
+
+        return filters;
     }
 
 }

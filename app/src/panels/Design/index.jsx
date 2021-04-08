@@ -54,6 +54,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
             {!isFetchDesign ?
                 <Group>
                     <Div className={styles.cardBlock}>
+                        <Title level='1'>{activeDesign.getTitle()}</Title>
                         {/* <Info title='Проект заказчика:' text={activeDesign.getProjectDescription()} />
                         <Info title='Задача заказчика:' text={activeDesign.getTaskDescription()} />
                         <Info title='Что было сделано:' text={activeDesign.getCompletedWork()} /> */}

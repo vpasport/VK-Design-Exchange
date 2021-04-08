@@ -3,8 +3,6 @@ import Design from './Gallery/Design';
 import Designer from './Raiting/Designer';
 import Offer from './Raiting/Designer/Offer';
 
-const { REACT_APP_API_URL } = process.env;
-
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
@@ -27,7 +25,7 @@ const getUrlByJson = (obj) => {
             if (typeof value === 'object' && value !== null && !Array.isArray(value)) generateUrl(value)
             else if (value !== null) {
                 if (Array.isArray(value) && value.length) url.append(key, value);
-                else if (typeof value === 'number') url.append(key, value);
+                else if (typeof value === 'number' || typeof value === 'string') url.append(key, value);
             }
         }
     }
@@ -43,7 +41,7 @@ const getUrlByJson = (obj) => {
 }
 
 const getDesignInfoById = async (id) => {
-    const { data } = await axios(`${REACT_APP_API_URL}/portfolio/work/${id}`);
+    const { data } = await axios(`portfolio/work/${id}`);
 
     if (data.isSuccess)
         return new Design(data.work);
@@ -52,7 +50,7 @@ const getDesignInfoById = async (id) => {
 }
 
 const getDesignerInfoById = async (id) => {
-    const { data } = await axios.get(`${REACT_APP_API_URL}/designers/${id}`);
+    const { data } = await axios.get(`/designers/${id}`);
 
     if(data.isSuccess){
         return new Designer(data.designer);
@@ -61,12 +59,31 @@ const getDesignerInfoById = async (id) => {
 }
 
 const getOfferInfoById = async (id) => {
-    const { data } = await axios.get(`${REACT_APP_API_URL}/offers/${id}`);
+    const { data } = await axios.get(`/offers/${id}`);
 
     if(data.isSuccess){
         return new Offer(data.offer);
     }
     else throw new Error('Не удалось загрузить услугу');
+}
+
+const checkPhotoAndGetSrc = async (photoFile) => {
+    return new Promise(resolve => {
+
+        if (!photoFile || !photoFile.length)
+            throw ('Выберите фотографию для обработки')
+        else {
+            const photo = photoFile[0];
+            const fileFormat = photo.name.split(".").pop();
+            if (fileFormat !== "jpg" && fileFormat !== "jpeg" && fileFormat !== "png" && fileFormat !== "gif" && fileFormat !== "svg")
+                throw ('Выбранный файл не является фотографией')
+
+
+            const reader = new FileReader();
+            reader.onload = (e) => resolve([e.target.result, photo]);
+            reader.readAsDataURL(photo);
+        }
+    })
 }
 
 export {
@@ -75,5 +92,6 @@ export {
     getUrlByJson,
     getDesignInfoById,
     getDesignerInfoById,
-    getOfferInfoById
+    getOfferInfoById,
+    checkPhotoAndGetSrc
 }

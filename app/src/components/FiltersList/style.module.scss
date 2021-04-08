@@ -9,10 +9,21 @@ $drobGap: $gap / 2;
 }
 
 .bottom{
-    display: flex;
+    display: grid;
+    grid-template-areas: "format filter";
+    grid-auto-columns: min-content;
     justify-content: space-between;
-}
 
-.button{
-    padding: 0;
+    .button{
+        padding: 0;
+    
+    
+        &_format{
+            grid-area: format;
+        }
+    
+        &_filter{
+            grid-area: filter;
+        }
+    }
 }

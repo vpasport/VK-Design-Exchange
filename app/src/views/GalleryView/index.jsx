@@ -1,20 +1,30 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { View, ModalRoot, ModalPage } from '@vkontakte/vkui';
+import { View } from '@vkontakte/vkui';
 
 import Gallery from '../../panels/Gallery';
 import Design from '../../panels/Design';
-import { alertContext, modalContext } from '../../App';
+import { alertContext } from '../../App';
 import useRouter from '../../utils/useRouter';
-import Modal from './Modal';
+import ModalRoot from '../../components/ModalRoot';
+import FiltersModal from '../../components/FiltersList/FiltersModal';
 
 const GalleryView = ({ id }) => {
 
     const { poput } = alertContext();
     const router = useRouter();
 
+    const modal = (
+        <ModalRoot>
+            <FiltersModal 
+                id='filters'
+                stateType='galleryList'
+            />
+        </ModalRoot>
+    )
+
     return (
-        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={<Modal />}>
+        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={modal}>
             <Gallery id='gallery' />
             <Design id='design' />
         </View>

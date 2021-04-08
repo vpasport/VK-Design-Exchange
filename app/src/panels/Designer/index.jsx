@@ -59,7 +59,13 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             <div className={styles.userBlock__info}>
                                 <Title weight='bold'>{`${activeDesigner.getFirstName()} ${activeDesigner.getLastName()}`}</Title>
                                 <StarRatings rating={activeDesigner.getRating()} className={styles.userBlock__raiting} />
-                                {/* <Text className={styles.userBlock__status}>Занят до 21.12.2112</Text> */}
+                                <Text className={styles.userBlock__status}>
+                                    {activeDesigner.getEngaged() ?
+                                        `Занят до ${activeDesigner.getEngagedDate()}`
+                                    :
+                                        `Свободен`
+                                    }
+                                </Text>
                             </div>
                         </Div>
                     </Group>

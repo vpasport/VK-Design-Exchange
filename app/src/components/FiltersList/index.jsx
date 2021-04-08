@@ -22,7 +22,7 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize }) => {
                             before={size === 'm' ? <Icon16GridOfFour /> : <Icon16ArticleOutline />}
                             mode='tertiary'
                             onClick={() => changeListFormat( size === 'm' ? 'l' : 'm' )}
-                            className={styles.button}
+                            className={`${styles.button} ${styles.button_format}`}
                         />
                     }
                     {showFilterButton &&
@@ -30,7 +30,7 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize }) => {
                             before={<Icon24Filter />}
                             mode='tertiary'
                             onClick={() => setActiveModal('filters')}
-                            className={styles.button}
+                            className={`${styles.button} ${styles.button_filter}`}
                         />
                     }
                 </Div>

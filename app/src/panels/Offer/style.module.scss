@@ -29,3 +29,20 @@
         color: var(--dynamic_green);
     }
 }
+
+
+.modal{
+    margin-top: 0;
+
+    &__priceText{
+        margin-top: 8px;
+    }
+
+    &__price{
+        color: var(--dynamic_green);
+    }
+
+    &__button{
+        margin-top: 8px;
+    }
+}

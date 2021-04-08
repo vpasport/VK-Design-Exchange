@@ -11,6 +11,8 @@ import useSpinnerHook from './components/poputs/spinner/useSpinner';
 
 import Panels from './Navigation';
 import User from './utils/User';
+import { useDispatch } from 'react-redux';
+import { changeUser } from './store/User/actions';
 
 const AlertContext = React.createContext();
 const SessionContext = React.createContext();
@@ -22,7 +24,6 @@ const modalContext = () => useContext(ModalContext);
 
 const App = () => {
 
-	const [userInfo, setUserInfo] = useState(null);
 	const [poput, setPoput] = useState(null);
 	const [isDesktop, setIsDesktop] = useState(false);
 	const [activeModal, setActiveModal] = useState(null);
@@ -30,6 +31,8 @@ const App = () => {
 
 	const useAlert = useAlertHook(setPoput);
 	const useSpinner = useSpinnerHook(setPoput);
+
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
@@ -43,11 +46,11 @@ const App = () => {
 		const fetchData = async () => {
 
 			try {
-				const urlParams = new URLSearchParams(window.location.search);
 				const userInfo = await bridge.send('VKWebAppGetUserInfo');
 
 				if (!('error_type' in userInfo)){
-					setUserInfo(new User(userInfo, urlParams.get('sign')));
+					dispatch(changeUser(new User(userInfo, window.location.search)))
+
 					setIsLoad(false);
 				}
 				else
@@ -64,7 +67,7 @@ const App = () => {
 
 	const alertContextValue = { useAlert, useSpinner, poput }
 	const modalContextValue = { activeModal, setActiveModal }
-	const sessionContextValue = { isDesktop, setIsDesktop, userInfo }
+	const sessionContextValue = { isDesktop, setIsDesktop }
 
 	return (
 		<ConfigProvider>

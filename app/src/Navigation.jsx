@@ -10,6 +10,7 @@ import {
 import { Icon24Gallery } from '@vkontakte/icons';
 import { Icon24InfoCircleOutline } from '@vkontakte/icons';
 import { Icon16StarCircle } from '@vkontakte/icons';
+import { Icon24Market } from '@vkontakte/icons';
 //import '@vkontakte/vkui/dist/vkui.css';
 
 import DesctopSideBar from './components/DesctopSideBar';
@@ -20,6 +21,7 @@ import AboutTableView from './views/AboutTableView';
 import { sessionContext } from './App';
 import RaitingView from './views/RaitingView';
 import useRouter from './utils/useRouter';
+import OrdersView from './views/OrdersView';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
 
@@ -45,6 +47,12 @@ const Panels = withAdaptivity(({ viewWidth }) => {
             name: 'Рейтинг',
             icon: <Icon16StarCircle />,
             defaultPanel: 'raiting'
+        },
+        {
+            story: 'orders',
+            name: 'Заказы',
+            icon: <Icon24Market />,
+            defaultPanel: 'orders'
         }
     ]
 
@@ -81,6 +89,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                     <GalleryView id='gallery' />
                     <AboutTableView id='table' />
                     <RaitingView id='raiting' />
+                    <OrdersView id='orders' />
                 </Epic>
             </SplitCol>
         </SplitLayout>
