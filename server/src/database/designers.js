@@ -6,7 +6,7 @@ const {
     getUsersInfo
 } = require('../helper/vk')
 
-async function getDesigners(from, to, engaged, from_id) {
+async function getDesigners(from, to, engaged, from_id, order) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -16,6 +16,7 @@ async function getDesigners(from, to, engaged, from_id) {
         let limit = '';
         let _engaged = '';
         let filter = '';
+        let _order = 'desc';
 
         let date = Math.floor(new Date() / 1000) - (new Date().getTimezoneOffset() * 60);
 
@@ -29,15 +30,22 @@ async function getDesigners(from, to, engaged, from_id) {
         }
         if (engaged !== undefined) {
             params.push(date);
-            _engaged = `where d.engaged_date < $${params.length}`;
+            if (Number(engaged) === 1)
+                _engaged = `where d.engaged_date < $${params.length}`;
+            else if (Number(engaged) === 2)
+                _engaged = `where d.engaged_date > $${params.length}`
         }
         if (from_id !== undefined) {
             params.push(from_id);
             if (_engaged !== '') {
-                filter = `and d.id > $${params.length}`;
+                filter = `and d.id < $${params.length}`;
             } else {
-                filter = `where d.id > $${params.length}`;
+                filter = `where d.id < $${params.length}`;
             }
+        }
+        if (order !== undefined) {
+            if (order === 'asc') _order = order;
+            else if (order === 'desc') _order = order;
         }
 
         let designers = (await client.query(
@@ -53,7 +61,7 @@ async function getDesigners(from, to, engaged, from_id) {
             from 
                 designers as d
             ${_engaged} ${filter}
-            order by d.rating desc
+            order by d.rating ${_order}
             ${offset}
             ${limit}`,
             [...params]
@@ -77,6 +85,7 @@ async function getDesigners(from, to, engaged, from_id) {
         return {
             isSuccess: true,
             count,
+            from_id: from_id === undefined ? designers[0].id : Number(from_id),
             designers
         }
     } catch (e) {
