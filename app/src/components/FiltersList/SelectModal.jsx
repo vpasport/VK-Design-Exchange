@@ -7,14 +7,16 @@ const SelectModal = ({ id, params: {selectList, onClose, header, top, onChange, 
 
     const [ value, setValue ] = useState(_value);
 
+    console.log(header)
+
     const changeItem = (event) => {
         setValue(event.target.value || null);
         onChange(event.target.value)
     }
 
     return (
-        <ModalPage id={id} header={header} onClose={onClose}>
-            <FormItem top={top || header}>
+        <ModalPage id={id} headerName={header} onClose={onClose}>
+            <FormItem>
                 {selectList.map(el => (
                     <Radio 
                         name='modalSelect' 
