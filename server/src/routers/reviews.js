@@ -78,6 +78,8 @@ async function create({ body: { url_params, order_id, rating, text }, files: { i
             if (result.isSuccess) {
                 await writeFile(`static/${image.name}`, image.buffer);
 
+                result.image = image.name;
+
                 res.json(result);
                 return;
             }

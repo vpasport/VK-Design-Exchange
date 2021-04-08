@@ -241,7 +241,7 @@ async function getOrderFull(id) {
             }
 
             await client.query('commit');
-            client.release;
+            client.release();
 
             return {
                 isSuccess: true,
