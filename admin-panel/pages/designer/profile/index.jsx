@@ -78,21 +78,6 @@ const Profile = ({ user }) => {
         setDesigner(designer);
     }
 
-    const updateEngaged = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer.id}/engaged`, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                engaged: !designer.engaged,
-            })
-        })
-
-        getProfile();
-    }
-
     return (
         <Container>
             <Header
@@ -104,7 +89,7 @@ const Profile = ({ user }) => {
                 admin={false}
                 edit={edit} setEdit={setEdit}
                 update={update}
-                user={user} updateEngaged={updateEngaged}
+                user={user} getDesigner={getProfile}
             ></DesignerCard>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>

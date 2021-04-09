@@ -6,10 +6,8 @@ import Link from 'next/link';
 import { Calendar } from 'primereact/calendar';
 import Quill from '../Quill';
 import { useEffect, useRef, useState } from 'react';
-import { InputSwitch } from 'primereact/inputswitch';
 import { Galleria } from 'primereact/galleria';
 import { Dialog } from 'primereact/dialog';
-import { useRouter } from 'next/router';
 
 import { addLocale } from 'primereact/api';
 
@@ -18,9 +16,8 @@ import styles from './style.module.scss';
 const DesignerCard = ({
     designer, edit, setEdit,
     update, admin = true,
-    user, updateEngaged
+    user, getDesigner
 }) => {
-    const router = useRouter();
 
     const galleria = useRef();
 
@@ -210,7 +207,7 @@ const DesignerCard = ({
 
         if (response.ok) {
             setDeleteReviewId(null);
-            router.reload();
+            getDesigner();
             return;
         }
 
@@ -234,7 +231,29 @@ const DesignerCard = ({
 
         if (response.ok) {
             setEngagedInput(false);
-            router.reload();
+            getDesigner();
+            return;
+        }
+
+        setErrorText('Что-то пошло не так');
+        setEngagedInput(false);
+    }
+
+    const cancelEngaged = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer.id}/engaged`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                engaged: 0
+            })
+        })
+
+        if (response.ok) {
+            setEngagedInput(false);
+            getDesigner();
             return;
         }
 
@@ -292,6 +311,13 @@ const DesignerCard = ({
                                 label='Подтведить'
                                 onClick={() => changeEngaged()}
                             />
+                            {designer?.engaged &&
+                                <Button
+                                    className='p-mt-4 p-ml-3'
+                                    label='Освободился'
+                                    onClick={() => cancelEngaged()}
+                                />
+                            }
                         </Dialog>
                     </div>
                 </div>
