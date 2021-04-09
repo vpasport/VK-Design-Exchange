@@ -99,7 +99,7 @@ const OrdersList = ({ user }) => {
                         }}
                     />
                 }
-                {(user.mainRole && data.status_id === 4) &&
+                {(user.mainRole === 'admin' && data.status_id === 4) &&
                     < Button
                         className='p-mr-2'
                         label='Завершить заказа'
