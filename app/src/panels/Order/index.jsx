@@ -7,6 +7,7 @@ import { alertContext, modalContext } from '../../App';
 import HeaderImage from '../../components/HeaderImage';
 
 import styles from './style.module.scss';
+import Price from '../../components/Price';
 
 const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, changeActiveOrderStatus }) => {
 
@@ -92,7 +93,7 @@ const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, ch
                     <HeaderImage
                         image={activeOrder.getPreview()}
                         left={activeOrder.getTitle()}
-                        right={`${activeOrder.getPrice()}₽`}
+                        right={<Price price={activeOrder.getPrice()} />}
                     />
                     <Group>
                         <Div>

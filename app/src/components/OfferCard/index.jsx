@@ -8,6 +8,7 @@ import useRouter from '../../utils/useRouter';
 import { changeActiveOfferId } from '../../store/Designer/DesignerListBlock/Offers/Offer/actions';
 import OfferCardClass from '../../utils/Raiting/Designer/Offer/OfferCard';
 import { getCardHeightBySize } from '../../utils/helpers';
+import Price from '../Price';
 
 const OfferCard = ({offerCard, listFormat}) => {
 
@@ -24,11 +25,8 @@ const OfferCard = ({offerCard, listFormat}) => {
             image={offerCard.getPreview()}
             header={offerCard.getTitle()}
             text={
-                <Text 
-                    className={styles.card__price} 
-                    weight='medium'
-                >
-                    {offerCard.getPrice()}₽
+                <Text weight='medium'>
+                    <Price price={offerCard.getPrice()} />
                 </Text>
             }
             className={styles.card}

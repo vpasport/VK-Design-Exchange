@@ -1,13 +1,17 @@
 .headerImage{
-    max-height: 300px;
     box-shadow: 0px -77px 38px -17px rgba(34, 60, 80, 0.19) inset;
     position: relative;
+    overflow: hidden;
 
     > img{
         object-fit: cover;
         object-position: center;
-        //height: 300px;
+        height: 300px;
         width: 100%;
+    }
+
+    &--vkcom{
+        border-radius: 8px;
     }
 
     &__info{
@@ -23,9 +27,5 @@
         color: white;
         padding-top: 30px;
         background: linear-gradient(180deg, rgba(215,215,215,0) 0%, rgba(32,32,32,1) 100%);
-    }
-
-    &__price{
-        color: var(--dynamic_green);
     }
 }

@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
+import {  ANDROID, IOS, VKCOM } from "@vkontakte/vkui";
 
 import { AdaptivityProvider, ConfigProvider, PanelSpinner } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
@@ -27,12 +28,23 @@ const App = () => {
 	const [poput, setPoput] = useState(null);
 	const [isDesktop, setIsDesktop] = useState(false);
 	const [activeModal, setActiveModal] = useState(null);
-	const [ isLoad, setIsLoad ] = useState(true);
+	const [isLoad, setIsLoad] = useState(true);
 
 	const useAlert = useAlertHook(setPoput);
 	const useSpinner = useSpinnerHook(setPoput);
 
 	const dispatch = useDispatch();
+
+	const platform = useMemo(() => {
+		let platform = new URLSearchParams(window.location.search).get("vk_platform");
+		platform = 
+			platform.includes("iphone") || platform.includes("mobile_web")
+				? IOS
+				: platform.includes("android")
+					? ANDROID
+					: VKCOM
+		return platform;
+	}, [])
 
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
@@ -48,7 +60,7 @@ const App = () => {
 			try {
 				const userInfo = await bridge.send('VKWebAppGetUserInfo');
 
-				if (!('error_type' in userInfo)){
+				if (!('error_type' in userInfo)) {
 					dispatch(changeUser(new User(userInfo, window.location.search)))
 
 					setIsLoad(false);
@@ -70,7 +82,7 @@ const App = () => {
 	const sessionContextValue = { isDesktop, setIsDesktop }
 
 	return (
-		<ConfigProvider>
+		<ConfigProvider platform={platform}>
 			<AdaptivityProvider>
 				<AlertContext.Provider value={alertContextValue}>
 					<SessionContext.Provider value={sessionContextValue}>

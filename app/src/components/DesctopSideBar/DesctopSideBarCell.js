@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Cell } from '@vkontakte/vkui';
+import { Icon24CheckBoxOn } from '@vkontakte/icons';
 
 const DesctopSideBarCell = ({ el, activeStory, onStoryChange }) => {
     return (

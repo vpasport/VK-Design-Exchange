@@ -5,12 +5,13 @@ import { SplitCol, Group, Panel, PanelHeader } from '@vkontakte/vkui';
 
 import DesctopSideBarCell from './DesctopSideBarCell';
 
-const DesctopSideBar = ({ isDesktop, params, activeStory, onStoryChange }) => {
+const DesctopSideBar = ({ isDesktop, params, activeStory, onStoryChange, hasHeader }) => {
+
     return (
         <SplitCol fixed width="280px" maxWidth="280px">
             <Panel>
-                {!isDesktop && <PanelHeader />}
-                <Group style={{paddingTop: 20}}>
+                {hasHeader && <PanelHeader />}
+                <Group>
                     {params.map((el, i) => (
                         <DesctopSideBarCell 
                             el={el}

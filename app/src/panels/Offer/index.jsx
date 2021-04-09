@@ -9,6 +9,7 @@ import { getOfferInfoById } from '../../utils/helpers';
 
 import styles from './style.module.scss';
 import HeaderImage from '../../components/HeaderImage';
+import Price from '../../components/Price';
 
 const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
 
@@ -49,21 +50,21 @@ const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
                     <HeaderImage
                         image={activeOffer.getPreview()}
                         left={activeOffer.getTitle()}
-                        right={`${activeOffer.getPrice()}₽`}
+                        right={<Price price={activeOffer.getPrice()} />}
                     />
-                    <Div>
-                        <Group>
+                    <Group>
+                        <Div>
                             <Title level='2'>Описание услуги</Title>
-                            <div dangerouslySetInnerHTML={{__html: activeOffer.getDescription()}} />
-                            <Button 
-                                stretched 
+                            <div dangerouslySetInnerHTML={{ __html: activeOffer.getDescription() }} />
+                            <Button
+                                stretched
                                 size='l'
                                 onClick={() => setActiveModal('offer')}
                             >
                                 Заказать услугу
                             </Button>
-                        </Group>
-                    </Div>
+                        </Div>
+                    </Group>
                 </>
                 :
                 <PanelSpinner size='large' />
