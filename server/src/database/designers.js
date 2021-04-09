@@ -454,15 +454,29 @@ async function deleteDesigner(id) {
     await client.query('begin');
 
     try {
+        let paths = [];
+
         let portfolios = (await client.query(
-            `select portfolio_id as id
-            from designers_portfolios
-            where designer_id = $1`,
+            `select 
+                dp.portfolio_id as id,
+                p.preview,
+                p.work_image
+            from 
+                designers_portfolios as dp,
+                portfolio as p
+            where 
+                dp.designer_id = $1 and
+                p.id = dp.portfolio_id`,
             [id]
         )).rows;
 
         if (portfolios.length !== 0) {
-            portfolios = portfolios.map(el => el.id);
+            portfolios = portfolios.map(el => {
+                paths.push(el.preview);
+                paths.push(el.work_image);
+
+                return el.id;
+            });
 
             await client.query(
                 `delete from portfolio
@@ -472,17 +486,28 @@ async function deleteDesigner(id) {
         }
 
         let offers = (await client.query(
-            `select offer_id as id
-            from designers_offers
-            where designer_id = $1`,
+            `select 
+                od.offer_id as id,
+                o.preview
+            from 
+                designers_offers as od,
+                offers as o
+            where 
+                od.designer_id = $1 and
+                o.id = od.offer_id`,
             [id]
         )).rows;
 
         let orders = [];
         let comments = [];
+        let reviews = [];
 
         if (offers.length !== 0) {
-            offers = offers.map(el => el.id);
+            offers = offers.map(el => {
+                paths.push(el.preview);
+
+                return el.id;
+            });
 
             orders = (await client.query(
                 `select id
@@ -511,6 +536,32 @@ async function deleteDesigner(id) {
                     );
                 }
 
+                let reviews = (await client.query(
+                    `select 
+                        id,
+                        image
+                    from 
+                        reviews
+                    where
+                        order_id = any($1)`,
+                    [orders]
+                )).rows;
+
+                if (reviews.length !== 0) {
+                    reviews = reviews.map(el => {
+                        if (el.image.indexOf('reviews/') !== -1)
+                            paths.push(el.image);
+
+                        return el.id;
+                    })
+
+                    await client.query(
+                        `delete from reviews
+                        where id = any($1)`,
+                        [reviews]
+                    );
+                }
+
                 await client.query(
                     `delete from orders
                     where id = any($1)`,
@@ -536,7 +587,8 @@ async function deleteDesigner(id) {
         client.release();
 
         return {
-            isSuccess: true
+            isSuccess: true,
+            paths
         }
     } catch (e) {
         await client.query('rollback');

@@ -1,6 +1,10 @@
 "use strict";
 
 const { Router } = require('express');
+const { promises: {
+    unlink
+} } = require('fs');
+
 const {
     getDesigners: getDesigners_,
     getDesigner: getDesigner_,
@@ -137,6 +141,14 @@ async function deleteDesigner({ body: { id }, session }, res) {
         let result = await deleteDesigner_(id);
 
         if (result.isSuccess) {
+            for (let path of result.paths) {
+                try {
+                    await unlink(`static/${path}`);
+                } catch (e) {
+                    console.error(e)
+                }
+            }
+
             res.sendStatus(204);
             return;
         }

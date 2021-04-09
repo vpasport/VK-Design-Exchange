@@ -97,7 +97,7 @@ async function deleteReview({ params: { id }, session }, res) {
         let result = await deleteReview_(id);
 
         if (result.isSuccess) {
-            if (result.image.indexOf('reviews') !== -1) {
+            if (result.image.indexOf('reviews/') !== -1) {
                 await unlink(`static/${result.image}`);
             }
 
