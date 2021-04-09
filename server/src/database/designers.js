@@ -1,6 +1,7 @@
 "use strict";
 
 const pool = require('./pg/pool').getPool();
+const e = require('express');
 const {
     getUserInfo,
     getUsersInfo
@@ -453,6 +454,77 @@ async function deleteDesigner(id) {
     await client.query('begin');
 
     try {
+        let portfolios = (await client.query(
+            `select portfolio_id as id
+            from designers_portfolios
+            where designer_id = $1`,
+            [id]
+        )).rows;
+
+        if (portfolios.length !== 0) {
+            portfolios = portfolios.map(el => el.id);
+
+            await client.query(
+                `delete from portfolio
+                where id = any($1)`,
+                [portfolios]
+            )
+        }
+
+        let offers = (await client.query(
+            `select offer_id as id
+            from designers_offers
+            where designer_id = $1`,
+            [id]
+        )).rows;
+
+        let orders = [];
+        let comments = [];
+
+        if (offers.length !== 0) {
+            offers = offers.map(el => el.id);
+
+            orders = (await client.query(
+                `select id
+                from orders
+                where offer_id = any($1)`,
+                [offers]
+            )).rows;
+
+            if (orders.length !== 0) {
+                orders = orders.map(el => el.id);
+
+                comments = (await client.query(
+                    `select id
+                    from orders_comments
+                    where order_id = any($1)`,
+                    [orders]
+                )).rows;
+
+                if (comments.length !== 0) {
+                    comments = comments.map(el => el.id);
+
+                    await client.query(
+                        `delete from orders_comments
+                        where id = any($1)`,
+                        [comments]
+                    );
+                }
+
+                await client.query(
+                    `delete from orders
+                    where id = any($1)`,
+                    [orders]
+                );
+            }
+
+            await client.query(
+                `delete from offers
+                where id = any($1)`,
+                [offers]
+            );
+        }
+
         await client.query(
             `delete from designers
             where
