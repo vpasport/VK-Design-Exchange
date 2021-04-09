@@ -665,6 +665,61 @@ async function updateEngaged(id, engaged) {
     }
 }
 
+async function updateVkInfo(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let designerVkId = (await client.query(
+            `select vk_id
+            from designers
+            where id = $1`,
+            [id]
+        )).rows[0];
+
+        if (designerVkId !== undefined) {
+            designerVkId = designerVkId.vk_id;
+
+            let info = await getUserInfo(designerVkId);
+
+            if (info.isSuccess) {
+                info = info.user;
+
+                await client.query(
+                    `update designers
+                    set
+                        first_name = $2,
+                        last_name = $3,
+                        photo = $4
+                    where
+                        id = $1`,
+                    [id, info.first_name, info.last_name, info.photo_max]
+                );
+
+                await client.query('commit');
+                client.release();
+
+                return {
+                    isSuccess: true
+                }
+            }
+
+            throw 'Vk network error';
+        }
+
+        throw 'Designer not found';
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getDesigners,
     getDesigner,
@@ -675,5 +730,6 @@ module.exports = {
     createDesigner,
     deleteDesigner,
     updateInfo,
-    updateEngaged
+    updateEngaged,
+    updateVkInfo
 }

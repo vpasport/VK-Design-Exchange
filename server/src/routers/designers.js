@@ -15,6 +15,7 @@ const {
     deleteDesigner: deleteDesigner_,
     updateInfo: updateInfo_,
     updateEngaged: updateEngaged_,
+    updateVkInfo: updateVkInfo_,
     getDesignerOffers: getDesignerOffers_
 } = require('../database/designers');
 const {
@@ -194,6 +195,23 @@ async function updateEngaged({ body: { engaged }, params: { id }, session }, res
     res.sendStatus(401);
 }
 
+async function updateVkInfo({ params: { id }, session }, res) {
+    if (session.role !== undefined &&
+        (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && session.user.did === Number(id)))) {
+        let result = await updateVkInfo_(id);
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 function index() {
     const router = new Router();
 
@@ -210,6 +228,7 @@ function index() {
 
     router.put('/:id', updateInfo);
     router.put('/:id/engaged', updateEngaged);
+    router.put('/:id/vk', updateVkInfo);
 
     return router;
 }

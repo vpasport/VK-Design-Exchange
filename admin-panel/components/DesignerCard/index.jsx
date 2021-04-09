@@ -261,6 +261,20 @@ const DesignerCard = ({
         setEngagedInput(false);
     }
 
+    const updateVK = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${designer.id}/vk`, {
+            method: 'PUT',
+            credentials: 'include'
+        })
+
+        if (response.ok) {
+            getDesigner();
+            return;
+        }
+
+        setErrorText('Что-то пошло не так');
+    }
+
     return (
         <>
             <div style={{ width: '60%', margin: 'auto' }}>
@@ -290,6 +304,9 @@ const DesignerCard = ({
                             label='Изменить статус активности'
                             onClick={() => setEngagedInput(true)}
                         />
+                        {edit &&
+                            <Button className='p-mt-2' label='Обновить информацию из Вконтакте' onClick={() => updateVK()} />
+                        }
                         <Dialog
                             className={styles.dialog}
                             header='Когда освободишься?'
