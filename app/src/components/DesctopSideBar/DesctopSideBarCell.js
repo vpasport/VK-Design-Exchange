@@ -7,7 +7,6 @@ import { Icon24CheckBoxOn } from '@vkontakte/icons';
 const DesctopSideBarCell = ({ el, activeStory, onStoryChange }) => {
     return (
         <Cell
-            disabled={activeStory === el.story}
             style={activeStory === el.story ? {
                 backgroundColor: "var(--button_secondary_background)",
                 borderRadius: 8,

@@ -64,7 +64,13 @@ const Panels = withAdaptivity(({ viewWidth }) => {
 
     useEffect(() => {
         setIsDesktop(viewWidth >= ViewWidth.SMALL_TABLET)
-    }, [])
+    }, []);
+
+    const changeStory = (story, panel) => {
+        if(router.bind.activeStory === story && router.bind.activePanel === panel)
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        else router.setActiveStoryAndPanel(story, panel);
+    }
 
     return (
         <AppRoot>
@@ -75,7 +81,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                 {isDesktop && (
                     <DesctopSideBar
                         activeStory={router.bind.activeStory}
-                        onStoryChange={(story, panel) => router.setActiveStoryAndPanel(story, panel)}
+                        onStoryChange={changeStory}
                         isDesktop={isDesktop}
                         params={params}
                         hasHeader={hasHeader}
@@ -90,7 +96,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                     <Epic activeStory={router.bind.activeStory} tabbar={!isDesktop &&
                         <MobileSideBar
                             activeStory={router.bind.activeStory}
-                            onStoryChange={(story, panel) => router.setActiveStoryAndPanel(story, panel)}
+                            onStoryChange={changeStory}
                             params={params}
                         />
                     }>
