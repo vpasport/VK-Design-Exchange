@@ -14,11 +14,11 @@ const TagsTable = dynamic(
 
 const Tags = ({ user }) => {
     const [tags, setTags] = useState(null);
-    const [create, setCrete] = useState(false);
     const [name, setName] = useState('');
 
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
+    const [create, setCreate] = useState(false);
 
     useEffect(async () => {
         const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/`);
@@ -51,7 +51,7 @@ const Tags = ({ user }) => {
             const { tags } = await response.json();
 
             setTags(tags);
-
+            setCreate(false);
             return;
         }
 
@@ -95,7 +95,6 @@ const Tags = ({ user }) => {
             const { tags } = await response.json();
 
             setTags(tags);
-
             return;
         }
 
@@ -110,32 +109,11 @@ const Tags = ({ user }) => {
                 url='/admin/tags'
             />
             <div className='p-m-6' style={{ textAlign: 'center' }}>
-                {!create &&
-                    <Button
-                        label='Создать'
-                        onClick={() => setCrete(true)}
-                    >
-                    </Button>}
-                {create &&
-                    <>
-                        <InputText
-                            placeholder='Название'
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        >
-                        </InputText>
-                        <Button
-                            className='p-ml-2'
-                            label='Создать'
-                            onClick={() => createTag()}
-                        ></Button>
-                        <Button
-                            className='p-ml-2 p-button-danger'
-                            label='Отмена'
-                            onClick={() => setCrete(false)}
-                        ></Button>
-                    </>
-                }
+                <Button
+                    label='Добавить тэг'
+                    onClick={() => setCreate(true)}
+                >
+                </Button>
             </div>
             <TagsTable
                 tags={tags}
@@ -147,11 +125,31 @@ const Tags = ({ user }) => {
                     {error}
                 </p>
             </Dialog>
+            <Dialog
+                header='Добавить тэг'
+                visible={create}
+                style={{ width: '50vw' }}
+                onHide={() => setCreate(false)}
+            >
+                <InputText
+                    placeholder='Название'
+                    value={name}
+                    style={{ width: '100%' }}
+                    onChange={(e) => setName(e.target.value)}
+                >
+                </InputText>
+                <br />
+                <Button
+                    className='p-mt-3'
+                    label='Создать'
+                    onClick={() => createTag()}
+                ></Button>
+            </Dialog>
         </Container>
     )
 }
 
-export async function getServerSideProps({ req: { headers: { cookie } }, res }) {
+export async function getServerSideProps({ req: { headers: { cookie } } }) {
     let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/role`, {
         headers: {
             cookie

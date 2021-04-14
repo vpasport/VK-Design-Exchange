@@ -104,6 +104,26 @@ async function updateTag(id, name) {
 
     try {
         let tag = (await client.query(
+            `select t.name
+                from tags as t
+            where
+                t.id = $1`,
+            [id]
+        )).rows[0];
+
+        if (tag === undefined) throw 'Tag not found';
+
+        let tag_ = (await client.query(
+            `select id
+                from tags
+            where
+                name = $1`,
+            [name]
+        )).rows[0];
+
+        if (tag_ !== undefined) throw 'This name already exists';
+
+        (await client.query(
             `update tags
                 set name = $1
             where
