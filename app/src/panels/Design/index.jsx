@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button } from '@vkontakte/vkui';
+import bridge from '@vkontakte/vk-bridge';
 
 import Info from './Info';
 
@@ -44,6 +45,14 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
         router.setActiveStoryAndPanel('raiting', 'designer');
     }
 
+    const showImage = () => {
+        bridge.send("VKWebAppShowImages", {
+            images: [
+                activeDesign.getWorkImage()
+            ],
+        })
+    }
+
     return (
         <Panel id={id}>
             <PanelHeader
@@ -65,7 +74,11 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                         
                         <div className={styles.cardBlock__group_image}>
                             <Title level='1'>Дизайн</Title>
-                            <img src={activeDesign.getWorkImage()} alt="test" />
+                            <img 
+                                src={activeDesign.getWorkImage()} 
+                                alt="test"
+                                onClick={showImage}
+                            />
                         </div>
 
                         {Boolean(activeDesign.getDesignerId() && router.getPrevRoute().panel !== 'portfolio') && 
