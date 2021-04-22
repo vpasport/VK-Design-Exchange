@@ -31,7 +31,6 @@ const Panels = withAdaptivity(({ viewWidth }) => {
 
     const { isDesktop, setIsDesktop } = sessionContext();
     const platform = usePlatform();
-    const hasHeader = useMemo(() => platform !== VKCOM, []);
     
     const router = useRouter();
 
@@ -75,7 +74,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
     return (
         <AppRoot>
             <SplitLayout
-                header={hasHeader && <PanelHeader separator={false} />}
+                header={!isDesktop && <PanelHeader separator={false} />}
                 style={{ justifyContent: "center" }}
             >
                 {isDesktop && (
@@ -84,7 +83,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                         onStoryChange={changeStory}
                         isDesktop={isDesktop}
                         params={params}
-                        hasHeader={hasHeader}
+                        hasHeader={!isDesktop}
                     />
                 )}
                 <SplitCol

@@ -43,7 +43,7 @@ const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, ch
                 title: 'Да',
                 autoclose: true,
                 action: () => {
-
+                    router.setActivePanel('review')
                 }
             },
             {

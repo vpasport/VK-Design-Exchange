@@ -35,15 +35,15 @@ const App = () => {
 
 	const dispatch = useDispatch();
 
-	const platform = useMemo(() => {
-		let platform = new URLSearchParams(window.location.search).get("vk_platform");
-		platform = 
-			platform.includes("iphone") || platform.includes("mobile_web")
+	const [ activePlatform, platform] = useMemo(() => {
+		let activePlatform = new URLSearchParams(window.location.search).get("vk_platform");
+		let vkPlatform  = 
+		activePlatform.includes("iphone") || activePlatform.includes("mobile_web")
 				? IOS
-				: platform.includes("android")
+				: activePlatform.includes("android")
 					? ANDROID
 					: VKCOM
-		return platform;
+		return [ activePlatform, vkPlatform ];
 	}, [])
 
 	useEffect(() => {
@@ -79,7 +79,7 @@ const App = () => {
 
 	const alertContextValue = { useAlert, useSpinner, poput }
 	const modalContextValue = { activeModal, setActiveModal }
-	const sessionContextValue = { isDesktop, setIsDesktop }
+	const sessionContextValue = { isDesktop, setIsDesktop, activePlatform}
 
 	return (
 		<ConfigProvider platform={platform}>
