@@ -14,6 +14,7 @@ const {
     getPreviewsFromTo: getPreviewsFromTo_,
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
+    getWorkViews: getWorkViews_,
     getImagesNames: getImagesNames_,
     getDesignerByPortfolio: getDesignerByPortfolio_,
     createWork: createWork_,
@@ -61,6 +62,17 @@ async function getWork({ params: { id }, session }, res) {
             id, false
         );
     }
+
+    if (result.isSuccess) {
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(520);
+}
+
+async function getWorkViews({ params: { id } }, res) {
+    let result = await getWorkViews_(id);
 
     if (result.isSuccess) {
         res.json(result);
@@ -279,6 +291,7 @@ function index() {
 
     router.get('/previews', getPreviews);
     router.get('/work/:id', getWork);
+    router.get('/work/:id/views', getWorkViews);
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
     router.post('/tags', addTags);

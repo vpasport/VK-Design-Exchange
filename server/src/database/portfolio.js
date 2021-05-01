@@ -188,6 +188,18 @@ async function getWork(id, full) {
 
 
         if (work !== undefined) {
+            await client.query(
+                `update
+                    portfolio
+                set 
+                    views = views + 1
+                where
+                    id = $1`,
+                [id]
+            );
+
+            work.views = work.views + 1;
+
             await client.query('commit');
             client.release();
 
@@ -201,6 +213,53 @@ async function getWork(id, full) {
                 isSuccess: true,
                 work
             };
+        }
+
+        throw 'Work not found';
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function getWorkViews(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let work = (await client.query(
+            `select views
+                from portfolio
+            where id = $1`,
+            [id]
+        )).rows[0];
+
+        if (work !== undefined) {
+            await client.query(
+                `update
+                    portfolio
+                set 
+                    views = views + 1
+                where
+                    id = $1`,
+                [id]
+            );
+
+            work.views = work.views + 1;
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                work
+            }
         }
 
         throw 'Work not found';
@@ -561,6 +620,7 @@ module.exports = {
     getPreviewsFromTo,
     getPreviewsTags,
     getWork,
+    getWorkViews,
     getImagesNames,
     getDesignerByPortfolio,
     createWork,
