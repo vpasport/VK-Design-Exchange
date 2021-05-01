@@ -43,10 +43,10 @@ async function auth(response, req, res) {
 
         if (roles.roles.length === 1 && roles.roles.indexOf('designer') !== -1) {
             res.redirect(`${process.env.CLIENT}/designer/profile`);
+            return;
         }
 
         res.redirect(req.query.state);
-
         return;
     }
 
