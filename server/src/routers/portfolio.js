@@ -19,11 +19,15 @@ const {
     getDesignerByPortfolio: getDesignerByPortfolio_,
     createWork: createWork_,
     addTags: addTags_,
+    addLike: addLike_,
     deleteWork: deleteWork_,
     updateTags: updateTags_,
     updateDescription: updateDescription_,
     updateImagePaths: updateImagePaths_
 } = require('../database/portfolio');
+const {
+    checkSign
+} = require('../helper/vk');
 
 async function getPreviews({ query: { from, to, from_id, tags } }, res) {
     if (tags !== undefined) tags = tags.split(',')
@@ -50,7 +54,7 @@ async function getPreviews({ query: { from, to, from_id, tags } }, res) {
     res.status(500).json(result);
 }
 
-async function getWork({ params: { id }, session }, res) {
+async function getWork({ params: { id }, query: { vk_id }, session }, res) {
     let result;
 
     if (session.role !== undefined && session.role.indexOf('adimn') !== -1) {
@@ -59,7 +63,7 @@ async function getWork({ params: { id }, session }, res) {
         );
     } else {
         result = await getWork_(
-            id, false
+            id, false, vk_id
         );
     }
 
@@ -141,6 +145,26 @@ async function addTags({ body: { portfolio_id, tag_ids } }, res) {
     }
 
     res.sendStatus(204);
+}
+
+async function addLike({ params: { id }, body: { url_params, vk_id } }, res) {
+    let result;
+
+    let params = JSON.parse('{"' + decodeURI(url_params).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+
+    if (checkSign(params)) {
+        result = await addLike_(id, vk_id);
+
+        if (result.isSuccess) {
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
 }
 
 async function updateTags({ params: { id }, body: { tag_ids }, session }, res) {
@@ -295,6 +319,7 @@ function index() {
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
     router.post('/tags', addTags);
+    router.post('/work/:id/likes', addLike);
 
     router.put('/:id/tags', updateTags);
     router.put('/:id/description', updateDescription);

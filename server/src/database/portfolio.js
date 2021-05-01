@@ -158,7 +158,7 @@ async function getPreviewsTags(from, to, from_id, tags) {
 
 }
 
-async function getWork(id, full) {
+async function getWork(id, full, vk_id = undefined) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -170,24 +170,50 @@ async function getWork(id, full) {
             [id]
         )).rows[0];
 
-        let tags = (await client.query(
-            `select * 
-                from tags as t, tags_portfolios as tp
-            where 
-                tp.portfolio_id = $1 and t.id = tp.tag_id`,
-            [id]
-        )).rows;
-
-        let user = (await client.query(
-            `select d.vk_id, d.first_name, d.last_name, d.id, d.photo, d.rating
-                from designers as d, designers_portfolios as dp
-            where 
-                dp.portfolio_id = $1 and d.id = dp.designer_id`,
-            [id]
-        )).rows[0];
-
-
         if (work !== undefined) {
+            let tags = (await client.query(
+                `select * 
+                    from tags as t, tags_portfolios as tp
+                where 
+                    tp.portfolio_id = $1 and t.id = tp.tag_id`,
+                [id]
+            )).rows;
+
+            let user = (await client.query(
+                `select d.vk_id, d.first_name, d.last_name, d.id, d.photo, d.rating
+                    from designers as d, designers_portfolios as dp
+                where 
+                    dp.portfolio_id = $1 and d.id = dp.designer_id`,
+                [id]
+            )).rows[0];
+
+            let likes = (await client.query(
+                `select count(pl.*)::int
+                    from portfolios_likes as pl
+                where
+                    pl.portfolio_id = $1`,
+                [id]
+            )).rows[0];
+
+            work.likes = likes;
+
+            if (vk_id !== undefined) {
+                let likeFromUser = (await client.query(
+                    `select pl.id
+                        from portfolios_likes as pl
+                    where
+                        pl.portfolio_id = $1 and
+                        pl.vk_user_id = $2`,
+                    [id, vk_id]
+                )).rows[0];
+
+                if (likeFromUser !== undefined) {
+                    work.likes.from_user = true;
+                } else {
+                    work.likes.from_user = false;
+                }
+            }
+
             await client.query(
                 `update
                     portfolio
@@ -493,6 +519,84 @@ async function addTags(portfolio_id, tag_ids) {
     }
 }
 
+async function addLike(id, vk_id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let work = (await client.query(
+            `select id
+                from portfolio
+            where id = $1`,
+            [id]
+        )).rows[0];
+
+        if (work !== undefined) {
+            let likeFromUser = (await client.query(
+                `select pl.id
+                    from portfolios_likes as pl
+                where
+                    pl.portfolio_id = $1 and
+                    pl.vk_user_id = $2`,
+                [id, vk_id]
+            )).rows[0];
+
+            let likes = (await client.query(
+                ` select count(pl.*)
+                    from portfolios_likes as pl
+                where
+                    pl.portfolio_id = $1`,
+                [id]
+            )).rows[0];
+
+            if (likeFromUser === undefined) {
+                await client.query(
+                    `insert into portfolios_likes
+                        (portfolio_id, vk_user_id)
+                    values
+                        ($1, $2)`,
+                    [id, vk_id]
+                );
+
+                likes.count = Number.parseInt(likes.count) + 1;
+                likes.from_user = true;
+            } else {
+                await client.query(
+                    `delete from
+                        portfolios_likes
+                    where
+                        portfolio_id = $1 and
+                        vk_user_id = $2`,
+                    [id, vk_id]
+                )
+
+                likes.count = Number.parseInt(likes.count) - 1;
+                likes.from_user = false;
+            }
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                likes
+            }
+        }
+
+        throw 'Work not found';
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.log(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function updateTags(portfolio_id, tag_ids) {
     const client = await pool.connect();
     await client.query('begin');
@@ -625,6 +729,7 @@ module.exports = {
     getDesignerByPortfolio,
     createWork,
     addTags,
+    addLike,
     updateTags,
     updateDescription,
     updateImagePaths,
