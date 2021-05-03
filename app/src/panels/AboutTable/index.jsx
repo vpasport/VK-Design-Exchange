@@ -7,7 +7,7 @@ import { Icon16StarCircle } from '@vkontakte/icons';
 import styles from './style.module.scss';
 import useRouter from '../../utils/useRouter';
 
-const AboutTable = ({id}) => {
+const AboutTable = ({ id }) => {
 
     const router = useRouter();
 
@@ -17,32 +17,41 @@ const AboutTable = ({id}) => {
             <Group>
                 <Div>
                     <Text>
-                        На доске почета размещены дизайнеры, 
-                        которые прошли мой авторский курс и получили за курсовую 
-                        работу не менее 5 баллов.<br/><br/>
-                        Работы, рейтинг и отзывы каждого дизайнера можно посмотреть 
+                        На доске почета размещены дизайнеры,
+                        которые прошли мой авторский курс и получили за курсовую
+                        работу не менее 5 баллов.<br /><br />
+                        Работы, рейтинг и отзывы каждого дизайнера можно посмотреть
                         в его профиле.
                     </Text>
                     <Text weight='semibold' className={styles.videoHeader}>Объясняю, как это все работает</Text>
-                    <img src='https://via.placeholder.com/500x300' alt='video' className={styles.video}/>
+                    <div className={styles.videoContainer}>
+                        <iframe
+                            src="https://www.youtube.com/embed/1vCcjiZz_Bs"
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            className={styles.videoContainer__video}>
+                        </iframe>
+                    </div>
+
                 </Div>
             </Group>
             <Group>
                 <Div>
                     <Title level='1' weight='bold'>Мои ученики</Title>
-                    <Button 
-                        stretched 
-                        size='l' 
+                    <Button
+                        stretched
+                        size='l'
                         className={styles.button}
                         before={<Icon16StarCircle />}
                         onClick={() => router.setActiveStoryAndPanel('raiting', 'raiting')}
-                        
+
                     >
                         Рейтинг дизайнеров
                     </Button>
-                    <Button 
-                        stretched 
-                        size='l' 
+                    <Button
+                        stretched
+                        size='l'
                         className={styles.button}
                         before={<Icon24Gallery />}
                         onClick={() => router.setActiveStoryAndPanel('gallery', 'gallery')}

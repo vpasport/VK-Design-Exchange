@@ -45,6 +45,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
             if(!fromId) dispatch(listActions.changeFromId(dispatchActionType)(data.fromId));
             
             dispatch(listActions.changeSecondLength(dispatchActionType)(secondLength + loadLength))
+            console.log(type)
             setIsLoad(true)
         }
         catch(error){
@@ -80,10 +81,14 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
     useEffect(() => {
         if(!filters.length && loadFilters) getFilters();
         if( loadingCondition() || !list?.length){
+            console.log(type)
             dispatch(listActions.changeList(dispatchActionType)([]));
             getList();
         }
-        else setIsLoad(true);
+        else {
+            console.log(type)
+            setIsLoad(true)
+        };
     }, []);
 
 

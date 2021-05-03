@@ -14,6 +14,7 @@ import Panels from './Navigation';
 import User from './utils/User';
 import { useDispatch } from 'react-redux';
 import { changeUser } from './store/User/actions';
+import axios from 'axios';
 
 const AlertContext = React.createContext();
 const SessionContext = React.createContext();
@@ -61,7 +62,13 @@ const App = () => {
 				const userInfo = await bridge.send('VKWebAppGetUserInfo');
 
 				if (!('error_type' in userInfo)) {
-					dispatch(changeUser(new User(userInfo, window.location.search)))
+					const { data } = await axios.get(`users/ban?vk_id=${userInfo.id}`);
+
+					if(!data.isSuccess) throw new Error('Ошибка API');
+
+					const user = new User(userInfo, window.location.search, data.banned);
+					
+					dispatch(changeUser(user));
 
 					setIsLoad(false);
 				}
@@ -69,6 +76,7 @@ const App = () => {
 					throw new Error('Ошибка API');
 			}
 			catch (error) {
+				console.log(error)
 				useAlert.error('Ошибка', error);
 			}
 

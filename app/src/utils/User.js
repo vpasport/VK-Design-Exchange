@@ -7,12 +7,13 @@ import OrderCard from './Orders/OrderCard';
 
 class User{
 
-    constructor(user, vkUrlParams){
+    constructor(user, vkUrlParams, banned){
         this.id = user.id;
         this.firstName = user.first_name;
         this.lastName = user.last_name;
         this.photo = user.photo_200;
         this.vkUrlParams = vkUrlParams.slice(1);
+        this._banned = banned;
         //axios.defaults.params.post['url_params'] = vkUrlParams;
     }
 
@@ -31,6 +32,8 @@ class User{
     getPhoto(){
         return this.photo;
     }
+
+    get banned(){ return this._banned }
 
     getVkUrlParams() {return this.vkUrlParams}
 

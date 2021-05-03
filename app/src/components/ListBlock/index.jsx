@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Icon24ArrowUpOutline } from '@vkontakte/icons';
 
@@ -19,6 +19,8 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
     const { isDesktop } = sessionContext();
 
     const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition);
+
+    console.log(listHook)
 
     const content = (
         <>
@@ -66,7 +68,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
         </>
     )
 
-    const PullToRefreshOrDiv = useMemo(() => {
+    const PullToRefreshOrDiv = useCallback(() => {
         if (pullToRefresh)
             return React.createElement(PullToRefresh, {
                 onRefresh: listHook.updateList,
@@ -79,7 +81,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
     return (
         <>
             {listHook.bind.isLoad ?
-                PullToRefreshOrDiv
+                PullToRefreshOrDiv()
                 :
                 <PanelSpinner size='large' />
             }

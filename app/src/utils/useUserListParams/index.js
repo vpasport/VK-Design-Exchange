@@ -14,7 +14,7 @@ const useUserListParams = (actionType) => {
 
     useEffect(() => {
         if(!isShowList){
-            dispatch(changeList(dispatchActionType)(null));
+            dispatch(changeList(dispatchActionType)([]));
             setShowList(true);
         }
     }, [])
