@@ -1,0 +1,10 @@
+.counterBlock{
+    display: inline-flex;
+    align-items: center;
+    color: var(--dynamic_gray);
+
+    > span{
+        padding-bottom: 1px;
+        margin-left: 4px;
+    }
+}

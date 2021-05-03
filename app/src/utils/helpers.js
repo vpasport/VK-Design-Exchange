@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { store } from '..';
 import Design from './Gallery/Design';
 import Designer from './Raiting/Designer';
 import Offer from './Raiting/Designer/Offer';
@@ -41,7 +42,8 @@ const getUrlByJson = (obj) => {
 }
 
 const getDesignInfoById = async (id) => {
-    const { data } = await axios(`portfolio/work/${id}`);
+    const { user: {activeUser} } = store.getState();
+    const { data } = await axios(`portfolio/work/${id}?vk_id=${activeUser.getId()}`);
 
     if (data.isSuccess)
         return new Design(data.work);
@@ -86,6 +88,11 @@ const checkPhotoAndGetSrc = async (photoFile) => {
     })
 }
 
+const parseDateFromServer = (date) => {
+    const formatedDate = new Date((Number(date) + new Date().getTimezoneOffset() * 60) * 1000);
+    return formatedDate;
+}
+
 export {
     sleep,
     getCardHeightBySize,
@@ -93,5 +100,6 @@ export {
     getDesignInfoById,
     getDesignerInfoById,
     getOfferInfoById,
-    checkPhotoAndGetSrc
+    checkPhotoAndGetSrc,
+    parseDateFromServer
 }

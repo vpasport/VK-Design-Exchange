@@ -25,4 +25,15 @@
         margin-top: 20px;
     }
 
+    &__footer{
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+}
+
+.commentsBlock{
+    padding-bottom: 55px;
 }

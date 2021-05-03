@@ -79,7 +79,10 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
 
     useEffect(() => {
         if(!filters.length && loadFilters) getFilters();
-        if( loadingCondition() || !list?.length) getList();
+        if( loadingCondition() || !list?.length){
+            dispatch(listActions.changeList(dispatchActionType)([]));
+            getList();
+        }
         else setIsLoad(true);
     }, []);
 

@@ -1,0 +1,12 @@
+.likeButtonBlock{
+    padding: 0;
+    padding-left: 2px;
+
+    &_checked{
+        color: var(--dynamic_red);
+    }
+
+    h5{
+        padding: 0 !important;
+    }
+}

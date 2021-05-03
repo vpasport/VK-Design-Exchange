@@ -92,7 +92,8 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                     width={isDesktop ? '560px' : '100%'}
                     maxWidth={isDesktop ? '560px' : '100%'}
                 >
-                    <Epic activeStory={router.bind.activeStory} tabbar={!isDesktop &&
+                    <Epic activeStory={router.bind.activeStory} 
+                    tabbar={!isDesktop &&
                         <MobileSideBar
                             activeStory={router.bind.activeStory}
                             onStoryChange={changeStory}

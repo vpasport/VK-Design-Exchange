@@ -7,8 +7,12 @@ const useInput = (defaultValue) => {
         setValue(event.target.value);
     }
 
+    const clear = () => {
+        setValue('');
+    }
+
     return {
-        value, onChange
+        value, onChange, clear
     }
 }
 

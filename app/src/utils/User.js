@@ -13,7 +13,6 @@ class User{
         this.lastName = user.last_name;
         this.photo = user.photo_200;
         this.vkUrlParams = vkUrlParams.slice(1);
-
         //axios.defaults.params.post['url_params'] = vkUrlParams;
     }
 

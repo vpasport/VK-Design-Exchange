@@ -12,6 +12,7 @@ import { ordersListReducer } from './OrdersList/reducer';
 import { orderReducer } from './Order/reducers';
 import { userReducer } from './User/reducers';
 import { selectModalReducer } from './selectModal/reducer';
+import { commentsReducer } from './Design/Comments/reducer';
 
 export default combineReducers({
     galleryList: galleryListReducer,
@@ -26,5 +27,6 @@ export default combineReducers({
     ordersList: ordersListReducer,
     order: orderReducer,
     user: userReducer,
-    selectModal: selectModalReducer
+    selectModal: selectModalReducer,
+    commentsList: commentsReducer
 })

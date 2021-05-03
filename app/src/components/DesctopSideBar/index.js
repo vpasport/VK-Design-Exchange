@@ -5,7 +5,7 @@ import { SplitCol, Group, Panel, PanelHeader } from '@vkontakte/vkui';
 
 import DesctopSideBarCell from './DesctopSideBarCell';
 
-const DesctopSideBar = ({ isDesktop, params, activeStory, onStoryChange, hasHeader }) => {
+const DesctopSideBar = ({ params, activeStory, onStoryChange, hasHeader }) => {
 
     return (
         <SplitCol fixed width="280px" maxWidth="280px">

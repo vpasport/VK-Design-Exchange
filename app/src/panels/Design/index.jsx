@@ -12,9 +12,12 @@ import { connect } from 'react-redux';
 import { changeActiveDesign } from '../../store/Design/actions';
 import { changeActiveDesignerId } from '../../store/Designer/actions';
 import useRouter from '../../utils/useRouter';
+import ViewsCounter from '../../components/ViewsCounter';
+import LikeButton from '../../components/LikeButton';
+import Comments from './Comments';
 
 const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, changeActiveDesign }) => {
-    
+
     const { useAlert } = alertContext();
     const router = useRouter();
 
@@ -35,8 +38,19 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
             }
         }
 
+        const getViews = async () => {
+            try {
+                await activeDesign.setNewViewCounts();
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+
         if (isFetchDesign)
             fetchData();
+        else
+            getViews();
 
     }, [])
 
@@ -53,6 +67,11 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
         })
     }
 
+    const handleLikeClick = async () => {
+        await activeDesign.changeLike()
+    }
+
+
     return (
         <Panel id={id}>
             <PanelHeader
@@ -61,39 +80,50 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                 Карточка сайта
             </PanelHeader>
             {!isFetchDesign ?
-                <Group>
-                    <Div className={styles.cardBlock}>
-                        <Title level='1'>{activeDesign.getTitle()}</Title>
-                        {/* <Info title='Проект заказчика:' text={activeDesign.getProjectDescription()} />
+                <>
+                    <Group>
+                        <Div className={styles.cardBlock}>
+                            <Title level='1'>{activeDesign.getTitle()}</Title>
+                            {/* <Info title='Проект заказчика:' text={activeDesign.getProjectDescription()} />
                         <Info title='Задача заказчика:' text={activeDesign.getTaskDescription()} />
                         <Info title='Что было сделано:' text={activeDesign.getCompletedWork()} /> */}
 
-                        {activeDesign.getProjectDescription() && 
-                            <div dangerouslySetInnerHTML={{__html: activeDesign.getProjectDescription()}} />
-                        }
-                        
-                        <div className={styles.cardBlock__group_image}>
-                            <Title level='1'>Дизайн</Title>
-                            <img 
+                            {activeDesign.getProjectDescription() &&
+                                <div dangerouslySetInnerHTML={{ __html: activeDesign.getProjectDescription() }} />
+                            }
+
+                            <div className={styles.cardBlock__group_image}>
+                                <Title level='1'>Дизайн</Title>
+                                <img 
                                 src={activeDesign.getWorkImage()} 
                                 alt="test"
                                 onClick={showImage}
                             />
-                        </div>
+                            </div>
 
-                        {Boolean(activeDesign.getDesignerId() && router.getPrevRoute().panel !== 'portfolio') && 
-                            <Button 
-                                mode='outline' 
-                                stretched 
-                                size='l' 
-                                className={styles.cardBlock__button}
-                                onClick={changeAuthor}
-                            >
-                                В карточку автора
+                            {Boolean(activeDesign.getDesignerId() && router.getPrevRoute().panel !== 'portfolio') &&
+                                <Button
+                                    mode='outline'
+                                    stretched
+                                    size='l'
+                                    className={styles.cardBlock__button}
+                                    onClick={changeAuthor}
+                                >
+                                    В карточку автора
                             </Button>
-                        }
-                    </Div>
-                </Group>
+                            }
+                            <div className={styles.cardBlock__footer}>
+                                <LikeButton
+                                    isChecked={activeDesign.isLikeChecked}
+                                    count={activeDesign.likes}
+                                    onClick={handleLikeClick}
+                                />
+                                <ViewsCounter count={activeDesign.viewCount} />
+                            </div>
+                        </Div>
+                    </Group>
+                    <Comments id={activeDesignId}/>
+                </>
                 :
                 <PanelSpinner size='large' />
             }
