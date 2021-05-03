@@ -214,8 +214,6 @@ async function unbanUser(id) {
     await client.query('begin');
 
     try {
-        console.log(id)
-
         await client.query(
             `delete 
                 from banned_users
