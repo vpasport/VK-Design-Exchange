@@ -107,6 +107,108 @@ async function getBannedUsers() {
     }
 }
 
+async function getBanInfo(vk_id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let user = (await client.query(
+            `select *
+                from banned_users
+            where
+                vk_user_id = $1`,
+            [vk_id]
+        )).rows[0];
+
+        let banned = user !== undefined;
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            banned
+        }
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function banUser(vk_id, delete_comment) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let user = (await client.query(
+            `select * 
+                from banned_users
+            where
+                vk_user_id = $1`,
+            [vk_id]
+        )).rows[0];
+
+        if (user !== undefined) {
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                error: 'User is now blocked'
+            }
+        }
+
+        await client.query(
+            `insert into banned_users
+                (vk_user_id)
+            values
+                ($1)`,
+            [vk_id]
+        )
+
+        if (delete_comment === 'all') {
+            await client.query(
+                `delete from
+                    portfolios_comments
+                where
+                    vk_user_id = $1`,
+                [vk_id]
+            )
+        } else if (delete_comment !== undefined) {
+            await client.query(
+                `delete from 
+                    portfolios_comments
+                where
+                    id = $1`,
+                [delete_comment]
+            )
+        }
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function unbanUser(id) {
     const client = await pool.connect();
     await client.query('begin');
@@ -143,5 +245,7 @@ async function unbanUser(id) {
 module.exports = {
     getRoles,
     getBannedUsers,
+    getBanInfo,
+    banUser,
     unbanUser
 }

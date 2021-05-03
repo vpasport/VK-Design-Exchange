@@ -215,6 +215,7 @@ const Work = ({ user }) => {
                 <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>
             </div>
             <WorkCard
+                user={user}
                 work={work}
                 edit={edit}
                 tags={tags} selectedTags={selectedTags} setSelectedTags={setSelectedTags}

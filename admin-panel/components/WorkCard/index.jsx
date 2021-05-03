@@ -19,15 +19,14 @@ const WorkCard = ({
     uploadWork, workUrl,
     uploadPreview, previewUrl,
     save, setProgress,
-    change, setChange
+    change, setChange,
+    user
 }) => {
     const { query: { id } } = useRouter()
 
     const [dialog, setDialog] = useState(false);
 
     const [comments, setComments] = useState([]);
-
-    console.log(comments)
 
     const getComments = async () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/comments?all=true`);
@@ -148,9 +147,12 @@ const WorkCard = ({
                 {comments.map(el => {
                     return (
                         <Comment
-                            user={el.user}
+                            id={el.id}
+                            user={user}
+                            vkUser={el.user}
                             text={el.text}
                             date={el.create_date}
+                            getComments={getComments}
                         />
                     )
                 })}

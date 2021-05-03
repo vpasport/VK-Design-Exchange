@@ -47,8 +47,6 @@ const BannedTable = ({ }) => {
         getUsers();
     }, []);
 
-    console.log(users);
-
     const header = () => {
         return (
             <div style={{ textAlign: 'center' }}>

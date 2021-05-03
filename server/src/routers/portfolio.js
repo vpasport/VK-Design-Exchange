@@ -23,6 +23,7 @@ const {
     addLike: addLike_,
     addComment: addComment_,
     deleteWork: deleteWork_,
+    deleteComment: deleteComment_,
     updateTags: updateTags_,
     updateDescription: updateDescription_,
     updateImagePaths: updateImagePaths_
@@ -196,7 +197,7 @@ async function addComment({ params: { id }, body: { url_params, text, vk_id } },
             return;
         }
 
-        res.sendStatus(520);
+        res.sendStatus(403);
         return;
     }
 
@@ -344,6 +345,22 @@ async function deleteWork({ body: { id }, session }, res) {
     res.sendStatus(401);
 }
 
+async function deleteComment({ body: { id }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await deleteComment_(id);
+
+        if (result.isSuccess) {
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 function index() {
     const upload = multer();
 
@@ -364,6 +381,7 @@ function index() {
     router.put('/:id/images', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), updateImages);
 
     router.delete('/work', deleteWork);
+    router.delete('/comment', deleteComment);
 
     return router;
 }

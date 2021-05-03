@@ -8,6 +8,8 @@ const {
 
 const {
     getBannedUsers: getBannedUsers_,
+    getBanInfo: getBanInfo_,
+    banUser: banUser_,
     unbanUser: unbanUser_
 } = require('../database/users');
 
@@ -61,6 +63,17 @@ async function getRole({ session }, res) {
     });
 }
 
+async function getBanInfo({ query: { vk_id } }, res) {
+    let result = await getBanInfo_(vk_id);
+
+    if (result.isSuccess) {
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(520);
+}
+
 async function changeMainRole({ session }, res) {
     for (const role of session.role) {
         if (role !== session.mainRole) {
@@ -76,8 +89,22 @@ async function changeMainRole({ session }, res) {
     })
 }
 
-async function banUser({ body: { vk_id }, session }, res) {
+async function banUser({ body: { vk_id, delete_comment }, session }, res) {
+    if (session.role !== undefined && session.role.indexOf('admin') !== -1) {
+        let result = await banUser_(vk_id, delete_comment);
 
+        if (result.isSuccess) {
+            if ('error' in result) {
+                res.json(result);
+            } else res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
 }
 
 async function unbanUser({ body: { id }, session }, res) {
@@ -103,6 +130,7 @@ function index() {
     router.get('/role', getRole);
     router.get('/check?:link', getInfoByLink);
     router.get('/banned', getBannedUsers);
+    router.get('/ban', getBanInfo);
 
     router.put('/change_role', changeMainRole);
 

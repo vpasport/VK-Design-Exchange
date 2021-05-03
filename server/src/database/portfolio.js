@@ -915,6 +915,38 @@ async function deleteWork(id) {
     }
 }
 
+async function deleteComment(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `delete 
+                from portfolios_comments
+            where
+                id = $1`,
+            [id]
+        );
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getAllPreviews,
     getPreviewsFromTo,
@@ -931,5 +963,6 @@ module.exports = {
     updateTags,
     updateDescription,
     updateImagePaths,
-    deleteWork
+    deleteWork,
+    deleteComment
 }
