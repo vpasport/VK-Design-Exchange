@@ -20,8 +20,6 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
 
     const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition);
 
-    console.log(listHook)
-
     const content = (
         <>
             {showScrollTop &&

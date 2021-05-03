@@ -7,8 +7,6 @@ const SelectModal = ({ id, params: {selectList, onClose, header, top, onChange, 
 
     const [ value, setValue ] = useState(_value);
 
-    console.log(header)
-
     const changeItem = (event) => {
         setValue(event.target.value || null);
         onChange(event.target.value)

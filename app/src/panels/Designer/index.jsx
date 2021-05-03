@@ -100,7 +100,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                                 size='l'
                                 onClick={() => router.setActivePanel('offers')}
                             >
-                                Выбрать дизайнера
+                                Посмотреть услуги
                             </Button>
                         </Div>
                     </Group>

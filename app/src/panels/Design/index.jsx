@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button, Cell, RichCell, Avatar } from '@vkontakte/vkui';
 import bridge from '@vkontakte/vk-bridge';
 
 import Info from './Info';
 
 import styles from './style.module.scss';
-import { alertContext } from '../../App';
+import { alertContext, sessionContext } from '../../App';
 import { getDesignInfoById } from '../../utils/helpers';
 import { connect } from 'react-redux';
 import { changeActiveDesign } from '../../store/Design/actions';
@@ -15,11 +15,13 @@ import useRouter from '../../utils/useRouter';
 import ViewsCounter from '../../components/ViewsCounter';
 import LikeButton from '../../components/LikeButton';
 import Comments from './Comments';
+import StarRatings from '../../components/StarRatings';
 
 const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, changeActiveDesign }) => {
 
     const { useAlert } = alertContext();
     const router = useRouter();
+    const { activePlatform } = sessionContext();
 
     const isFetchDesign = useMemo(() => Boolean(!activeDesign || activeDesign.getId() !== activeDesignId), [activeDesign]);
 
@@ -71,6 +73,13 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
         await activeDesign.changeLike()
     }
 
+    const buyDesign = () => {
+        if (activePlatform === 'vkcom' || activePlatform === 'mobile_web')
+            window.open(`https://vk.com/id${activeDesign.author.vk_id}`, '_blank')
+        else
+            window.location.href = `https://vk.com/id${activeDesign.author.vk_id}`;
+    }
+
 
     return (
         <Panel id={id}>
@@ -82,6 +91,19 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
             {!isFetchDesign ?
                 <>
                     <Group>
+                        {activeDesign.author &&
+                            <Cell
+                                description={
+                                    <StarRatings rating={activeDesign.author.rating} />
+                                }
+                                before={
+                                    <Avatar src={activeDesign.author.photo} />
+                                }
+                                onClick={changeAuthor}
+                            >
+                                {`${activeDesign.author.first_name} ${activeDesign.author.last_name}`}
+                            </Cell>
+                        }
                         <Div className={styles.cardBlock}>
                             <Title level='1'>{activeDesign.getTitle()}</Title>
                             {/* <Info title='Проект заказчика:' text={activeDesign.getProjectDescription()} />
@@ -94,24 +116,21 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
 
                             <div className={styles.cardBlock__group_image}>
                                 <Title level='1'>Дизайн</Title>
-                                <img 
-                                src={activeDesign.getWorkImage()} 
-                                alt="test"
-                                onClick={showImage}
-                            />
+                                <img
+                                    src={activeDesign.getWorkImage()}
+                                    alt="test"
+                                    onClick={showImage}
+                                />
                             </div>
-
-                            {Boolean(activeDesign.getDesignerId() && router.getPrevRoute().panel !== 'portfolio') &&
-                                <Button
-                                    mode='outline'
-                                    stretched
-                                    size='l'
-                                    className={styles.cardBlock__button}
-                                    onClick={changeAuthor}
-                                >
-                                    В карточку автора
+                            <Button
+                                mode='outline'
+                                stretched
+                                size='l'
+                                className={styles.cardBlock__button}
+                                onClick={buyDesign}
+                            >
+                                Купить этот шаблон
                             </Button>
-                            }
                             <div className={styles.cardBlock__footer}>
                                 <LikeButton
                                     isChecked={activeDesign.isLikeChecked}
@@ -122,7 +141,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                             </div>
                         </Div>
                     </Group>
-                    <Comments id={activeDesignId}/>
+                    <Comments id={activeDesignId} />
                 </>
                 :
                 <PanelSpinner size='large' />

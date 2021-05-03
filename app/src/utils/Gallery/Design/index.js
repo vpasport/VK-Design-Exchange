@@ -10,17 +10,22 @@ class Design extends DesignDefaultProps {
     constructor(item) {
         super(item.title, item.id);
 
+        console.log(item)
+
         this._projectDescription = item.project_description;
         this._workImage = `${REACT_APP_API_URL}/${item.work_image}`;
         this._designerId = item.author?.id;
         this._viewCount = item.views;
         this._likes = item.likes.count;
         this._isLikeChecked = item.likes.from_user;
+        this._author = item.author;
     }
 
     getProjectDescription() { return this._projectDescription }
     getWorkImage() { return this._workImage }
     getDesignerId() { return this._designerId }
+
+    get author(){ return this._author }
 
     set viewCount(value) {
         this.viewCount = value;
