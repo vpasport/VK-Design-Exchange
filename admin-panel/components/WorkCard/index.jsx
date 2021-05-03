@@ -3,7 +3,6 @@ import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from 'primereact/multiselect';
-import { InputTextarea } from 'primereact/inputtextarea';
 import FileUpload from '../FileUpload';
 import Quill from '../Quill';
 import { Dialog } from 'primereact/dialog';
@@ -142,6 +141,20 @@ const WorkCard = ({
                     </Button>
                 </div>
             }
+            <div
+                style={{
+                    width: '70%',
+                    margin: 'auto'
+                }}
+                className='p-d-flex p-ai-center'
+            >
+                <div className='p-d-flex p-ai-center'>
+                    <i className='pi pi-eye' style={{ paddingTop: 2 }}></i><p className='p-ml-1'>{work?.views}</p>
+                </div>
+                <div className='p-d-flex p-ai-center p-ml-3'>
+                    <i className='pi pi-heart' style={{ paddingTop: 2, color: '#e64646' }}></i><p className='p-ml-1'>{work?.likes?.count}</p>
+                </div>
+            </div>
             <div style={{ width: '70%', margin: 'auto' }}>
                 <h3>Комметарии:</h3>
                 {comments.map(el => {
