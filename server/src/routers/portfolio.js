@@ -190,6 +190,11 @@ async function addComment({ params: { id }, body: { url_params, text, vk_id } },
     let params = JSON.parse('{"' + decodeURI(url_params).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
 
     if (checkSign(params)) {
+        if (text.length === 0) {
+            res.sendStatus(400);
+            return;
+        }
+
         result = await addComment_(id, text, vk_id);
 
         if (result.isSuccess) {
