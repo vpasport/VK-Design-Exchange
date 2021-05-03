@@ -381,9 +381,6 @@ async function getWorkComments(id, from, to = 20, from_id, all = false) {
             params
         )
 
-        await client.query('commit');
-        client.release();
-
         let count = 0;
         let userVkId = [];
 
@@ -406,12 +403,20 @@ async function getWorkComments(id, from, to = 20, from_id, all = false) {
             }
         }
 
-        return {
+        await client.query('commit');
+        client.release();
+
+        let result = {
             isSuccess: true,
             count,
-            from_id: from_id === undefined ? comments[0].id : Number(from_id),
             comments
         }
+
+        if (comments.length > 0) {
+            result.from_id = from_id === undefined ? comments[0].id : Number(from_id);
+        }
+
+        return result;
     } catch (e) {
         await client.query('rollback');
         client.release();
