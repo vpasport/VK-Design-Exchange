@@ -155,8 +155,9 @@ const WorkCard = ({
                     <i className='pi pi-heart' style={{ paddingTop: 2, color: '#e64646' }}></i><p className='p-ml-1'>{work?.likes?.count}</p>
                 </div>
             </div>
-            <div style={{ width: '70%', margin: 'auto' }}>
-                <h3>Комметарии:</h3>
+            <div style={{ width: '70%', margin: 'auto', marginBottom: '10%' }}>
+                <h3>Комментарии:</h3>
+                {comments.length === 0 && `Комментарии отсутствуют`}
                 {comments.map(el => {
                     return (
                         <Comment
