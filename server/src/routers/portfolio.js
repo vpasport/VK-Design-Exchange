@@ -15,11 +15,13 @@ const {
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
     getWorkViews: getWorkViews_,
+    getWorkComments: getWorkComments_,
     getImagesNames: getImagesNames_,
     getDesignerByPortfolio: getDesignerByPortfolio_,
     createWork: createWork_,
     addTags: addTags_,
     addLike: addLike_,
+    addComment: addComment_,
     deleteWork: deleteWork_,
     updateTags: updateTags_,
     updateDescription: updateDescription_,
@@ -77,6 +79,20 @@ async function getWork({ params: { id }, query: { vk_id }, session }, res) {
 
 async function getWorkViews({ params: { id } }, res) {
     let result = await getWorkViews_(id);
+
+    if (result.isSuccess) {
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(520);
+}
+
+async function getWorkComments({
+    params: { id },
+    query: { from, to, from_id, all }
+}, res) {
+    let result = await getWorkComments_(id, from, to, from_id, all);
 
     if (result.isSuccess) {
         res.json(result);
@@ -154,6 +170,26 @@ async function addLike({ params: { id }, body: { url_params, vk_id } }, res) {
 
     if (checkSign(params)) {
         result = await addLike_(id, vk_id);
+
+        if (result.isSuccess) {
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
+async function addComment({ params: { id }, body: { url_params, text, vk_id } }, res) {
+    let result;
+
+    let params = JSON.parse('{"' + decodeURI(url_params).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+
+    if (checkSign(params)) {
+        result = await addComment_(id, text, vk_id);
 
         if (result.isSuccess) {
             res.json(result);
@@ -316,10 +352,12 @@ function index() {
     router.get('/previews', getPreviews);
     router.get('/work/:id', getWork);
     router.get('/work/:id/views', getWorkViews);
+    router.get('/work/:id/comments', getWorkComments);
 
     router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
     router.post('/tags', addTags);
     router.post('/work/:id/likes', addLike);
+    router.post('/work/:id/comment', addComment);
 
     router.put('/:id/tags', updateTags);
     router.put('/:id/description', updateDescription);

@@ -22,7 +22,8 @@ const Header = ({ url, user }) => {
             { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: '/admin/tags' },
             { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: '/admin/admins' },
             { label: 'Предложения', icon: 'pi pi-fw pi-list', url: '/admin/offers' },
-            { label: 'Заказы', icon: 'pi pi-fw pi-shopping-cart', url: '/admin/orders' }
+            { label: 'Заказы', icon: 'pi pi-fw pi-shopping-cart', url: '/admin/orders' },
+            { label: 'Бан-лист', icon: 'pi pi-fw pi-user-minus', url: '/admin/banned' }
         ])
     }
     if (user.mainRole === 'designer') {
@@ -68,12 +69,12 @@ const Header = ({ url, user }) => {
             }}
         >
             <TabMenu
-                className='p-ml-4'
+                // className='p-ml-2'
                 model={items}
                 activeItem={items.find(el => el.url === url)}
                 onTabChange={(e) => router.push(e.value.url)}
             />
-            <div className='p-d-flex p-ai-center p-mr-4'>
+            <div className='p-d-flex p-ai-center'>
                 {user.role.length === 2 &&
                     <div className='p-d-flex p-ai-center p-mr-3'>
                         <span className='p-mr-2'>

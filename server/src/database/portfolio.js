@@ -1,5 +1,7 @@
 "use strict";
 
+const { getUsersInfo } = require('../helper/vk');
+
 const pool = require('./pg/pool').getPool();
 
 async function getAllPreviews() {
@@ -301,6 +303,128 @@ async function getWorkViews(id) {
     }
 }
 
+async function getWorkComments(id, from, to = 20, from_id, all = false) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        if (all) {
+            const comments = (await client.query(
+                `select *, count( 1 ) over ()::int
+                    from portfolios_comments
+                where
+                    portfolio_id = $1
+                order by create_date desc`,
+                [id]
+            )).rows;
+
+            await client.query('commit');
+            client.release();
+
+            let count = 0;
+            let userVkId = [];
+
+            if (comments.length > 0) {
+                count = comments[0].count;
+                comments.forEach(el => {
+                    userVkId.push(el.vk_user_id);
+                    delete el.count;
+                });
+
+                userVkId = await getUsersInfo(userVkId);
+
+                if (userVkId.isSuccess) {
+                    userVkId = userVkId.users;
+
+                    comments.forEach(element => {
+                        let user = userVkId.find(el => el.id === element.vk_user_id);
+                        element.user = user;
+                    })
+                }
+            }
+
+            return {
+                isSuccess: true,
+                count,
+                comments
+            }
+        }
+
+        const params = [];
+        let filter = '';
+        let offset = '';
+        let limit = '';
+
+        if (from_id) {
+            params.push(from_id);
+            filter = `and id <= $${params.length}`;
+        }
+        if (from) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to) {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
+        params.push(id);
+
+        let { rows: comments } = await client.query(
+            `select *, count( 1 ) over ()::int
+            from portfolios_comments
+            where 
+            portfolio_id = $${params.length} ${filter}
+            order by create_date desc
+            ${offset}
+            ${limit}`,
+            params
+        )
+
+        await client.query('commit');
+        client.release();
+
+        let count = 0;
+        let userVkId = [];
+
+        if (comments.length > 0) {
+            count = comments[0].count;
+            comments.forEach(el => {
+                userVkId.push(el.vk_user_id);
+                delete el.count;
+            });
+
+            userVkId = await getUsersInfo(userVkId);
+
+            if (userVkId.isSuccess) {
+                userVkId = userVkId.users;
+
+                comments.forEach(element => {
+                    let user = userVkId.find(el => el.id === element.vk_user_id);
+                    element.user = user;
+                })
+            }
+        }
+
+        return {
+            isSuccess: true,
+            count,
+            from_id: from_id === undefined ? comments[0].id : Number(from_id),
+            comments
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+
+}
+
 async function getImagesNames(id) {
     const client = await pool.connect();
     await client.query('begin');
@@ -597,6 +721,73 @@ async function addLike(id, vk_id) {
     }
 }
 
+async function addComment(id, text, vk_id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let work = (await client.query(
+            `select id
+                from portfolio
+            where id = $1`,
+            [id]
+        )).rows[0];
+
+        let user = (await client.query(
+            `select id
+                from banned_users
+            where
+                vk_user_id = $1`,
+            [vk_id]
+        )).rows[0];
+
+        if (user !== undefined) {
+            return {
+                isSuccess: false,
+                error: 'Banned user'
+            }
+        }
+
+        if (work !== undefined) {
+            const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60)
+
+            const comment = (await client.query(
+                `insert into 
+                    portfolios_comments (portfolio_id, vk_user_id, text, create_date)
+                values
+                    ($1, $2, $3, $4)
+                returning id`,
+                [id, vk_id, text, date]
+            )).rows[0].id;
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                comment: {
+                    id: comment,
+                    work_id: Number.parseInt(id),
+                    text,
+                    create_date: date
+                }
+            }
+        }
+
+        throw 'Work not found';
+
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function updateTags(portfolio_id, tag_ids) {
     const client = await pool.connect();
     await client.query('begin');
@@ -725,11 +916,13 @@ module.exports = {
     getPreviewsTags,
     getWork,
     getWorkViews,
+    getWorkComments,
     getImagesNames,
     getDesignerByPortfolio,
     createWork,
     addTags,
     addLike,
+    addComment,
     updateTags,
     updateDescription,
     updateImagePaths,

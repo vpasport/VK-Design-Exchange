@@ -7,7 +7,10 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import FileUpload from '../FileUpload';
 import Quill from '../Quill';
 import { Dialog } from 'primereact/dialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
+import Comment from '../Comment';
 
 const WorkCard = ({
     work, edit,
@@ -18,7 +21,25 @@ const WorkCard = ({
     save, setProgress,
     change, setChange
 }) => {
+    const { query: { id } } = useRouter()
+
     const [dialog, setDialog] = useState(false);
+
+    const [comments, setComments] = useState([]);
+
+    console.log(comments)
+
+    const getComments = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/comments?all=true`);
+
+        const { comments } = await response.json();
+
+        setComments(comments);
+    }
+
+    useEffect(() => {
+        getComments()
+    }, [])
 
     return (
         <>
@@ -122,6 +143,18 @@ const WorkCard = ({
                     </Button>
                 </div>
             }
+            <div style={{ width: '70%', margin: 'auto' }}>
+                <h3>Комметарии:</h3>
+                {comments.map(el => {
+                    return (
+                        <Comment
+                            user={el.user}
+                            text={el.text}
+                            date={el.create_date}
+                        />
+                    )
+                })}
+            </div>
             <Dialog
                 header='Опубликовать'
                 visible={dialog}
