@@ -16,7 +16,8 @@ async function getUserInfo(vk_id) {
             {
                 user_ids: vk_id,
                 fields: 'photo_max',
-                name_case: 'nom'
+                name_case: 'nom',
+                lang: 'ru'
             }
         )
 
@@ -39,7 +40,8 @@ async function getUsersInfo(vk_ids) {
             {
                 user_ids: vk_ids,
                 fields: 'photo_max',
-                name_case: 'nom'
+                name_case: 'nom',
+                lang: 'ru'
             }
         )
 
