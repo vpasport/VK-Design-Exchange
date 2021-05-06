@@ -342,7 +342,20 @@ async function deleteWork({ body: { id }, session }, res) {
                     return;
                 }
             }
+        } else {
+            if (session.role.indexOf('admin') !== -1) {
+                let result = await deleteWork_(id);
+
+                if (result.isSuccess) {
+                    await unlink(`static/${result.images.preview}`);
+                    await unlink(`static/${result.images.work_image}`);
+
+                    res.sendStatus(204);
+                    return;
+                }
+            }
         }
+
         res.sendStatus(520);
         return;
     }

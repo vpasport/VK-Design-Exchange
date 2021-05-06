@@ -488,7 +488,7 @@ async function getDesignerByPortfolio(id) {
             }
         }
 
-        throw 'Portfolio not found'
+        throw 'Deisgner not found'
     } catch (e) {
         await client.query('rollback');
         client.release();
