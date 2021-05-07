@@ -133,8 +133,7 @@ async function getPreviewsTags(from, to, from_id, tags) {
         let count = 0;
 
         let result = {
-            isSuccess: true,
-            count
+            isSuccess: true
         }
 
         if (previews.length > 0) {
@@ -148,6 +147,7 @@ async function getPreviewsTags(from, to, from_id, tags) {
 
         return {
             ...result,
+            count,
             previews
         }
 
