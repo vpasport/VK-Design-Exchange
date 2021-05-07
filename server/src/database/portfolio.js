@@ -132,18 +132,22 @@ async function getPreviewsTags(from, to, from_id, tags) {
 
         let count = 0;
 
+        let result = {
+            isSuccess: true,
+            count
+        }
+
         if (previews.length > 0) {
             count = previews[0].count;
             previews.forEach(element => delete element.count);
+            result.from_id = from_id === undefined ? previews[0].id : Number(from_id);
         }
 
         await client.query('commit');
         client.release();
 
         return {
-            isSuccess: true,
-            count,
-            from_id: from_id === undefined ? previews[0].id : Number(from_id),
+            ...result,
             previews
         }
 
