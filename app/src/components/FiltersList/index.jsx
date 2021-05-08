@@ -40,7 +40,7 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize }) => {
 }
 
 FiltersList.propTypes = {
-    filters: PropTypes.object,
+    filters: PropTypes.array,
     size: PropTypes.string,
     changeListFormat: PropTypes.func,
     isChangeSize: PropTypes.bool.isRequired

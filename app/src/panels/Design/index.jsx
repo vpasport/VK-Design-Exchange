@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button, Cell, RichCell, Avatar } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button, Cell, RichCell, Avatar, usePlatform, ANDROID, IOS } from '@vkontakte/vkui';
 import bridge from '@vkontakte/vk-bridge';
 
 import Info from './Info';
@@ -22,6 +22,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     const { useAlert } = alertContext();
     const router = useRouter();
     const { activePlatform } = sessionContext();
+    const platform = usePlatform();
 
     const isFetchDesign = useMemo(() => Boolean(!activeDesign || activeDesign.getId() !== activeDesignId), [activeDesign]);
 
@@ -74,7 +75,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     }
 
     const buyDesign = () => {
-        if (activePlatform === 'vkcom' || activePlatform === 'mobile_web')
+        if (platform !== ANDROID && platform !== IOS)
             window.open(`https://vk.com/id${activeDesign.author.vk_id}`, '_blank')
         else
             window.location.href = `https://vk.com/id${activeDesign.author.vk_id}`;
@@ -106,9 +107,6 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                         }
                         <Div className={styles.cardBlock}>
                             <Title level='1'>{activeDesign.getTitle()}</Title>
-                            {/* <Info title='Проект заказчика:' text={activeDesign.getProjectDescription()} />
-                        <Info title='Задача заказчика:' text={activeDesign.getTaskDescription()} />
-                        <Info title='Что было сделано:' text={activeDesign.getCompletedWork()} /> */}
 
                             {activeDesign.getProjectDescription() &&
                                 <div dangerouslySetInnerHTML={{ __html: activeDesign.getProjectDescription() }} />

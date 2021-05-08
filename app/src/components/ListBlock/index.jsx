@@ -34,14 +34,12 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                     />
                 </ScrollUpButton>
             }
-            {Boolean(listHook.bind.list.length) &&
-                <FiltersList
-                    filters={listHook.bind.filters}
-                    size={listHook.bind.listFormat}
-                    changeListFormat={listHook.changeListFormat}
-                    isChangeSize={isChangeSize}
-                />
-            }
+            <FiltersList
+                filters={listHook.bind.filters}
+                size={listHook.bind.listFormat}
+                changeListFormat={listHook.changeListFormat}
+                isChangeSize={isChangeSize}
+            />
             {listHook.bind.list.length ?
                 <InfiniteScroll
                     loadMore={listHook.getList}

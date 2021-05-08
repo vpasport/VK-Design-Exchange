@@ -39,12 +39,14 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
             
             const data = await loadList({from, to: nextStep, fromId, activeFilters});
 
+            console.log(data)
+
             dispatch(listActions.changeList(dispatchActionType)(data.list));
 
             if(!length) dispatch(listActions.changeLength(dispatchActionType)(data.count));
             if(!fromId) dispatch(listActions.changeFromId(dispatchActionType)(data.fromId));
             
-            dispatch(listActions.changeSecondLength(dispatchActionType)(secondLength + loadLength))
+            dispatch(listActions.changeSecondLength(dispatchActionType)(secondLength + loadLength));
             setIsLoad(true)
         }
         catch(error){

@@ -10,6 +10,8 @@ class Gallery {
 
         const allParams = getUrlByJson(params);
 
+        console.log(allParams)
+
         const { data } = await axios.get(`portfolio/previews${allParams}`);
 
         if (data.isSuccess){
@@ -32,10 +34,18 @@ class Gallery {
         
         const { data } = await axios.get(`tags`);
 
-        if(data.isSuccess) return data;
-        else throw new Error ('Ошибка при загрузке тегов');
-        
+        console.log(data)
 
+        if(!data.isSuccess) throw new Error ('Ошибка при загрузке тегов');
+        
+        return [
+            {
+                name: 'Теги',
+                type: 'tags',
+                componentName: 'CellButtonsList',
+                filters: data.tags
+            }
+        ];
     }
 
 }

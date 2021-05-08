@@ -27,32 +27,30 @@ class Raiting {
     }
 
     async getFilters(){
-        const filters = {
-            engaged: [
-                {
-                    status: 'Все дизайнеры',
-                    type: null
-                },
-                {
-                    status: 'Свободные',
-                    type: 1
-                },
-                {
-                    status: 'Занятые',
-                    type: 2
-                }
-            ],
-            order: [
-                {
-                    status: 'По убыванию рейтинга',
-                    type: 'desc'
-                },
-                {
-                    status: 'По возрастанию рейтинга',
-                    type: 'asc'
-                }
-            ]
-        }
+
+        const filters = [
+            {
+                name: 'Статус дизайнера',
+                header: 'Выберите статус',
+                type: 'engaged',
+                componentName: 'ModalRadioSelect',
+                filters: [
+                    {status: 'Все дизайнеры', type: null},
+                    {status: 'Свободные', type: 1},
+                    {status: 'Занятые', type: 2}
+                ]
+            },
+            {
+                name: 'Сортировка дизайнеров',
+                header: 'Тип сортировки',
+                type: 'order',
+                componentName: 'ModalRadioSelect',
+                filters: [
+                    {status: 'По убыванию рейтинга', type: 'desc'},
+                    {status: 'По возрастанию рейтинга', type: 'asc'}
+                ]
+            }
+        ]
 
         return filters;
     }
