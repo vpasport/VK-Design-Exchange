@@ -32,7 +32,7 @@ const {
     checkSign
 } = require('../helper/vk');
 
-async function getPreviews({ query: { from, to, from_id, tags } }, res) {
+async function getPreviews({ query: { from, to, from_id, tags, sort_by, direction } }, res) {
     if (tags !== undefined) tags = tags.split(',')
 
     let result;
@@ -44,9 +44,9 @@ async function getPreviews({ query: { from, to, from_id, tags } }, res) {
     }
 
     if (tags === undefined) {
-        result = await getPreviewsFromTo_(from, to, from_id);
+        result = await getPreviewsFromTo_(from, to, from_id, sort_by, direction);
     } else {
-        result = await getPreviewsTags_(from, to, from_id, tags)
+        result = await getPreviewsTags_(from, to, from_id, tags, sort_by, direction)
     }
 
     if (result.isSuccess) {

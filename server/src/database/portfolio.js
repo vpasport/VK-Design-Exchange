@@ -33,7 +33,7 @@ async function getAllPreviews() {
     }
 }
 
-async function getPreviewsFromTo(from, to, from_id) {
+async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -42,6 +42,11 @@ async function getPreviewsFromTo(from, to, from_id) {
         let filter = '';
         let offset = '';
         let limit = '';
+        let sort = 'p.id';
+        let dir = 'desc';
+
+        let sortTypes = ['likes', 'views', 'id'];
+        let dirTypes = ['desc', 'asc'];
 
         if (from_id) {
             params.push(from_id);
@@ -55,31 +60,72 @@ async function getPreviewsFromTo(from, to, from_id) {
             params.push(to);
             limit = `limit $${params.length}`;
         }
+        if (sort_by && sortTypes.indexOf(sort_by) !== -1) {
+            if (sort_by === 'likes')
+                sort = 'p.likes is null, p.likes'
+            else
+                sort = `p.${sort_by}`;
+        }
+        if (direction && dirTypes.indexOf(direction)) {
+            dir = direction;
+        }
 
         let { rows: previews } = await client.query(
-            `with tmp as (
-                select id, title, preview, count( 1 ) over ()::int  
-                    from portfolio
+            `with likes as (
+                select 
+                    portfolio_id, 
+                    count(vk_user_id) as likes
+                from 
+                    portfolios_likes
+                group by portfolio_id
+            ),
+            tmp as (
+                select 
+                    p.id, 
+                    p.title, 
+                    p.preview, 
+                    p.views,
+                     l.likes,
+                    count( 1 ) over ()::int
+                from 
+                    portfolio as p
+                left outer join 
+                    likes as l 
+                on 
+                    p.id = l.portfolio_id
             )
-            select * 
-                from tmp as p
+            select
+                 id, 
+                 title, 
+                 preview, 
+                 count
+            from 
+                tmp as p
             ${filter}
-            order by p.id desc
+            order by ${sort} ${dir}
             ${offset}
             ${limit}`,
             params
         );
 
-        let count = previews[0].count;
-        previews.forEach(element => delete element.count);
+        let count = 0;
+
+        let result = {
+            isSuccess: true
+        }
+
+        if (previews.length > 0) {
+            count = previews[0].count;
+            previews.forEach(element => delete element.count);
+            result.from_id = from_id === undefined ? previews[0].id : Number(from_id);
+        }
 
         await client.query('commit');
         client.release();
 
         return {
-            isSuccess: true,
+            ...result,
             count,
-            from_id: from_id === undefined ? previews[0].id : Number(from_id),
             previews
         }
 
@@ -95,7 +141,7 @@ async function getPreviewsFromTo(from, to, from_id) {
     }
 }
 
-async function getPreviewsTags(from, to, from_id, tags) {
+async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -104,6 +150,11 @@ async function getPreviewsTags(from, to, from_id, tags) {
         let filter = '';
         let offset = '';
         let limit = '';
+        let sort = 'p.id';
+        let dir = 'desc';
+
+        let sortTypes = ['likes', 'views', 'id'];
+        let dirTypes = ['desc', 'asc'];
 
         if (from_id) {
             params.push(from_id);
@@ -117,14 +168,53 @@ async function getPreviewsTags(from, to, from_id, tags) {
             params.push(to);
             limit = `limit $${params.length}`;
         }
+        if (sort_by && sortTypes.indexOf(sort_by) !== -1) {
+            if (sort_by === 'likes')
+                sort = 'p.likes is null, p.likes'
+            else
+                sort = `p.${sort_by}`;
+        }
+        if (direction && dirTypes.indexOf(direction)) {
+            dir = direction;
+        }
 
         params.push(tags);
 
         let { rows: previews } = await client.query(
-            `select p.id, p.title, p.preview, count( 1 ) over ()::int  
-                from portfolio as p, tags_portfolios as tp
-            where p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
-            order by p.id desc
+            `with likes as (
+                select 
+                    portfolio_id, 
+                    count(vk_user_id) as likes
+                from 
+                    portfolios_likes
+                group by portfolio_id
+            ),
+            tmp as (
+                select 
+                    p.id, 
+                    p.title, 
+                    p.preview, 
+                    p.views,
+                     l.likes,
+                    count( 1 ) over ()::int
+                from 
+                    portfolio as p
+                left outer join 
+                    likes as l 
+                on 
+                    p.id = l.portfolio_id
+            )
+            select
+                 p.id, 
+                 p.title, 
+                 p.preview, 
+                 p.count
+            from 
+                tmp as p,
+                tags_portfolios as tp
+            where
+                p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
+            order by ${sort} ${dir}
             ${offset}
             ${limit}`,
             params
