@@ -61,17 +61,13 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
             limit = `limit $${params.length}`;
         }
         if (sort_by && sortTypes.indexOf(sort_by) !== -1) {
-            if (direction && dirTypes.indexOf(direction)) {
-                dir = direction;
-                if (sort_by === 'likes')
-                    if (direction === 'asc') {
-                        sort = 'p.likes';
-                        dir = 'asc nulls first';
-                    } else
-                        sort = 'p.likes is null, p.likes';
-                else
-                    sort = `p.${sort_by}`;
-            }
+            sort = `p.${sort_by}`;
+        }
+        if (direction && dirTypes.indexOf(direction) !== -1) {
+            if (direction === 'asc')
+                dir = 'asc nulls first';
+            else
+                dir = 'desc nulls last';
         }
 
         let { rows: previews } = await client.query(
@@ -173,17 +169,13 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
             limit = `limit $${params.length}`;
         }
         if (sort_by && sortTypes.indexOf(sort_by) !== -1) {
-            if (direction && dirTypes.indexOf(direction)) {
-                dir = direction;
-                if (sort_by === 'likes')
-                    if (direction === 'asc') {
-                        sort = 'p.likes';
-                        dir = 'asc nulls first';
-                    } else
-                        sort = 'p.likes is null, p.likes';
-                else
-                    sort = `p.${sort_by}`;
-            }
+            sort = `p.${sort_by}`;
+        }
+        if (direction && dirTypes.indexOf(direction) !== -1) {
+            if (direction === 'asc')
+                dir = 'asc nulls first';
+            else
+                dir = 'desc nulls last';
         }
 
         params.push(tags);
