@@ -5,8 +5,6 @@ const PreviewUpload = ({ lable, onChange, preview }) => {
         return preview ? 'Заменить превью' : 'Загрузить превью'
     }
 
-    console.log(preview)
-
     return (
         <>
             {!preview &&

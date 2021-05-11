@@ -1,15 +1,24 @@
 import { useEffect, useState, useRef } from "react";
 import { Toast } from 'primereact/toast';
+import { Dialog } from 'primereact/dialog';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import { useRouter } from 'next/router';
 
-const WorkImagesUpload = ({ onChange = () => { } }) => {
+const WorkImagesUpload = ({
+    onChange = () => { }, previews = undefined,
+    edit = false
+}) => {
+    const { query: { id } } = useRouter();
+
     const [images, setImages] = useState([]);
-    const [imagesFiles, setImagesFiles] = useState([]);
 
     const [removeImageIndex, setRemoveImageIndex] = useState(null);
 
+    const [progress, setProgress] = useState(false);
+
     const toast = useRef(null);
 
-    const addFirstImage = ({ target }) => {
+    const addFirstImage = async ({ target }) => {
         const file = target.files[0];
 
         if (file) {
@@ -17,6 +26,24 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                 target.value = "";
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
+                if (edit) {
+                    const formData = new FormData();
+
+                    formData.append('image', file);
+                    formData.append('position', 0);
+
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/image`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: formData
+                    })
+
+                    if (!response.ok)
+                        return;
+
+                    setProgress(false);
+                }
+
                 setImages(prev => [
                     {
                         path: URL.createObjectURL(file),
@@ -28,7 +55,7 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
         }
     }
 
-    const addImage = ({ target }) => {
+    const addImage = async ({ target }) => {
         const file = target.files[0];
 
         if (file) {
@@ -36,6 +63,23 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                 target.value = "";
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
+                if (edit) {
+                    const formData = new FormData();
+
+                    formData.append('image', file);
+
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/image`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: formData
+                    })
+
+                    if (!response.ok)
+                        return;
+
+                    setProgress(false);
+                }
+
                 setImages(prev => [
                     ...prev,
                     {
@@ -47,7 +91,7 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
         }
     }
 
-    const insertImage = ({ target }, index) => {
+    const insertImage = async ({ target }, index) => {
         const file = target.files[0];
 
         if (file) {
@@ -55,6 +99,24 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                 target.value = "";
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
+                if (edit) {
+                    const formData = new FormData();
+
+                    formData.append('image', file);
+                    formData.append('position', index + 1 );
+
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/image`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: formData
+                    })
+
+                    if (!response.ok)
+                        return;
+
+                    setProgress(false);
+                }
+
                 setImages(prev => {
                     let tmp = [...prev];
                     tmp.splice(index + 1, 0, {
@@ -67,7 +129,32 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
         }
     }
 
-    const removeImage = (i) => {
+    useEffect(() => {
+        if (previews) {
+            setImages(prev => {
+                let tmp = previews.map(el => {
+                    el.path = `${process.env.NEXT_PUBLIC_API_URL}/${el.path}`;
+                    return {
+                        ...el
+                    }
+                })
+
+                return tmp;
+            })
+        }
+    }, [])
+
+    const removeImage = async (i) => {
+        if (edit) {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/image/${i}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+
+            if (!response.ok)
+                return;
+        }
+
         let tmp = images;
         tmp.splice(i, 1);
         setImages(tmp);
@@ -115,12 +202,18 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
             {images.length === 0 ?
                 <Button
                     label='Загрузить изображение'
-                    onClick={addImage}
+                    onClick={(e) => {
+                        if (edit) setProgress(true);
+                        addImage(e);
+                    }}
                 />
                 :
                 <Button
                     label='Вставить изображение в начало'
-                    onClick={addFirstImage}
+                    onClick={(e) => {
+                        if (edit) setProgress(true);
+                        addFirstImage(e);
+                    }}
                 />
             }
             {images.length > 0 &&
@@ -152,7 +245,7 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                                     right: 0,
                                     padding: 10,
                                     color: '#fff',
-                                    fontSize: '2em'
+                                    fontSize: '24px'
                                 }}
                                 onClick={() => setRemoveImageIndex(i)}
                             />
@@ -162,7 +255,10 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                                 <br />
                                 <Button
                                     label='Добавить изображение'
-                                    onClick={addImage}
+                                    onClick={(e) => {
+                                        if (edit) setProgress(true);
+                                        addImage(e);
+                                    }}
                                 />
                             </>
                             :
@@ -170,7 +266,10 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                                 <br />
                                 <Button
                                     label='Вставить изображение'
-                                    onClick={(event) => insertImage(event, i)}
+                                    onClick={(event) => {
+                                        if (edit) setProgress(true);
+                                        insertImage(event, i)
+                                    }}
                                 />
                             </>
                         }
@@ -178,6 +277,14 @@ const WorkImagesUpload = ({ onChange = () => { } }) => {
                 )
             }
             <Toast ref={toast} position="bottom-right" />
+            <Dialog
+                header="Загрузка"
+                visible={progress}
+                style={{ width: '200px', textAlign: 'center' }}
+                closable={false}
+            >
+                <ProgressSpinner style={{ width: '30px', height: '30px' }} strokeWidth="4" animationDuration="1.5s" />
+            </Dialog>
         </>
     )
 }

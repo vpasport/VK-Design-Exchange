@@ -20,6 +20,7 @@ const {
     getDesignerByPortfolio: getDesignerByPortfolio_,
     createWork: createWork_,
     addImages: _addImages,
+    addImage: addImage_,
     addTags: addTags_,
     addLike: addLike_,
     addComment: addComment_,
@@ -27,7 +28,8 @@ const {
     deleteComment: deleteComment_,
     updateTags: updateTags_,
     updateDescription: updateDescription_,
-    updateImagePaths: updateImagePaths_
+    updatePreviewPaths: updatePreviewPaths_,
+    deleteImage: deleteImage_,
 } = require('../database/portfolio');
 const {
     checkSign
@@ -154,8 +156,8 @@ async function addImages({ files, body, params: { id }, session }, res) {
         let portfolio = await getDesignerByPortfolio_(id);
 
         if (portfolio.isSuccess && portfolio.designer === session.user.did) {
-            if (!files && files.length === 0) {
-                res.sendStatus(204);
+            if (!files || files.length === 0 || files.length > 30) {
+                res.sendStatus(422);
                 return;
             }
 
@@ -192,6 +194,46 @@ async function addImages({ files, body, params: { id }, session }, res) {
     }
 
     res.sendStatus(401);
+}
+
+async function addImage({ file, session, params: { id }, body: { position } }, res) {
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                if (!file) {
+                    res.sendStatus(422);
+                    return;
+                }
+
+                const ext = file.originalname.slice(file.originalname.lastIndexOf(".") + 1, file.originalname.length);
+
+                if (file.size >= 5_242_880 || !['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(file.mimetype)) {
+                    res.sendStatus(422);
+                    return;
+                }
+
+                let name = `uploads/works/${uuid()}.${ext}`;
+
+                let result = await addImage_(id, name, position);
+
+                if (result.isSuccess) {
+                    await writeFile(`static/${name}`, file.buffer);
+
+                    res.sendStatus(204);
+                    return;
+                }
+
+                res.sendStatus(422);
+                return;
+            }
+            res.sendStatus(520);
+            return;
+        }
+        res.sendStatus(403);
+        return;
+    }
+    res.sendStatus(410);
 }
 
 async function addTags({ body: { portfolio_id, tag_ids } }, res) {
@@ -298,59 +340,33 @@ async function updateDescription({
     res.sendStatus(401);
 }
 
-async function updateImages({ params: { id }, files, session }, res) {
+async function updatePreview({ params: { id }, file, session }, res) {
     if (session.role !== undefined) {
         let designer = await getDesignerByPortfolio_(id);
         if (designer.isSuccess) {
             if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
                 try {
-                    if (files.preview === undefined && files.image === undefined) {
+                    if (!file) {
                         res.sendStatus(520);
                         return;
                     }
 
                     let { imageNames } = await getImagesNames_(id);
+                    file.name = imageNames.preview;
 
-                    let images = [];
-
-                    if (files.preview !== undefined) {
-                        images.push({
-                            type: 'preview',
-                            name: imageNames.preview,
-                            file: files.preview[0]
-                        })
-                    }
-                    if (files.image !== undefined) {
-                        images.push({
-                            type: 'work',
-                            name: imageNames.work_image,
-                            file: files.image[0]
-                        })
+                    if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(file.mimetype) || file.size >= 5_242_880) {
+                        res.sendStatus(422);
+                        return;
                     }
 
-                    let preview = undefined;
-                    let work_image = undefined;
+                    let originalname = file.originalname;
+                    file.newName = `${file.name.slice(0, file.name.lastIndexOf('.'))}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
 
-                    for (const image of images) {
-                        if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) || image.file.size >= 20971520) {
-                            res.sendStatus(422);
-                            return;
-                        }
-
-                        let originalname = image.file.originalname;
-                        image.newName = `${image.name.slice(0, image.name.lastIndexOf('.'))}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
-
-                        if (image.type === 'preview') preview = image.newName;
-                        if (image.type === 'work') work_image = image.newName;
-                    }
-
-                    let update = await updateImagePaths_(id, preview, work_image)
+                    let update = await updatePreviewPaths_(id, file.newName)
 
                     if (update.isSuccess) {
-                        for (const image of images) {
-                            await rename(`static/${image.name}`, `static/${image.newName}`);
-                            await writeFile(`static/${image.newName}`, image.file.buffer);
-                        }
+                        await rename(`static/${file.name}`, `static/${file.newName}`);
+                        await writeFile(`static/${file.newName}`, file.buffer);
 
                         res.sendStatus(204);
                         return;
@@ -422,6 +438,31 @@ async function deleteComment({ body: { id }, session }, res) {
     res.sendStatus(401);
 }
 
+async function deleteImage({ params: { id, position }, session }, res) {
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                let result = await deleteImage_(id, position);
+
+                if (result.isSuccess) {
+                    await unlink(`static/${result.path}`);
+
+                    res.sendStatus(204);
+                    return;
+                }
+
+                res.sendStatus(520);
+                return;
+            }
+        }
+        res.sendStatus(403);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 function index() {
     const upload = multer();
 
@@ -434,16 +475,18 @@ function index() {
 
     router.post('/work', upload.single('preview'), createWork);
     router.post('/work/:id/images', upload.array('images', 30), addImages);
+    router.post('/work/:id/image', upload.single('image'), addImage);
     router.post('/tags', addTags);
     router.post('/work/:id/likes', addLike);
     router.post('/work/:id/comment', addComment);
 
     router.put('/:id/tags', updateTags);
     router.put('/:id/description', updateDescription);
-    router.put('/:id/images', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), updateImages);
+    router.put('/:id/preview', upload.single('preview'), updatePreview);
 
     router.delete('/work', deleteWork);
     router.delete('/comment', deleteComment);
+    router.delete('/work/:id/image/:position', deleteImage);
 
     return router;
 }

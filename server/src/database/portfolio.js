@@ -608,29 +608,17 @@ async function getDesignerByPortfolio(id) {
     }
 }
 
-async function updateImagePaths(id, preview, work_image) {
+async function updatePreviewPaths(id, preview) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
-        let set = [];
-        let params = [];
-
-        if (work_image !== undefined) {
-            params.push(work_image);
-            set.push(`work_image = $${params.length + 1}`);
-        }
-        if (preview !== undefined) {
-            params.push(preview);
-            set.push(`preview = $${params.length + 1}`);
-        }
-
         await client.query(
             `update portfolio
-                set ${set.join(',')}
+                set preview = $2
             where
                 id = $1`,
-            [id, ...params]
+            [id, preview]
         );
 
         await client.query('commit');
@@ -752,6 +740,98 @@ async function addImages(images, id) {
     }
 }
 
+async function addImage(id, name, position) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let { rows: images } = await client.query(
+            `select * 
+            from
+                portfolios_images
+            where
+                portfolio_id = $1
+            order by position asc`,
+            [id]
+        )
+
+        if (images.length > 0) {
+            if (position === undefined) {
+                await client.query(
+                    `insert into
+                        portfolios_images (portfolio_id, path, position)
+                    values
+                        ($1, $2, $3)`,
+                    [id, name, Number.parseInt(images[images.length - 1].position) + 1]
+                )
+
+                await client.query('commit');
+                client.release();
+
+                return {
+                    isSuccess: true
+                }
+            } else {
+                await client.query(
+                    `insert into
+                        portfolios_images (portfolio_id, path, position)
+                    values
+                        ($1, $2, $3)`,
+                    [id, name, position]
+                );
+
+                images.map(async (el, i) => {
+                    el.position = Number.parseInt(el.position);
+                    if (el.position >= Number.parseInt(position)) {
+                        el.position = Number.parseInt(el.position) + 1;
+
+                        await client.query(
+                            `update
+                                portfolios_images
+                            set
+                                position = $1
+                            where
+                                id = $2`,
+                            [el.position, el.id]
+                        )
+                    }
+                });
+
+                await client.query('commit');
+                client.release();
+
+                return {
+                    isSuccess: true
+                }
+            }
+        } else {
+            await client.query(
+                `insert into
+                    portfolios_images(portfolio_id, path)
+                values
+                        ($1, $2)`,
+                [id, name]
+            )
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true
+            }
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function addTags(portfolio_id, tag_ids) {
     const client = await pool.connect();
     await client.query('begin');
@@ -761,7 +841,7 @@ async function addTags(portfolio_id, tag_ids) {
 
         let tags = (await client.query(
             `insert into 
-                tags_portfolios (portfolio_id, tag_id)
+                tags_portfolios(portfolio_id, tag_id)
             values ${s}
                 returning id`,
             [portfolio_id, ...tag_ids]
@@ -820,9 +900,9 @@ async function addLike(id, vk_id) {
             if (likeFromUser === undefined) {
                 await client.query(
                     `insert into portfolios_likes
-                        (portfolio_id, vk_user_id)
+                (portfolio_id, vk_user_id)
                     values
-                        ($1, $2)`,
+                    ($1, $2)`,
                     [id, vk_id]
                 );
 
@@ -897,7 +977,7 @@ async function addComment(id, text, vk_id) {
 
             const comment = (await client.query(
                 `insert into 
-                    portfolios_comments (portfolio_id, vk_user_id, text, create_date)
+                    portfolios_comments(portfolio_id, vk_user_id, text, create_date)
                 values
                     ($1, $2, $3, $4)
                 returning id`,
@@ -948,7 +1028,7 @@ async function updateTags(portfolio_id, tag_ids) {
 
         let tags = (await client.query(
             `insert into 
-                tags_portfolios (portfolio_id, tag_id)
+                tags_portfolios(portfolio_id, tag_id)
             values ${s}
                 returning id`,
             [portfolio_id, ...tag_ids]
@@ -1060,8 +1140,8 @@ async function deleteComment(id) {
 
     try {
         await client.query(
-            `delete 
-                from portfolios_comments
+            `delete
+            from portfolios_comments
             where
                 id = $1`,
             [id]
@@ -1086,6 +1166,78 @@ async function deleteComment(id) {
     }
 }
 
+async function deleteImage(id, position) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let { rows: image } = await client.query(
+            `select *
+            from 
+                portfolios_images
+            where
+                portfolio_id = $1 and
+                position = $2`,
+            [id, position]
+        )
+
+        if (image[0] !== undefined) {
+            await client.query(
+                `delete
+            from
+                    portfolios_images
+                where
+                    id = $1`,
+                [image[0].id]
+            )
+
+            let { rows: images } = await client.query(
+                `select *
+            from 
+                    portfolios_images
+                where
+                    portfolio_id = $1 and
+                    position > $2
+                order by position asc`,
+                [id, position]
+            )
+
+            images.map(async (el, i) => {
+                el.position = Number.parseInt(position) + i;
+
+                await client.query(
+                    `update
+                        portfolios_images
+                    set
+                        position = $1
+                    where
+                        id = $2`,
+                    [el.position, el.id]
+                )
+            });
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true,
+                path: image[0].path
+            }
+        }
+
+        throw 'Image not found';
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getAllPreviews,
     getPreviewsFromTo,
@@ -1097,12 +1249,14 @@ module.exports = {
     getDesignerByPortfolio,
     createWork,
     addImages,
+    addImage,
     addTags,
     addLike,
     addComment,
     updateTags,
     updateDescription,
-    updateImagePaths,
+    updatePreviewPaths,
     deleteWork,
-    deleteComment
+    deleteComment,
+    deleteImage
 }

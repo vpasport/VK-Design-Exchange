@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import MyImage from '../Image';
 import Comment from '../Comment';
 import PreviewUpload from '../PreviewUpload';
+import WorkImagesUpload from '../WorkImagesUpload';
 
 const WorkCard = ({
     work, edit,
@@ -101,7 +102,7 @@ const WorkCard = ({
                     <PreviewUpload
                         lable={work?.title}
                         onChange={uploadPreview}
-                        preview={{ path: `${process.env.NEXT_PUBLIC_API_URL}/${work.preview}` }}
+                        preview={previewUrl}
                     />
                 }
             </div>
@@ -120,33 +121,18 @@ const WorkCard = ({
             </div>
             <div style={{ textAlign: 'center' }} className='p-mt-6 p-mb-6'>
                 {!edit ?
-                    // <img
-                    //     src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.work_image}`}
-                    //     style={{ width: '70%' }}>
-                    // </img>
-                    // :
-                    // <FileUpload
-                    //     type='work'
-                    //     onChange={uploadWork}
-                    //     preview={workUrl}
-                    // />
-                    work?.images?.map((el, i) => {
-                        return <MyImage
+                    work?.images?.map((el, i) =>
+                        <MyImage
                             key={i}
                             path={`${process.env.NEXT_PUBLIC_API_URL}/${el.path}`}
                         />
-                    }
-                        // <>
-                        //     <img
-                        //         src={`${process.env.NEXT_PUBLIC_API_URL}/${el.path}`}
-                        //         style={{ width: '70%' }}>
-                        //     </img>
-                        //     <Skeleton width='70%' />
-                        // </>
                     )
                     :
-                    <>
-                    </>
+                    <WorkImagesUpload
+                        previews={work?.images}
+                        onChange={uploadWork}
+                        edit={true}
+                    />
                 }
             </div>
             {edit &&

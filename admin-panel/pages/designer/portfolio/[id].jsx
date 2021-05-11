@@ -30,7 +30,7 @@ const Work = ({ user }) => {
     );
     const [preview, setPreview] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
-    const [workImage, setWorkImage] = useState(null);
+    const [workImages, setWorkImages] = useState([]);
     const [workUrl, setWorkUrl] = useState(null);
 
     const [error, setError] = useState();
@@ -52,15 +52,12 @@ const Work = ({ user }) => {
             title: work.title,
             project_description: work.project_description
         })
-        setWorkUrl(`${process.env.NEXT_PUBLIC_API_URL}/${work.work_image}`);
-        setPreviewUrl(`${process.env.NEXT_PUBLIC_API_URL}/${work.preview}`);
+        setPreviewUrl({ path: `${process.env.NEXT_PUBLIC_API_URL}/${work.preview}` });
     }
 
     useEffect(() => {
         getWork()
     }, [])
-
-    console.log(work);
 
     useEffect(async () => {
         if (!edit) return;
@@ -84,31 +81,41 @@ const Work = ({ user }) => {
         }));
     }
 
-    const uploadPreview = ({ target }) => {
+    const getSquare = (path) => new Promise((resolve) => {
+        const img = new Image();
+        let square = false;
+
+        img.onload = function () {
+            if (this.width === this.height)
+                square = true;
+
+            resolve(square);
+        }
+        img.src = path;
+    })
+
+    const uploadPreview = async ({ target }) => {
         const file = target.files[0];
 
         if (file) {
             if (file.size / 1024 / 1024 / 5 > 1) {
                 target.value = "";
             } else {
-                setPreviewUrl(URL.createObjectURL(file));
+                let square = await getSquare(URL.createObjectURL(file));
+                setPreviewUrl({
+                    path: URL.createObjectURL(file),
+                    square
+                });
                 setPreview(file);
             }
         }
     }
 
-    const uploadWork = ({ target }) => {
-        const file = target.files[0];
-
-        if (file) {
-            if (file.size / 1024 / 1024 / 20 > 1) {
-                target.value = "";
-            } else {
-                setWorkUrl(URL.createObjectURL(file));
-                setWorkImage(file);
-            }
-        }
+    const uploadWork = (images) => {
+        setWorkImages(images);
     }
+
+    console.log(workImages);
 
     const save = async () => {
         setError('');
@@ -157,11 +164,9 @@ const Work = ({ user }) => {
 
         const formData = new FormData();
 
-        if (preview !== null) formData.append('preview', preview);
-        if (workImage !== null) formData.append('image', workImage);
-
-        if (preview !== null || workImage !== null) {
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/images`, {
+        if (preview !== null) {
+            formData.append('preview', preview);
+            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/preview`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: formData

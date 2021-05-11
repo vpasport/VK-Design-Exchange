@@ -94,36 +94,36 @@ const Create = ({ user }) => {
     const save = async () => {
         setError('');
 
-        // if (selectTags.length === 0) {
-        //     setError('Вы не выбрали тэги');
-        //     setDialog(true);
-        //     setCreation(false);
-        //     setProgress(false);
-        //     return;
-        // }
-        // for (const val of Object.values(portfolio)) {
-        //     if (val === null) {
-        //         setError('Заполние все поля');
-        //         setDialog(true);
-        //         setCreation(false);
-        //         setProgress(false);
-        //         return;
-        //     }
-        // }
-        // if (preview === null) {
-        //     setError('Вы не выбрали изображение для превью');
-        //     setDialog(true);
-        //     setCreation(false);
-        //     setProgress(false);
-        //     return;
-        // }
-        // if (workImages.length === 0) {
-        //     setError('Вы не выбрали изображения выполненной работы');
-        //     setDialog(true);
-        //     setCreation(false);
-        //     setProgress(false);
-        //     return;
-        // }
+        if (selectTags.length === 0) {
+            setError('Вы не выбрали тэги');
+            setDialog(true);
+            setCreation(false);
+            setProgress(false);
+            return;
+        }
+        for (const val of Object.values(portfolio)) {
+            if (val === null) {
+                setError('Заполние все поля');
+                setDialog(true);
+                setCreation(false);
+                setProgress(false);
+                return;
+            }
+        }
+        if (preview === null) {
+            setError('Вы не выбрали изображение для превью');
+            setDialog(true);
+            setCreation(false);
+            setProgress(false);
+            return;
+        }
+        if (workImages.length === 0) {
+            setError('Вы не выбрали изображения выполненной работы');
+            setDialog(true);
+            setCreation(false);
+            setProgress(false);
+            return;
+        }
 
         let formData = new FormData();
 
@@ -137,34 +137,7 @@ const Create = ({ user }) => {
         formData.append('designer_id', user.db.did);
         formData.append('tag_ids', tag_ids);
 
-        // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
-        //     method: 'POST',
-        //     credentials: 'include',
-        //     body: formData
-        // });
-
-        // if (response.status !== 200) {
-        //     setError('Не удалось создать портолио');
-        //     setDialog(true);
-        //     setCreation(false);
-        //     setProgress(false);
-        //     return;
-        // }
-
-        // const { id } = await response.json();
-
-        formData = new FormData();
-
-        formData.append('designer_id', user.db.did);
-        for (const image of workImages) {
-            formData.append('images', image.file);
-        }
-
-        for (var value of formData.values()) {
-            console.log(value);
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/53/images`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
             method: 'POST',
             credentials: 'include',
             body: formData
@@ -178,11 +151,38 @@ const Create = ({ user }) => {
             return;
         }
 
+        const { id } = await response.json();
+
+        formData = new FormData();
+
+        formData.append('designer_id', user.db.did);
+        for (const image of workImages) {
+            formData.append('images', image.file);
+        }
+
+        for (var value of formData.values()) {
+            console.log(value);
+        }
+
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/images`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+
+        if (response.status !== 204) {
+            setError('Не удалось создать портолио');
+            setDialog(true);
+            setCreation(false);
+            setProgress(false);
+            return;
+        }
+
         console.log(id);
 
         setProgress(false);
 
-        // router.push(`/designer/profile`);
+        router.push(`/designer/profile`);
     }
 
     return (

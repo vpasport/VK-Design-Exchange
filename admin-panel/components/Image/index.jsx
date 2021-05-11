@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import { Skeleton } from 'primereact/skeleton';
-
 const MyImage = ({ path }) => {
     const [loading, setLoading] = useState(true);
     const [height, setHeight] = useState(100);
@@ -23,7 +21,6 @@ const MyImage = ({ path }) => {
             width: '70%',
             margin: 'auto'
         }}>
-            {loading && <Skeleton height={`${height}px`} />}
             <img
                 style={{
                     width: '100%',
