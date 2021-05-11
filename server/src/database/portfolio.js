@@ -275,6 +275,19 @@ async function getWork(id, full, vk_id = undefined) {
                 [id]
             )).rows;
 
+            let { rows: images } = await client.query(
+                `select 
+                    * 
+                from 
+                    portfolios_images
+                where
+                    portfolio_id = $1
+                order by position asc`,
+                [id]
+            )
+
+            work.images = images;
+
             let user = (await client.query(
                 `select d.vk_id, d.first_name, d.last_name, d.id, d.photo, d.rating
                     from designers as d, designers_portfolios as dp
@@ -640,7 +653,7 @@ async function updateImagePaths(id, preview, work_image) {
 
 async function createWork(
     title, preview,
-    project_description, work_image,
+    project_description,
     designer_id, tag_ids
 ) {
     const client = await pool.connect();
@@ -649,11 +662,11 @@ async function createWork(
     try {
         let id = (await client.query(
             `insert into
-                portfolio (title, preview, project_description, work_image)
+                portfolio (title, preview, project_description)
             values 
-                ($1, $2, $3, $4)
+                ($1, $2, $3)
             returning id`,
-            [title, preview, project_description, work_image]
+            [title, preview, project_description]
         )).rows[0].id;
 
         if (id !== undefined) {
@@ -695,6 +708,38 @@ async function createWork(
 
         throw 'Error while creating portfolio';
 
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function addImages(images, id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let s = images.map((_, i) => (`($1, $${i + 2}, ${i})`)).join(',');
+
+        await client.query(
+            `insert into
+                portfolios_images (portfolio_id, path, position)
+            values ${s}`,
+            [id, ...images]
+        );
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
     } catch (e) {
         await client.query('rollback');
         client.release();
@@ -1051,6 +1096,7 @@ module.exports = {
     getImagesNames,
     getDesignerByPortfolio,
     createWork,
+    addImages,
     addTags,
     addLike,
     addComment,

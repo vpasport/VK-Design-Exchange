@@ -7,6 +7,8 @@ import Quill from '../Quill';
 import { Button } from 'primereact/button';
 import { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
+import PreviewUpload from '../PreviewUpload';
+import WorkImagesUpload from '../WorkImagesUpload';
 
 const CreatePortfolio = ({
     designer = undefined, tags,
@@ -74,10 +76,10 @@ const CreatePortfolio = ({
                             textAlign: 'center'
                         }}
                     >
-                        <FileUpload
-                            type='preview'
+                        <PreviewUpload
                             onChange={uploadPreview}
                             preview={previewUrl}
+                            lable={portfolio.title}
                         />
                     </div>
                 </div>
@@ -96,10 +98,13 @@ const CreatePortfolio = ({
                         // width: '70%',
                         textAlign: 'center'
                     }}>
-                        <FileUpload
+                        {/* <FileUpload
                             type='work'
                             onChange={uploadWork}
                             preview={workUrl}
+                        /> */}
+                        <WorkImagesUpload
+                            onChange={uploadWork}
                         />
                     </div>
                 </div>

@@ -60,6 +60,8 @@ const Work = ({ user }) => {
         getWork()
     }, [])
 
+    console.log(work);
+
     useEffect(async () => {
         if (!edit) return;
 

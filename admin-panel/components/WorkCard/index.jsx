@@ -9,7 +9,9 @@ import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
+import MyImage from '../Image';
 import Comment from '../Comment';
+import PreviewUpload from '../PreviewUpload';
 
 const WorkCard = ({
     work, edit,
@@ -96,10 +98,10 @@ const WorkCard = ({
                         style={{ width: '50%' }}>
                     </img>
                     :
-                    <FileUpload
-                        type='preview'
+                    <PreviewUpload
+                        lable={work?.title}
                         onChange={uploadPreview}
-                        preview={previewUrl}
+                        preview={{ path: `${process.env.NEXT_PUBLIC_API_URL}/${work.preview}` }}
                     />
                 }
             </div>
@@ -118,16 +120,33 @@ const WorkCard = ({
             </div>
             <div style={{ textAlign: 'center' }} className='p-mt-6 p-mb-6'>
                 {!edit ?
-                    <img
-                        src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.work_image}`}
-                        style={{ width: '70%' }}>
-                    </img>
+                    // <img
+                    //     src={`${process.env.NEXT_PUBLIC_API_URL}/${work?.work_image}`}
+                    //     style={{ width: '70%' }}>
+                    // </img>
+                    // :
+                    // <FileUpload
+                    //     type='work'
+                    //     onChange={uploadWork}
+                    //     preview={workUrl}
+                    // />
+                    work?.images?.map((el, i) => {
+                        return <MyImage
+                            key={i}
+                            path={`${process.env.NEXT_PUBLIC_API_URL}/${el.path}`}
+                        />
+                    }
+                        // <>
+                        //     <img
+                        //         src={`${process.env.NEXT_PUBLIC_API_URL}/${el.path}`}
+                        //         style={{ width: '70%' }}>
+                        //     </img>
+                        //     <Skeleton width='70%' />
+                        // </>
+                    )
                     :
-                    <FileUpload
-                        type='work'
-                        onChange={uploadWork}
-                        preview={workUrl}
-                    />
+                    <>
+                    </>
                 }
             </div>
             {edit &&

@@ -19,6 +19,7 @@ const {
     getImagesNames: getImagesNames_,
     getDesignerByPortfolio: getDesignerByPortfolio_,
     createWork: createWork_,
+    addImages: _addImages,
     addTags: addTags_,
     addLike: addLike_,
     addComment: addComment_,
@@ -103,48 +104,90 @@ async function getWorkComments({
     res.sendStatus(520);
 }
 
-async function createWork({ files, body, session }, res) {
+async function createWork({ file, body, session }, res) {
     if (session.role !== undefined &&
         (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && body.designer_id == session.user.did))) {
-        if (files.preview === undefined || files.image === undefined) {
+
+        console.log(file)
+
+        if (!file) {
             res.sendStatus(520);
             return;
         }
 
-        let images = [
-            { type: 'previews', file: files.preview[0] },
-            { type: 'works', file: files.image[0] }
-        ];
-
-        for (const image of images) {
-            if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(image.file.mimetype) || image.file.size >= 20971520) {
-                res.sendStatus(422);
-                return;
-            }
-
-            let originalname = image.file.originalname;
-            image.name = `uploads/${image.type}/${uuid()}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
+        if (!['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(file.mimetype) || file.size >= 5_242_880) {
+            res.sendStatus(422);
+            return;
         }
+
+        let image = file;
+
+
+        let originalname = file.originalname;
+        image.name = `uploads/previews/${uuid()}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
 
         let result = await createWork_(
             body.title,
-            images[0].name,
+            image.name,
             body.project_description,
-            images[1].name,
             body.designer_id,
             body.tag_ids.split(',')
         )
 
         if (result.isSuccess) {
-            for (const image of images) {
-                await writeFile(`static/${image.name}`, image.file.buffer);
-            }
+            await writeFile(`static/${image.name}`, image.buffer);
 
             res.json(result);
             return;
         }
 
         res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
+async function addImages({ files, body, params: { id }, session }, res) {
+    if (session.role !== undefined &&
+        (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && body.designer_id == session.user.did))) {
+        let portfolio = await getDesignerByPortfolio_(id);
+
+        if (portfolio.isSuccess && portfolio.designer === session.user.did) {
+            if (!files && files.length === 0) {
+                res.sendStatus(204);
+                return;
+            }
+
+            const images = [];
+
+            for (const { size, originalname, mimetype } of files) {
+                const ext = originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length);
+
+                if (size >= 5_242_880 || !['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(mimetype)) {
+                    res.sendStatus(422);
+                    return;
+                }
+
+                images.push(`uploads/works/${uuid()}.${ext}`);
+            }
+
+            let result = await _addImages(images, id);
+
+            if (result.isSuccess) {
+                for (const [i, imageName] of Object.entries(images)) {
+                    await writeFile(`static/${imageName}`, files[parseInt(i)].buffer);
+                }
+
+                res.sendStatus(204);
+                return;
+            }
+
+            res.sendStatus(422);
+            return;
+        }
+
+        res.sendStatus(403);
         return;
     }
 
@@ -389,7 +432,8 @@ function index() {
     router.get('/work/:id/views', getWorkViews);
     router.get('/work/:id/comments', getWorkComments);
 
-    router.post('/work', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'preview', maxCount: 1 }]), createWork);
+    router.post('/work', upload.single('preview'), createWork);
+    router.post('/work/:id/images', upload.array('images', 30), addImages);
     router.post('/tags', addTags);
     router.post('/work/:id/likes', addLike);
     router.post('/work/:id/comment', addComment);

@@ -31,8 +31,7 @@ const Create = ({ user }) => {
     );
     const [preview, setPreview] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
-    const [workImage, setWorkImage] = useState(null);
-    const [workUrl, setWorkUrl] = useState(null);
+    const [workImages, setWorkImages] = useState([]);
 
     const [creation, setCreation] = useState(false);
 
@@ -58,74 +57,114 @@ const Create = ({ user }) => {
         set({ tags: val });
     }
 
-    const uploadPreview = ({ target }) => {
+    const getSquare = (path) => new Promise((resolve) => {
+        const img = new Image();
+        let square = false;
+
+        img.onload = function () {
+            if (this.width === this.height)
+                square = true;
+
+            resolve(square);
+        }
+        img.src = path;
+    })
+
+    const uploadPreview = async ({ target }) => {
         const file = target.files[0];
 
         if (file) {
             if (file.size / 1024 / 1024 / 5 > 1) {
                 target.value = "";
             } else {
-                setPreviewUrl(URL.createObjectURL(file));
+                let square = await getSquare(URL.createObjectURL(file));
+                setPreviewUrl({
+                    path: URL.createObjectURL(file),
+                    square
+                });
                 setPreview(file);
             }
         }
     }
 
-    const uploadWork = ({ target }) => {
-        const file = target.files[0];
-
-        if (file) {
-            if (file.size / 1024 / 1024 / 20 > 1) {
-                target.value = "";
-            } else {
-                setWorkUrl(URL.createObjectURL(file));
-                setWorkImage(file);
-            }
-        }
+    const uploadWork = (images) => {
+        setWorkImages(images);
     }
 
     const save = async () => {
         setError('');
 
-        for (const val of Object.values(portfolio)) {
-            if (val === null) {
-                setError('Заполние все поля');
-                setDialog(true);
-                setCreation(false);
-                setProgress(false);
-                return;
-            }
-        }
+        // if (selectTags.length === 0) {
+        //     setError('Вы не выбрали тэги');
+        //     setDialog(true);
+        //     setCreation(false);
+        //     setProgress(false);
+        //     return;
+        // }
+        // for (const val of Object.values(portfolio)) {
+        //     if (val === null) {
+        //         setError('Заполние все поля');
+        //         setDialog(true);
+        //         setCreation(false);
+        //         setProgress(false);
+        //         return;
+        //     }
+        // }
+        // if (preview === null) {
+        //     setError('Вы не выбрали изображение для превью');
+        //     setDialog(true);
+        //     setCreation(false);
+        //     setProgress(false);
+        //     return;
+        // }
+        // if (workImages.length === 0) {
+        //     setError('Вы не выбрали изображения выполненной работы');
+        //     setDialog(true);
+        //     setCreation(false);
+        //     setProgress(false);
+        //     return;
+        // }
 
-        if (preview === null) {
-            setError('Вы не выбрали изображение для превью');
-            setDialog(true);
-            setCreation(false);
-            setProgress(false);
-            return;
-        }
-        if (workImage === null) {
-            setError('Вы не выбрали изображение выполненной работы');
-            setDialog(true);
-            setCreation(false);
-            setProgress(false);
-            return;
-        }
-
-        const formData = new FormData();
+        let formData = new FormData();
 
         let tag_ids = [];
         selectTags.forEach(element => tag_ids.push(element.id));
 
         formData.append('preview', preview);
-        formData.append('image', workImage);
+
         formData.append('title', portfolio.title);
         formData.append('project_description', portfolio.project_description);
         formData.append('designer_id', user.db.did);
         formData.append('tag_ids', tag_ids);
 
+        // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
+        //     method: 'POST',
+        //     credentials: 'include',
+        //     body: formData
+        // });
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
+        // if (response.status !== 200) {
+        //     setError('Не удалось создать портолио');
+        //     setDialog(true);
+        //     setCreation(false);
+        //     setProgress(false);
+        //     return;
+        // }
+
+        // const { id } = await response.json();
+
+        formData = new FormData();
+
+        formData.append('designer_id', user.db.did);
+        for (const image of workImages) {
+            formData.append('images', image.file);
+        }
+
+        for (var value of formData.values()) {
+            console.log(value);
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/53/images`, {
             method: 'POST',
             credentials: 'include',
             body: formData
@@ -139,11 +178,11 @@ const Create = ({ user }) => {
             return;
         }
 
-        const { id } = await response.json();
+        console.log(id);
 
         setProgress(false);
 
-        router.push(`/designer/profile`);
+        // router.push(`/designer/profile`);
     }
 
     return (
@@ -156,7 +195,7 @@ const Create = ({ user }) => {
                 tags={tags}
                 selectTags={selectTags} setSelectTags={setSelectedTags}
                 previewUrl={previewUrl} uploadPreview={uploadPreview}
-                workUrl={workUrl} uploadWork={uploadWork}
+                uploadWork={uploadWork}
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
                 portfolio={portfolio} setProgress={setProgress}
