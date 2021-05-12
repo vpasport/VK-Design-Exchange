@@ -272,7 +272,8 @@ const WorkImagesUpload = ({
                                     right: 0,
                                     padding: 10,
                                     color: '#fff',
-                                    fontSize: '24px'
+                                    fontSize: '24px',
+                                    textShadow: '1px 1px 2px black, 0 0 1em black'
                                 }}
                                 onClick={() => setRemoveImageIndex(i)}
                             />
