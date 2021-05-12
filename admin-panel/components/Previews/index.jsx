@@ -87,7 +87,12 @@ const Previews = ({ user }) => {
     }
 
     return (
-        <div className="p-d-flex p-jc-center">
+        <div
+            style={{
+                width: '90%',
+                margin: 'auto'
+            }}
+        >
             <DataView
                 header={header()}
                 className='p-mt-4'

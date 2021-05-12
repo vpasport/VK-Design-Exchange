@@ -937,7 +937,7 @@ async function addLike(id, vk_id) {
         await client.query('rollback');
         client.release();
 
-        console.log(e);
+        console.error(e);
 
         return {
             isSuccess: false
@@ -1103,6 +1103,26 @@ async function deleteWork(id) {
             [id]
         )).rows[0];
 
+        let { rows: workImages } = await client.query(
+            `select 
+                path
+            from 
+                portfolios_images
+            where
+                portfolio_id = $1`,
+            [id]
+        )
+
+        let imgs = [];
+
+        for (let key in images) {
+            if (images[key] !== null) imgs.push(images[key]);
+        }
+
+        workImages.map(el => {
+            imgs.push(el.path);
+        })
+
         if (images !== undefined) {
             await client.query(
                 `delete from portfolio
@@ -1111,12 +1131,21 @@ async function deleteWork(id) {
                 [id]
             );
 
+            await client.query(
+                `delete 
+                from
+                    portfolios_images
+                where
+                    portfolio_id = $1`,
+                [id]
+            );
+
             await client.query('commit');
             client.release();
 
             return {
                 isSuccess: true,
-                images
+                imgs
             }
         }
 

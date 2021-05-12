@@ -110,8 +110,6 @@ async function createWork({ file, body, session }, res) {
     if (session.role !== undefined &&
         (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && body.designer_id == session.user.did))) {
 
-        console.log(file)
-
         if (!file) {
             res.sendStatus(520);
             return;
@@ -394,8 +392,13 @@ async function deleteWork({ body: { id }, session }, res) {
                 let result = await deleteWork_(id);
 
                 if (result.isSuccess) {
-                    await unlink(`static/${result.images.preview}`);
-                    await unlink(`static/${result.images.work_image}`);
+                    result.imgs.map(async el => {
+                        try {
+                            await unlink(`static/${el}`);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    });
 
                     res.sendStatus(204);
                     return;
@@ -406,8 +409,13 @@ async function deleteWork({ body: { id }, session }, res) {
                 let result = await deleteWork_(id);
 
                 if (result.isSuccess) {
-                    await unlink(`static/${result.images.preview}`);
-                    await unlink(`static/${result.images.work_image}`);
+                    result.imgs.map(async el => {
+                        try {
+                            await unlink(`static/${el}`);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    });
 
                     res.sendStatus(204);
                     return;

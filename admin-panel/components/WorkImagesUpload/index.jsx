@@ -19,6 +19,12 @@ const WorkImagesUpload = ({
     const toast = useRef(null);
 
     const addFirstImage = async ({ target }) => {
+        if (images.length >= 30) {
+            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Максимальное количество файлов 30', life: 3000 });
+            if (edit) setProgress(false);
+            return;
+        }
+
         const file = target.files[0];
 
         if (file) {
@@ -56,6 +62,12 @@ const WorkImagesUpload = ({
     }
 
     const addImage = async ({ target }) => {
+        if (images.length >= 30) {
+            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Максимальное количество файлов 30', life: 3000 });
+            if (edit) setProgress(false);
+            return;
+        }
+
         const file = target.files[0];
 
         if (file) {
@@ -92,6 +104,12 @@ const WorkImagesUpload = ({
     }
 
     const insertImage = async ({ target }, index) => {
+        if (images.length >= 30) {
+            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Максимальное количество файлов 30', life: 3000 });
+            if (edit) setProgress(false);
+            return;
+        }
+
         const file = target.files[0];
 
         if (file) {
@@ -103,7 +121,7 @@ const WorkImagesUpload = ({
                     const formData = new FormData();
 
                     formData.append('image', file);
-                    formData.append('position', index + 1 );
+                    formData.append('position', index + 1);
 
                     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/image`, {
                         method: 'POST',
@@ -171,7 +189,7 @@ const WorkImagesUpload = ({
         onChange(images);
     }, [images])
 
-    const Button = ({ label, onClick }) =>
+    const Button = ({ label, onClick, icon }) =>
         <div
             className='p-button'
             style={{
@@ -180,10 +198,19 @@ const WorkImagesUpload = ({
                 userSelect: 'none'
             }}
         >
+            {icon &&
+                <i
+                    className={icon}
+                    style={{
+                        margin: '0 10px 0 -10px',
+                        fontSize: '24px'
+                    }}
+                />}
             {label}
             <input
                 type="file"
                 onChange={onClick}
+                accept='.png, .jpg, .jpeg, .gif, .svg'
                 style={{
                     position: 'absolute',
                     width: '100%',
@@ -198,42 +225,42 @@ const WorkImagesUpload = ({
     return (
         <>
             <p style={{ color: 'red' }}>Максимальный размер для одного файла - 5 мб.</p>
-            <p style={{ color: 'red' }}>Макисальное количество файлов - 30.</p>
-            {images.length === 0 ?
-                <Button
-                    label='Загрузить изображение'
-                    onClick={(e) => {
-                        if (edit) setProgress(true);
-                        addImage(e);
-                    }}
-                />
-                :
-                <Button
-                    label='Вставить изображение в начало'
-                    onClick={(e) => {
-                        if (edit) setProgress(true);
-                        addFirstImage(e);
-                    }}
-                />
-            }
+            <p style={{ color: 'red' }}>Макисальное количество файлов - 30. Вы выбрали - {images.length}.</p>
+            <div className='p-mb-2'>
+                {images.length === 0 ?
+                    <Button
+                        label='Загрузить изображение'
+                        onClick={(e) => {
+                            if (edit) setProgress(true);
+                            addImage(e);
+                        }}
+                    />
+                    :
+                    <Button
+                        label='Вставить изображение в начало'
+                        onClick={(e) => {
+                            if (edit) setProgress(true);
+                            addFirstImage(e);
+                        }}
+                    />
+                }
+            </div>
             {images.length > 0 &&
                 images.map((el, i) =>
                     <div
                         key={`${i}`}
                     >
-                        <br />
                         <div
                             style={{
                                 position: 'relative',
                                 margin: 'auto',
-                                maxHeight: '250px',
-                                display: 'inline-flex'
+                                width: '50%',
                             }}
                         >
                             <img
                                 src={el.path}
                                 style={{
-                                    maxHeight: '250px',
+                                    width: '100%',
                                     display: 'block'
                                 }}
                             />
@@ -249,30 +276,43 @@ const WorkImagesUpload = ({
                                 }}
                                 onClick={() => setRemoveImageIndex(i)}
                             />
+                            {i === images.length - 1 ?
+                                <div className='p-mt-2'>
+                                    <Button
+                                        label='Добавить изображение'
+                                        onClick={(e) => {
+                                            if (edit) setProgress(true);
+                                            addImage(e);
+                                        }}
+                                    />
+                                </div>
+                                :
+                                <div
+                                    style={{
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            left: 'calc(100% + 15px)',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            display: 'inline-block'
+                                        }}
+                                    >
+                                        <Button
+                                            icon="pi pi-angle-left"
+                                            label='Вставить изображение'
+                                            onClick={(event) => {
+                                                if (edit) setProgress(true);
+                                                insertImage(event, i)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            }
                         </div>
-                        {i === images.length - 1 ?
-                            <>
-                                <br />
-                                <Button
-                                    label='Добавить изображение'
-                                    onClick={(e) => {
-                                        if (edit) setProgress(true);
-                                        addImage(e);
-                                    }}
-                                />
-                            </>
-                            :
-                            <>
-                                <br />
-                                <Button
-                                    label='Вставить изображение'
-                                    onClick={(event) => {
-                                        if (edit) setProgress(true);
-                                        insertImage(event, i)
-                                    }}
-                                />
-                            </>
-                        }
                     </div>
                 )
             }
