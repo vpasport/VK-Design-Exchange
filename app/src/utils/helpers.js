@@ -17,7 +17,7 @@ const getCardHeightBySize = (size) => {
 
 const getUrlByJson = (obj) => {
 
-    if(!obj) return '';
+    if (!obj) return '';
 
     const url = new URLSearchParams();
 
@@ -42,7 +42,7 @@ const getUrlByJson = (obj) => {
 }
 
 const getDesignInfoById = async (id) => {
-    const { user: {activeUser} } = store.getState();
+    const { user: { activeUser } } = store.getState();
     const { data } = await axios(`portfolio/work/${id}?vk_id=${activeUser.getId()}`);
 
     if (data.isSuccess)
@@ -54,7 +54,7 @@ const getDesignInfoById = async (id) => {
 const getDesignerInfoById = async (id) => {
     const { data } = await axios.get(`/designers/${id}`);
 
-    if(data.isSuccess){
+    if (data.isSuccess) {
         return new Designer(data.designer);
     }
     else throw new Error('Не удалось получать данные дизайнера')
@@ -63,7 +63,7 @@ const getDesignerInfoById = async (id) => {
 const getOfferInfoById = async (id) => {
     const { data } = await axios.get(`/offers/${id}`);
 
-    if(data.isSuccess){
+    if (data.isSuccess) {
         return new Offer(data.offer);
     }
     else throw new Error('Не удалось загрузить услугу');
@@ -88,6 +88,13 @@ const checkPhotoAndGetSrc = async (photoFile) => {
     })
 }
 
+const openVkLink = (link, fromMobile) => {
+    if (!fromMobile)
+        window.open(link, '_blank')
+    else
+        window.location.href = link;
+}
+
 const parseDateFromServer = (date) => {
     const formatedDate = new Date((Number(date) + new Date().getTimezoneOffset() * 60) * 1000);
     return formatedDate;
@@ -101,5 +108,6 @@ export {
     getDesignerInfoById,
     getOfferInfoById,
     checkPhotoAndGetSrc,
-    parseDateFromServer
+    parseDateFromServer,
+    openVkLink
 }

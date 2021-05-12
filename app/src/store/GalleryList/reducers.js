@@ -4,5 +4,5 @@ import { listBlockReducerMap, defaultState } from '../ListBlock/reducers';
 
 export const galleryListReducer = handleActions(
     new Map([...listBlockReducerMap('GALLERYLIST').entries()]),
-    defaultState
+    { ...defaultState, activeFilters: {sort_by: 'id&direction=desc'}}
 )

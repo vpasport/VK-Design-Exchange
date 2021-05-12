@@ -7,7 +7,7 @@ import Info from './Info';
 
 import styles from './style.module.scss';
 import { alertContext, sessionContext } from '../../App';
-import { getDesignInfoById } from '../../utils/helpers';
+import { getDesignInfoById, openVkLink } from '../../utils/helpers';
 import { connect } from 'react-redux';
 import { changeActiveDesign } from '../../store/Design/actions';
 import { changeActiveDesignerId } from '../../store/Designer/actions';
@@ -21,7 +21,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
 
     const { useAlert } = alertContext();
     const router = useRouter();
-    const { activePlatform } = sessionContext();
+    const { fromMobile } = sessionContext();
     const platform = usePlatform();
 
     const isFetchDesign = useMemo(() => Boolean(!activeDesign || activeDesign.getId() !== activeDesignId), [activeDesign]);
@@ -45,9 +45,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
             try {
                 await activeDesign.setNewViewCounts();
             }
-            catch (e) {
-                console.log(e)
-            }
+            catch (e) {}
         }
 
         if (isFetchDesign)
@@ -62,11 +60,10 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
         router.setActiveStoryAndPanel('raiting', 'designer');
     }
 
-    const showImage = () => {
+    const showImage = (index) => {
         bridge.send("VKWebAppShowImages", {
-            images: [
-                activeDesign.getWorkImage()
-            ],
+            images: activeDesign.workImages,
+            index
         })
     }
 
@@ -75,10 +72,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     }
 
     const buyDesign = () => {
-        if (platform !== ANDROID && platform !== IOS)
-            window.open(`https://vk.com/id${activeDesign.author.vk_id}`, '_blank')
-        else
-            window.location.href = `https://vk.com/id${activeDesign.author.vk_id}`;
+        openVkLink(`https://vk.com/id${activeDesign.author.vk_id}`, fromMobile)
     }
 
 
@@ -113,12 +107,14 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                             }
 
                             <div className={styles.cardBlock__group_image}>
-                                <Title level='1'>Дизайн</Title>
-                                <img
-                                    src={activeDesign.getWorkImage()}
-                                    alt="test"
-                                    onClick={showImage}
-                                />
+                                <Title level='1' className={styles.imageTitle}>Дизайн</Title>
+                                {activeDesign.workImages.map((image, i) => (
+                                    <img
+                                        src={image}
+                                        alt={`image ${i+1}`}
+                                        onClick={() => showImage(i)}
+                                    />
+                                ))}
                             </div>
                             <Button
                                 mode='outline'

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ContentCard } from '@vkontakte/vkui';
+import { Card, ContentCard } from '@vkontakte/vkui';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeActiveDesignId } from '../../store/Design/actions';
 
@@ -24,13 +24,17 @@ const GalleryItem = ({ designCard, listFormat }) => {
     }
 
     return (
-        <ContentCard
-            image={designCard.getPreview()}
+        <Card
             className={styles.card}
-            header={designCard.getTitle()}
-            height={getCardHeightBySize(listFormat)}
-            onClick={() => handleDesignChange()}
-        />
+            onClick={handleDesignChange}
+        >
+            <div className={styles.imgBlock}>
+                <img src={designCard.getPreview()} className={styles.imgBlock__img}/>
+            </div>
+            <h5>
+                {designCard.getTitle()}
+            </h5>
+        </Card>
     )
 }
 

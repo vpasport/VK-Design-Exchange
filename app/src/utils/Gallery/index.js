@@ -10,8 +10,6 @@ class Gallery {
 
         const allParams = getUrlByJson(params);
 
-        console.log(allParams)
-
         const { data } = await axios.get(`portfolio/previews${allParams}`);
 
         if (data.isSuccess){
@@ -34,11 +32,23 @@ class Gallery {
         
         const { data } = await axios.get(`tags`);
 
-        console.log(data)
-
         if(!data.isSuccess) throw new Error ('Ошибка при загрузке тегов');
         
         return [
+            {
+                name: 'Сортировать по',
+                header: 'Сортировать по',
+                type: 'sort_by',
+                componentName: 'ModalRadioSelect',
+                filters: [
+                    {status: 'Дате публикации (сначала новые)', type: 'id&direction=desc'},
+                    {status: 'Дате публикации (сначала старые)', type: 'id&direction=asc'},
+                    {status: 'Лайкам (по убыванию)', type: 'likes&direction=desc'},
+                    {status: 'Лайкам (по возрастанию)', type: 'likes&direction=asc'},
+                    {status: 'Просмотрам (по убыванию)', type: 'views&direction=desc'},
+                    {status: 'Просмотрам (по возрастанию)', type: 'views&direction=asc'},
+                ]
+            },
             {
                 name: 'Теги',
                 type: 'tags',

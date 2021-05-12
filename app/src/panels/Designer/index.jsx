@@ -1,11 +1,11 @@
 import { Avatar, Button, Div, Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, SimpleCell, Text, Title } from '@vkontakte/vkui';
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { alertContext } from '../../App';
+import { alertContext, sessionContext } from '../../App';
 import { connect, useSelector } from 'react-redux';
 
 import { changeActiveDesignerId, changeActiveDesigner } from '../../store/Designer/actions';
-import { getDesignerInfoById } from '../../utils/helpers';
+import { getDesignerInfoById, openVkLink } from '../../utils/helpers';
 import useRouter from '../../utils/useRouter';
 
 import styles from './style.module.scss';
@@ -19,6 +19,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
 
     const { useAlert } = alertContext();
     const router = useRouter();
+    const { fromMobile } = sessionContext();
 
     const isFetchDesigner = useMemo(() => Boolean(!activeDesigner || activeDesigner.getId() !== activeDesignerId), [activeDesigner]);
 
@@ -43,6 +44,10 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
             fetchData();
 
     }, [])
+
+    const openDesignerPage = () => {
+        openVkLink(`https://vk.com/id${activeDesigner.getVkId()}`, fromMobile);
+    }
 
     return (
         <Panel id={id}>
@@ -94,13 +99,21 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             Отзывы
                         </SimpleCell>
                         <Div>
-                            <Button 
+                            {/* <Button 
                                 stretched 
                                 mode='outline' 
                                 size='l'
                                 onClick={() => router.setActivePanel('offers')}
                             >
                                 Посмотреть услуги
+                            </Button> */}
+                            <Button 
+                                stretched 
+                                mode='outline' 
+                                size='l'
+                                onClick={openDesignerPage}
+                            >
+                                Связаться с дизайнером
                             </Button>
                         </Div>
                     </Group>

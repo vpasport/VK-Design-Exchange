@@ -10,10 +10,8 @@ class Design extends DesignDefaultProps {
     constructor(item) {
         super(item.title, item.id);
 
-        console.log(item)
-
         this._projectDescription = item.project_description;
-        this._workImage = `${REACT_APP_API_URL}/${item.work_image}`;
+        this._workImages = item.images.map(image => `${REACT_APP_API_URL}/${image.path}`);
         this._designerId = item.author?.id;
         this._viewCount = item.views;
         this._likes = item.likes.count;
@@ -25,8 +23,6 @@ class Design extends DesignDefaultProps {
     getWorkImage() { return this._workImage }
     getDesignerId() { return this._designerId }
 
-    get author(){ return this._author }
-
     set viewCount(value) {
         this.viewCount = value;
     }
@@ -34,6 +30,8 @@ class Design extends DesignDefaultProps {
     get viewCount() { return this._viewCount }
     get likes() { return this._likes }
     get isLikeChecked() { return this._isLikeChecked }
+    get author(){ return this._author }
+    get workImages(){ return this._workImages }
 
     updateDesign() {
         store.dispatch(changeActiveDesign(Object.assign(Object.create(Object.getPrototypeOf(this)), this)));

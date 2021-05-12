@@ -36,7 +36,7 @@ const App = () => {
 
 	const dispatch = useDispatch();
 
-	const [ activePlatform, platform] = useMemo(() => {
+	const [ activePlatform, platform, fromMobile] = useMemo(() => {
 		let activePlatform = new URLSearchParams(window.location.search).get("vk_platform");
 		let vkPlatform  = 
 		activePlatform.includes("iphone") || activePlatform.includes("mobile_web")
@@ -44,7 +44,8 @@ const App = () => {
 				: activePlatform.includes("android")
 					? ANDROID
 					: VKCOM
-		return [ activePlatform, vkPlatform ];
+		const fromMobile = Boolean(vkPlatform === IOS || vkPlatform === ANDROID); 
+		return [ activePlatform, vkPlatform, fromMobile ];
 	}, [])
 
 	useEffect(() => {
@@ -76,7 +77,6 @@ const App = () => {
 					throw new Error('Ошибка API');
 			}
 			catch (error) {
-				console.log(error)
 				useAlert.error('Ошибка', error);
 			}
 
@@ -87,7 +87,7 @@ const App = () => {
 
 	const alertContextValue = { useAlert, useSpinner, poput }
 	const modalContextValue = { activeModal, setActiveModal }
-	const sessionContextValue = { isDesktop, setIsDesktop, activePlatform}
+	const sessionContextValue = { isDesktop, setIsDesktop, activePlatform, fromMobile}
 
 	return (
 		<ConfigProvider platform={platform}>

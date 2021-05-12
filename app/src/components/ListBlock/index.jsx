@@ -39,6 +39,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                 size={listHook.bind.listFormat}
                 changeListFormat={listHook.changeListFormat}
                 isChangeSize={isChangeSize}
+                updateList={listHook.bind.updateList}
             />
             {listHook.bind.list.length ?
                 <InfiniteScroll
@@ -65,7 +66,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
     )
 
     const PullToRefreshOrDiv = useCallback(() => {
-        if (pullToRefresh)
+        if (pullToRefresh && !isDesktop)
             return React.createElement(PullToRefresh, {
                 onRefresh: listHook.updateList,
                 isFetching: listHook.bind.isFetch

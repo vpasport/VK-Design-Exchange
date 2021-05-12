@@ -8,6 +8,7 @@ import { alertContext } from '../../App';
 import useRouter from '../../utils/useRouter';
 import ModalRoot from '../../components/ModalRoot';
 import FiltersModal from '../../components/FiltersList/FiltersModal';
+import SelectModal from '../../components/FiltersList/SelectModal';
 
 const GalleryView = ({ id }) => {
 
@@ -20,6 +21,7 @@ const GalleryView = ({ id }) => {
                 id='filters'
                 stateType='galleryList'
             />
+            <SelectModal id='selectModal'/>
         </ModalRoot>
     )
 

@@ -10,20 +10,25 @@ $drobGap: $gap / 2;
 
 .bottom{
     display: grid;
-    grid-template-areas: "format filter";
+    grid-template-areas: "left right";
     grid-auto-columns: min-content;
     justify-content: space-between;
+
+    .right{
+        grid-area: right;
+        display: flex;
+
+        .button:last-child{
+            margin-left: 5px;
+        }
+    }
 
     .button{
         padding: 0;
     
     
         &_format{
-            grid-area: format;
-        }
-    
-        &_filter{
-            grid-area: filter;
+            grid-area: left;
         }
     }
 }

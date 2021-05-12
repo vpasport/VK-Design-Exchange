@@ -1,4 +1,4 @@
-import { CellButton, FormItem } from '@vkontakte/vkui';
+import { CellButton, FormItem, SelectMimicry } from '@vkontakte/vkui';
 import React, {useMemo} from 'react';
 import { modalContext } from '../../../App';
 import useSelectModal from '../../../utils/useSelectModal';
@@ -17,7 +17,7 @@ const ModalRadioSelect = ({ params, changeFilter, activeFilters }) => {
 
     return (
         <FormItem top={params.name}>
-            <CellButton
+            <SelectMimicry
                 onClick={() => selectModal.show({
                     header: params.header,
                     onClose: () => setActiveModal('filters'),
@@ -27,7 +27,7 @@ const ModalRadioSelect = ({ params, changeFilter, activeFilters }) => {
                 })}
             >
                 {params.filters.find(el => el.type === activeFilters[filterType]).status}
-            </CellButton>
+            </SelectMimicry>
         </FormItem>
     )
 }
