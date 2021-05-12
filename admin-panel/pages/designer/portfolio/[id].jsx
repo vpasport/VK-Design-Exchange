@@ -115,8 +115,6 @@ const Work = ({ user }) => {
         setWorkImages(images);
     }
 
-    console.log(workImages);
-
     const save = async () => {
         setError('');
 
