@@ -87,7 +87,7 @@ const ReviewCreator = ({ id, activeOrder }) => {
                             stretched
                             controlSize='l'
                             onChange={changePreview}
-                            accept='.png, .jpg, .jpeg, .git, .svg'
+                            accept='.png, .jpg, .jpeg, .gif, .svg'
                         />
                     </FormItem>
                     {preview &&
