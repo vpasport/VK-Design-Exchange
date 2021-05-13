@@ -8,7 +8,11 @@ const PreviewUpload = ({ lable, onChange, preview }) => {
     return (
         <>
             {!preview &&
-                <p style={{ color: 'red' }}>Рекомендуется использовать квадратное изображение</p>
+                <>
+                    <p style={{ color: 'red' }}>Рекомендуется использовать квадратное изображение</p>
+                    <p style={{ color: 'red' }}>Максимальный размер файла: 5 MБ.</p>
+                    <p style={{ color: 'red' }}>Перед загрузкой рекомендуется сжать изображение через <a href='https://tinypng.com/' target='_blank' style={{ fontWeight: 'bold' }}>Tinypng</a></p>
+                </>
             }
             <div
                 className='p-button'

@@ -15,12 +15,14 @@ const WorkImagesUpload = ({
     const [removeImageIndex, setRemoveImageIndex] = useState(null);
 
     const [progress, setProgress] = useState(false);
+    const [fileLimit, setFileLimit] = useState(15);
+    const [fileSizeLimit, setFileSizeLimit] = useState(15);
 
     const toast = useRef(null);
 
     const addFirstImage = async ({ target }) => {
-        if (images.length >= 30) {
-            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Максимальное количество файлов 30', life: 3000 });
+        if (images.length >= fileLimit) {
+            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: `Максимальное количество файлов ${fileLimit}`, life: 3000 });
             if (edit) setProgress(false);
             return;
         }
@@ -28,7 +30,7 @@ const WorkImagesUpload = ({
         const file = target.files[0];
 
         if (file) {
-            if (file.size / 1024 / 1024 / 5 > 1) {
+            if (file.size / 1024 / 1024 / fileSizeLimit > 1) {
                 target.value = "";
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
@@ -62,8 +64,8 @@ const WorkImagesUpload = ({
     }
 
     const addImage = async ({ target }) => {
-        if (images.length >= 30) {
-            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Максимальное количество файлов 30', life: 3000 });
+        if (images.length >= fileLimit) {
+            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: `Максимальное количество файлов ${fileLimit}`, life: 3000 });
             if (edit) setProgress(false);
             return;
         }
@@ -71,7 +73,7 @@ const WorkImagesUpload = ({
         const file = target.files[0];
 
         if (file) {
-            if (file.size / 1024 / 1024 / 5 > 1) {
+            if (file.size / 1024 / 1024 / fileSizeLimit > 1) {
                 target.value = "";
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
@@ -104,8 +106,8 @@ const WorkImagesUpload = ({
     }
 
     const insertImage = async ({ target }, index) => {
-        if (images.length >= 30) {
-            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Максимальное количество файлов 30', life: 3000 });
+        if (images.length >= fileLimit) {
+            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: `Максимальное количество файлов ${fileLimit}`, life: 3000 });
             if (edit) setProgress(false);
             return;
         }
@@ -113,7 +115,7 @@ const WorkImagesUpload = ({
         const file = target.files[0];
 
         if (file) {
-            if (file.size / 1024 / 1024 / 5 > 1) {
+            if (file.size / 1024 / 1024 / fileSizeLimit > 1) {
                 target.value = "";
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
@@ -224,8 +226,9 @@ const WorkImagesUpload = ({
 
     return (
         <>
-            <p style={{ color: 'red' }}>Максимальный размер для одного файла - 5 мб.</p>
-            <p style={{ color: 'red' }}>Макисальное количество файлов - 30. Вы выбрали - {images.length}.</p>
+            <p style={{ color: 'red' }}>Максимальный размер для одного файла: {fileSizeLimit} МБ.</p>
+            <p style={{ color: 'red' }}>Перед загрузкой рекомендуется сжать изображение через <a href='https://tinypng.com/' target='_blank' style={{ fontWeight: 'bold' }}>Tinypng</a></p>
+            <p style={{ color: 'red' }}>Максимальное количество файлов: {fileLimit}. Вы выбрали: {images.length}.</p>
             <div className='p-mb-2'>
                 {images.length === 0 ?
                     <Button

@@ -154,7 +154,7 @@ async function addImages({ files, body, params: { id }, session }, res) {
         let portfolio = await getDesignerByPortfolio_(id);
 
         if (portfolio.isSuccess && portfolio.designer === session.user.did) {
-            if (!files || files.length === 0 || files.length > 30) {
+            if (!files || files.length === 0 || files.length > 15) {
                 res.sendStatus(422);
                 return;
             }
@@ -164,7 +164,7 @@ async function addImages({ files, body, params: { id }, session }, res) {
             for (const { size, originalname, mimetype } of files) {
                 const ext = originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length);
 
-                if (size >= 5_242_880 || !['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(mimetype)) {
+                if (size >= 1024 * 1024 * 15 || !['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(mimetype)) {
                     res.sendStatus(422);
                     return;
                 }
@@ -482,7 +482,7 @@ function index() {
     router.get('/work/:id/comments', getWorkComments);
 
     router.post('/work', upload.single('preview'), createWork);
-    router.post('/work/:id/images', upload.array('images', 30), addImages);
+    router.post('/work/:id/images', upload.array('images', 15), addImages);
     router.post('/work/:id/image', upload.single('image'), addImage);
     router.post('/tags', addTags);
     router.post('/work/:id/likes', addLike);
