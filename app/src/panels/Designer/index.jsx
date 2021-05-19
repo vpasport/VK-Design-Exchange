@@ -99,14 +99,14 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             Отзывы
                         </SimpleCell>
                         <Div>
-                            {/* <Button 
+                            <Button 
                                 stretched 
                                 mode='outline' 
                                 size='l'
                                 onClick={() => router.setActivePanel('offers')}
                             >
                                 Посмотреть услуги
-                            </Button> */}
+                            </Button>
                             <Button 
                                 stretched 
                                 mode='outline' 

@@ -91,8 +91,13 @@ const checkPhotoAndGetSrc = async (photoFile) => {
 const openVkLink = (link, fromMobile) => {
     if (!fromMobile)
         window.open(link, '_blank')
-    else
-        window.location.href = link;
+    else{
+        //window.location.href = link;
+        const a = document.createElement('a');
+        a.href = link;
+        a.click();
+    }
+        
 }
 
 const parseDateFromServer = (date) => {

@@ -61,9 +61,10 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     }
 
     const showImage = (index) => {
+        console.log(index)
         bridge.send("VKWebAppShowImages", {
             images: activeDesign.workImages,
-            index
+            start_index: index
         })
     }
 
