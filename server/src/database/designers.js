@@ -69,24 +69,28 @@ async function getDesigners(from, to, engaged, from_id, order) {
         )).rows;
 
         let count = 0;
+        let result = {
+            isSuccess: true
+        }
+
         if (designers.length > 0) {
             count = designers[0].count;
             designers.forEach(element => {
                 element.engaged = element.engaged_date < date;
                 element.engaged_date = Number(element.engaged_date);
+                element.rating = Number(element.rating);
                 delete element.count
             });
+
+            result.from_id = from_id === undefined ? designers[0].id : Number(from_id);
         }
 
         await client.query('commit');
         client.release();
 
-        designers.forEach(element => element.rating = Number(element.rating));
-
         return {
-            isSuccess: true,
+            ...result,
             count,
-            from_id: from_id === undefined ? designers[0].id : Number(from_id),
             designers
         }
     } catch (e) {
