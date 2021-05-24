@@ -32,6 +32,7 @@ const WorkImagesUpload = ({
         if (file) {
             if (file.size / 1024 / 1024 / fileSizeLimit > 1) {
                 target.value = "";
+                if (edit) setProgress(false);
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
                 if (edit) {
@@ -75,6 +76,7 @@ const WorkImagesUpload = ({
         if (file) {
             if (file.size / 1024 / 1024 / fileSizeLimit > 1) {
                 target.value = "";
+                if (edit) setProgress(false);
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
                 if (edit) {
@@ -117,6 +119,7 @@ const WorkImagesUpload = ({
         if (file) {
             if (file.size / 1024 / 1024 / fileSizeLimit > 1) {
                 target.value = "";
+                if (edit) setProgress(false);
                 toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
             } else {
                 if (edit) {

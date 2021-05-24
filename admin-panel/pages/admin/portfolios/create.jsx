@@ -28,8 +28,7 @@ const Create = ({ user }) => {
     );
     const [preview, setPreview] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
-    const [workImage, setWorkImage] = useState(null);
-    const [workUrl, setWorkUrl] = useState(null);
+    const [workImages, setWorkImages] = useState([]);
 
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
@@ -64,35 +63,50 @@ const Create = ({ user }) => {
         set({ tags: val });
     }
 
-    const uploadPreview = ({ target }) => {
+    const getSquare = (path) => new Promise((resolve) => {
+        const img = new Image();
+        let square = false;
+
+        img.onload = function () {
+            if (this.width === this.height)
+                square = true;
+
+            resolve(square);
+        }
+        img.src = path;
+    })
+
+    const uploadPreview = async ({ target }) => {
         const file = target.files[0];
 
         if (file) {
             if (file.size / 1024 / 1024 / 5 > 1) {
                 target.value = "";
             } else {
-                setPreviewUrl(URL.createObjectURL(file));
+                let square = await getSquare(URL.createObjectURL(file));
+                setPreviewUrl({
+                    path: URL.createObjectURL(file),
+                    square
+                });
                 setPreview(file);
             }
         }
     }
 
-    const uploadWork = ({ target }) => {
-        const file = target.files[0];
-
-        if (file) {
-            if (file.size / 1024 / 1024 / 20 > 1) {
-                target.value = "";
-            } else {
-                setWorkUrl(URL.createObjectURL(file));
-                setWorkImage(file);
-            }
-        }
+    const uploadWork = (images) => {
+        setWorkImages(images);
     }
 
     const save = async () => {
         setError('');
 
+        if (selectTags.length === 0) {
+            setError('Вы не выбрали тэги');
+            setDialog(true);
+            setCreation(false);
+            setProgress(false);
+            return;
+        }
         for (const val of Object.values(portfolio)) {
             if (val === null) {
                 setError('Заполние все поля');
@@ -110,28 +124,27 @@ const Create = ({ user }) => {
             setProgress(false);
             return;
         }
-        if (workImage === null) {
-            setError('Вы не выбрали изображение выполненной работы');
+        if (workImages.length === 0) {
+            setError('Вы не выбрали изображения выполненной работы');
             setDialog(true);
             setCreation(false);
             setProgress(false);
             return;
         }
 
-        const formData = new FormData();
+        let formData = new FormData();
 
         let tag_ids = [];
         selectTags.forEach(element => tag_ids.push(element.id));
 
         formData.append('preview', preview);
-        formData.append('image', workImage);
         formData.append('title', portfolio.title);
         formData.append('project_description', portfolio.project_description);
         formData.append('designer_id', designer_id);
         formData.append('tag_ids', tag_ids);
 
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
             method: 'POST',
             credentials: 'include',
             body: formData
@@ -146,6 +159,27 @@ const Create = ({ user }) => {
         }
 
         const { id } = await response.json();
+
+        formData = new FormData();
+
+        formData.append('designer_id', designer_id);
+        for (let image of workImages) {
+            formData.append('images', image.file);
+        }
+
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/images`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+
+        if (!response.ok) {
+            setError('Не удалось создать портолио');
+            setDialog(true);
+            setCreation(false);
+            setProgress(false);
+            return;
+        }
 
         setProgress(false);
 
@@ -163,7 +197,7 @@ const Create = ({ user }) => {
                 tags={tags}
                 selectTags={selectTags} setSelectTags={setSelectedTags}
                 previewUrl={previewUrl} uploadPreview={uploadPreview}
-                workUrl={workUrl} uploadWork={uploadWork}
+                uploadWork={uploadWork}
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
                 portfolio={portfolio} setProgress={setProgress}

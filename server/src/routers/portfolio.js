@@ -153,7 +153,7 @@ async function addImages({ files, body, params: { id }, session }, res) {
         (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && body.designer_id == session.user.did))) {
         let portfolio = await getDesignerByPortfolio_(id);
 
-        if (portfolio.isSuccess && portfolio.designer === session.user.did) {
+        if (portfolio.isSuccess && (session.role.indexOf('admin') !== -1 || portfolio.designer === session.user.did)) {
             if (!files || files.length === 0 || files.length > 15) {
                 res.sendStatus(422);
                 return;
@@ -206,7 +206,7 @@ async function addImage({ file, session, params: { id }, body: { position } }, r
 
                 const ext = file.originalname.slice(file.originalname.lastIndexOf(".") + 1, file.originalname.length);
 
-                if (file.size >= 5_242_880 || !['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(file.mimetype)) {
+                if (file.size >= 1024 * 1024 * 15 || !['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/svg+xml'].includes(file.mimetype)) {
                     res.sendStatus(422);
                     return;
                 }

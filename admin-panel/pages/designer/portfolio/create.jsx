@@ -131,7 +131,6 @@ const Create = ({ user }) => {
         selectTags.forEach(element => tag_ids.push(element.id));
 
         formData.append('preview', preview);
-
         formData.append('title', portfolio.title);
         formData.append('project_description', portfolio.project_description);
         formData.append('designer_id', user.db.did);
@@ -160,25 +159,19 @@ const Create = ({ user }) => {
             formData.append('images', image.file);
         }
 
-        for (var value of formData.values()) {
-            console.log(value);
-        }
-
         response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/images`, {
             method: 'POST',
             credentials: 'include',
             body: formData
         });
 
-        if (response.status !== 204) {
+        if (!response.ok) {
             setError('Не удалось создать портолио');
             setDialog(true);
             setCreation(false);
             setProgress(false);
             return;
         }
-
-        console.log(id);
 
         setProgress(false);
 
