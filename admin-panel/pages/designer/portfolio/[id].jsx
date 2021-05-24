@@ -171,7 +171,7 @@ const Work = ({ user }) => {
             });
 
             if (response.status !== 204) {
-                setError('Не удалось обновить превью или изображение работы. Обновление остановлено');
+                setError('Не удалось обновить превью. Обновление остановлено');
                 setChange(false);
                 setDialog(true);
                 setProgress(false);

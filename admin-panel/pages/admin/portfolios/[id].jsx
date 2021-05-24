@@ -163,18 +163,17 @@ const Work = ({ user }) => {
 
         const formData = new FormData();
 
-        if (preview !== null) formData.append('preview', preview);
-        if (workImage !== null) formData.append('image', workImage);
+        if (preview !== null) {
+            formData.append('preview', preview);
 
-        if (preview !== null || workImage !== null) {
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/images`, {
+            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/preview`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: formData
             });
 
             if (response.status !== 204) {
-                setError('Не удалось обновить превью или изображение работы. Обновление остановлено');
+                setError('Не удалось обновить превью. Обновление остановлено');
                 setChange(false);
                 setDialog(true);
                 setProgress(false);
