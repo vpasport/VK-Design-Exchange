@@ -1,9 +1,15 @@
+import { useRef } from 'react';
+
+import { Toast } from 'primereact/toast';
+
 import styles from './styles.module.scss';
 
 const PreviewUpload = ({ lable, onChange, preview }) => {
     const renderText = () => {
         return preview ? 'Заменить превью' : 'Загрузить превью'
     }
+
+    const toast = useRef(null);
 
     return (
         <>
@@ -25,7 +31,16 @@ const PreviewUpload = ({ lable, onChange, preview }) => {
                 {renderText()}
                 <input
                     type="file"
-                    onChange={onChange}
+                    onChange={(e) => {
+                        const file = e.target.files[0];
+
+                        if (file.size / 1024 / 1024 / 5 > 1) {
+                            toast.current.show({ severity: 'error', summary: 'Ошибка', detail: 'Превышен допустимый размер файла', life: 3000 });
+                            return;
+                        }
+
+                        onChange(e);
+                    }}
                     style={{
                         position: 'absolute',
                         width: '100%',
@@ -57,6 +72,7 @@ const PreviewUpload = ({ lable, onChange, preview }) => {
                     </div>
                 </>
             }
+            <Toast ref={toast} position="bottom-right" />
         </>
     )
 }
