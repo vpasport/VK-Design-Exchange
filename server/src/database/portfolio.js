@@ -639,10 +639,50 @@ async function updatePreviewPaths(id, preview) {
     }
 }
 
+async function updateForSale(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `update 
+                portfolio
+            set
+                is_for_sale = not (
+                    select 
+                        is_for_sale
+                    from
+                        portfolio
+                    where
+                        id = $1
+                )
+            where
+                id = $1`,
+            [id]
+        );
+
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function createWork(
     title, preview,
     project_description,
-    designer_id, tag_ids
+    designer_id, tag_ids,
+    is_for_sale
 ) {
     const client = await pool.connect();
     await client.query('begin');
@@ -650,11 +690,11 @@ async function createWork(
     try {
         let id = (await client.query(
             `insert into
-                portfolio (title, preview, project_description)
+                portfolio (title, preview, project_description, is_for_sale)
             values 
-                ($1, $2, $3)
+                ($1, $2, $3, $4)
             returning id`,
-            [title, preview, project_description]
+            [title, preview, project_description, is_for_sale]
         )).rows[0].id;
 
         if (id !== undefined) {
@@ -1285,6 +1325,7 @@ module.exports = {
     updateTags,
     updateDescription,
     updatePreviewPaths,
+    updateForSale,
     deleteWork,
     deleteComment,
     deleteImage

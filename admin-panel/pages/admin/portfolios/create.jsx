@@ -23,7 +23,8 @@ const Create = ({ user }) => {
     const [portfolio, setPortfolio] = useState(
         {
             title: null,
-            project_description: null
+            project_description: null,
+            is_for_sale: false
         }
     );
     const [preview, setPreview] = useState(null);
@@ -142,7 +143,7 @@ const Create = ({ user }) => {
         formData.append('project_description', portfolio.project_description);
         formData.append('designer_id', designer_id);
         formData.append('tag_ids', tag_ids);
-
+        formData.append('is_for_sale', portfolio.is_for_sale);
 
         let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work`, {
             method: 'POST',
@@ -201,6 +202,7 @@ const Create = ({ user }) => {
                 set={set} save={save}
                 creation={creation} setCreation={setCreation}
                 portfolio={portfolio} setProgress={setProgress}
+                setForSale={(val) => set({ is_for_sale: val })}
             ></CreatePortfolio>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>

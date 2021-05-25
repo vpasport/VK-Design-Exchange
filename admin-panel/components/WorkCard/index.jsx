@@ -13,6 +13,7 @@ import MyImage from '../Image';
 import Comment from '../Comment';
 import PreviewUpload from '../PreviewUpload';
 import WorkImagesUpload from '../WorkImagesUpload';
+import { Checkbox } from 'primereact/checkbox';
 
 const WorkCard = ({
     work, edit,
@@ -29,6 +30,8 @@ const WorkCard = ({
     const [dialog, setDialog] = useState(false);
 
     const [comments, setComments] = useState([]);
+
+    const [forSale, setForSale] = useState(work?.is_for_sale)
 
     const getComments = async () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/work/${id}/comments?all=true`);
@@ -133,6 +136,31 @@ const WorkCard = ({
                         onChange={uploadWork}
                         edit={true}
                     />
+                }
+            </div>
+            <div
+                style={{
+                    width: '70%',
+                    margin: 'auto'
+                }}
+            >
+                {edit ?
+                    <div>
+                        <h3>Продажа шаблона:</h3>
+                        <div>
+                            <Checkbox
+                                inputId="forSale"
+                                checked={forSale}
+                                onChange={() => {
+                                    setForSale(!forSale);
+                                    set({ is_for_sale: !forSale });
+                                }}
+                            />
+                            <label htmlFor="forSale" className="p-checkbox-label p-ml-2">Отображать кнопку "Купить шаблон"</label>
+                        </div>
+                    </div>
+                    :
+                    <h3>{work?.is_for_sale && 'Шаблон для продажи'}</h3>
                 }
             </div>
             {edit &&

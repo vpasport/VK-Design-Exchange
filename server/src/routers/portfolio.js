@@ -29,6 +29,7 @@ const {
     updateTags: updateTags_,
     updateDescription: updateDescription_,
     updatePreviewPaths: updatePreviewPaths_,
+    updateForSale: updateForSale_,
     deleteImage: deleteImage_,
 } = require('../database/portfolio');
 const {
@@ -122,7 +123,6 @@ async function createWork({ file, body, session }, res) {
 
         let image = file;
 
-
         let originalname = file.originalname;
         image.name = `uploads/previews/${uuid()}.${originalname.slice(originalname.lastIndexOf(".") + 1, originalname.length)}`
 
@@ -131,7 +131,8 @@ async function createWork({ file, body, session }, res) {
             image.name,
             body.project_description,
             body.designer_id,
-            body.tag_ids.split(',')
+            body.tag_ids.split(','),
+            body.is_for_sale
         )
 
         if (result.isSuccess) {
@@ -384,6 +385,33 @@ async function updatePreview({ params: { id }, file, session }, res) {
     res.sendStatus(401);
 }
 
+async function updateForSale({ session, params: { id } }, res) {
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                let result = await updateForSale_(id);
+
+                if (result.isSuccess) {
+                    res.sendStatus(204);
+                    return;
+                }
+
+                res.sendStatus(520);
+                return;
+            }
+
+            res.sendStatus(403);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 async function deleteWork({ body: { id }, session }, res) {
     if (session.role !== undefined) {
         let designer = await getDesignerByPortfolio_(id);
@@ -491,6 +519,7 @@ function index() {
     router.put('/:id/tags', updateTags);
     router.put('/:id/description', updateDescription);
     router.put('/:id/preview', upload.single('preview'), updatePreview);
+    router.put('/:id/for-sale', updateForSale);
 
     router.delete('/work', deleteWork);
     router.delete('/comment', deleteComment);

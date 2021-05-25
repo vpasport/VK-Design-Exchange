@@ -50,7 +50,8 @@ const Work = ({ user }) => {
         setWork(work);
         setUpdateWork({
             title: work.title,
-            project_description: work.project_description
+            project_description: work.project_description,
+            is_for_sale: work.is_for_sale
         })
         setPreviewUrl({ path: `${process.env.NEXT_PUBLIC_API_URL}/${work.preview}` });
     }
@@ -160,6 +161,21 @@ const Work = ({ user }) => {
             return;
         }
 
+        if (work.is_for_sale !== updateWork.is_for_sale) {
+            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/for-sale`, {
+                method: 'PUT',
+                credentials: 'include'
+            })
+
+            if (!response.ok) {
+                setError('Не удалось обновить описание работы. Обновление остановлено');
+                setDialog(true);
+                setChange(false);
+                setProgress(false);
+                return;
+            }
+        }
+
         const formData = new FormData();
 
         if (preview !== null) {
@@ -182,6 +198,7 @@ const Work = ({ user }) => {
         getWork();
         setEdit();
         setProgress(false);
+        setChange(false);
     }
 
     const deletePortfolio = async () => {

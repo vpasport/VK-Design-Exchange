@@ -1,12 +1,14 @@
+import { useState, useEffect } from 'react';
+
 import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from 'primereact/multiselect';
-import FileUpload from '../FileUpload';
-import Quill from '../Quill';
+import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
-import { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
+
+import Quill from '../Quill';
 import PreviewUpload from '../PreviewUpload';
 import WorkImagesUpload from '../WorkImagesUpload';
 
@@ -14,12 +16,18 @@ const CreatePortfolio = ({
     designer = undefined, tags,
     selectTags, setSelectTags,
     previewUrl, uploadPreview,
-    uploadWork, workUrl,
+    uploadWork,
     set, save, creation, setCreation,
     portfolio,
-    setProgress
+    setProgress,
+    setForSale: setForSale_
 }) => {
     const [dialog, setDialog] = useState(false);
+    const [forSale, setForSale] = useState(false);
+
+    useEffect(() => {
+        setForSale_(forSale)
+    }, [forSale])
 
     return (
         <div
@@ -81,6 +89,13 @@ const CreatePortfolio = ({
                             preview={previewUrl}
                             lable={portfolio.title}
                         />
+                    </div>
+                </div>
+                <div>
+                    <h3>Продажа шаблона:</h3>
+                    <div>
+                        <Checkbox inputId="forSale" checked={forSale} onChange={(e) => setForSale(!forSale)}></Checkbox>
+                        <label htmlFor="forSale" className="p-checkbox-label p-ml-2">Отображать кнопку "Купить шаблон"</label>
                     </div>
                 </div>
                 <div>
