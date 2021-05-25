@@ -14,6 +14,7 @@ class User{
         this.photo = user.photo_200;
         this.vkUrlParams = vkUrlParams.slice(1);
         this._banned = banned;
+        console.log(vkUrlParams)
         //axios.defaults.params.post['url_params'] = vkUrlParams;
     }
 

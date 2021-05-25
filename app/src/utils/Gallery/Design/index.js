@@ -17,21 +17,21 @@ class Design extends DesignDefaultProps {
         this._likes = item.likes.count;
         this._isLikeChecked = item.likes.from_user;
         this._author = item.author;
+        this._isForSale = item.is_for_sale;
     }
 
     getProjectDescription() { return this._projectDescription }
     getWorkImage() { return this._workImage }
     getDesignerId() { return this._designerId }
 
-    set viewCount(value) {
-        this.viewCount = value;
-    }
+    set viewCount(value) {this.viewCount = value;}
 
     get viewCount() { return this._viewCount }
     get likes() { return this._likes }
     get isLikeChecked() { return this._isLikeChecked }
     get author(){ return this._author }
     get workImages(){ return this._workImages }
+    get isForSale(){ return this._isForSale }
 
     updateDesign() {
         store.dispatch(changeActiveDesign(Object.assign(Object.create(Object.getPrototypeOf(this)), this)));

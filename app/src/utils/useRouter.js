@@ -1,10 +1,11 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { changeRouterPath } from '../store/router/actions';
+import bridge from '@vkontakte/vk-bridge';
 
 const useRouter = () => {
 
-    const { path } = useSelector(state => state.path);
+    const { path: { path }, design } = useSelector(state => state);
     const dispatch = useDispatch();
 
     const activeStory = useMemo(() => path[path.length - 1][0], [path]);

@@ -14,6 +14,8 @@ import { Icon24Gallery } from '@vkontakte/icons';
 import { Icon24InfoCircleOutline } from '@vkontakte/icons';
 import { Icon16StarCircle } from '@vkontakte/icons';
 import { Icon24Market } from '@vkontakte/icons';
+import { Icon24User } from '@vkontakte/icons';
+import { Icon24CupOutline } from '@vkontakte/icons';
 //import '@vkontakte/vkui/dist/vkui.css';
 
 import DesctopSideBar from './components/DesctopSideBar';
@@ -26,12 +28,15 @@ import RaitingView from './views/RaitingView';
 import useRouter from './utils/useRouter';
 import OrdersView from './views/OrdersView';
 import { Icon24Users } from '@vkontakte/icons';
+import { useDispatch } from 'react-redux';
+import { store } from '.';
+import { changeActiveDesignId } from './store/Design/actions';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
 
     const { isDesktop, setIsDesktop } = sessionContext();
-    const platform = usePlatform();
-    
+    const dispatch = useDispatch();
+
     const router = useRouter();
 
     const params = [
@@ -50,24 +55,37 @@ const Panels = withAdaptivity(({ viewWidth }) => {
         {
             story: 'raiting',
             name: 'Рейтинг',
-            icon: <Icon24Users />,
+            icon: <Icon24CupOutline />,
             defaultPanel: 'raiting'
         },
         {
             story: 'orders',
-            name: 'Заказы',
-            icon: <Icon24Market />,
+            name: 'Настройки',
+            icon: <Icon24User />,
             defaultPanel: 'orders'
         }
     ]
 
     useEffect(() => {
-        setIsDesktop(viewWidth >= ViewWidth.SMALL_TABLET)
+        const hash = window.location.hash;
+
+        if (hash) {
+            const [key, value] = hash.split('=');
+            switch (key) {
+                case '#designId': {
+                    dispatch(changeActiveDesignId(Number(value)));
+                    router.setActiveStoryAndPanel('gallery', 'design');
+                    break;
+                }
+            }
+        }
+
+        setIsDesktop(viewWidth >= ViewWidth.SMALL_TABLET);
     }, []);
 
     const changeStory = (story, panel) => {
-        if(router.bind.activeStory === story && router.bind.activePanel === panel)
-            window.scrollTo({top: 0, behavior: 'smooth'});
+        if (router.bind.activeStory === story && router.bind.activePanel === panel)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         else router.setActiveStoryAndPanel(story, panel);
     }
 
@@ -92,14 +110,14 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                     width={isDesktop ? '560px' : '100%'}
                     maxWidth={isDesktop ? '560px' : '100%'}
                 >
-                    <Epic activeStory={router.bind.activeStory} 
-                    tabbar={!isDesktop &&
-                        <MobileSideBar
-                            activeStory={router.bind.activeStory}
-                            onStoryChange={changeStory}
-                            params={params}
-                        />
-                    }>
+                    <Epic activeStory={router.bind.activeStory}
+                        tabbar={!isDesktop &&
+                            <MobileSideBar
+                                activeStory={router.bind.activeStory}
+                                onStoryChange={changeStory}
+                                params={params}
+                            />
+                        }>
                         <GalleryView id='gallery' />
                         <AboutTableView id='table' />
                         <RaitingView id='raiting' />

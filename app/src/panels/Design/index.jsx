@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button, Cell, RichCell, Avatar, usePlatform, ANDROID, IOS } from '@vkontakte/vkui';
 import bridge from '@vkontakte/vk-bridge';
 
-import Info from './Info';
-
 import styles from './style.module.scss';
 import { alertContext, sessionContext } from '../../App';
 import { getDesignInfoById, openVkLink } from '../../utils/helpers';
@@ -16,6 +14,7 @@ import ViewsCounter from '../../components/ViewsCounter';
 import LikeButton from '../../components/LikeButton';
 import Comments from './Comments';
 import StarRatings from '../../components/StarRatings';
+import ShareButton from '../../components/ShareButton';
 
 const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, changeActiveDesign }) => {
 
@@ -45,7 +44,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
             try {
                 await activeDesign.setNewViewCounts();
             }
-            catch (e) {}
+            catch (e) { }
         }
 
         if (isFetchDesign)
@@ -75,7 +74,6 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     const buyDesign = () => {
         openVkLink(`https://vk.com/id${activeDesign.author.vk_id}`, fromMobile)
     }
-
 
     return (
         <Panel id={id}>
@@ -112,26 +110,35 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                                 {activeDesign.workImages.map((image, i) => (
                                     <img
                                         src={image}
-                                        alt={`image ${i+1}`}
+                                        alt={`image ${i + 1}`}
                                         onClick={() => showImage(i)}
                                     />
                                 ))}
                             </div>
-                            <Button
-                                mode='outline'
-                                stretched
-                                size='l'
-                                className={styles.cardBlock__button}
-                                onClick={buyDesign}
-                            >
-                                Купить этот шаблон
-                            </Button>
+                            {activeDesign.isForSale &&
+                                <Button
+                                    mode='outline'
+                                    stretched
+                                    size='l'
+                                    className={styles.cardBlock__button}
+                                    onClick={buyDesign}
+                                >
+                                    Связаться с исполнителем
+                                </Button>
+                            }
+
                             <div className={styles.cardBlock__footer}>
-                                <LikeButton
-                                    isChecked={activeDesign.isLikeChecked}
-                                    count={activeDesign.likes}
-                                    onClick={handleLikeClick}
-                                />
+                                <div>
+                                    <LikeButton
+                                        isChecked={activeDesign.isLikeChecked}
+                                        count={activeDesign.likes}
+                                        onClick={handleLikeClick}
+                                    />
+                                    <ShareButton 
+                                        hash={`#designId=${activeDesignId}`}
+                                        style={{marginLeft: 18}}
+                                    />
+                                </div>
                                 <ViewsCounter count={activeDesign.viewCount} />
                             </div>
                         </Div>
