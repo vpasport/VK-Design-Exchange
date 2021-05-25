@@ -299,18 +299,28 @@ async function getOrdersByDesigner(id) {
     }
 }
 
-async function getOrdersByCustomer(vk_id) {
+async function getOrdersByCustomer(vk_id, status_id = undefined) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
+        let params = [];
+        let status = '';
+
+        if (status_id) {
+            params.push(status_id);
+            status = `ord.status = $${params.length} and`;
+        }
+
+        params.push(vk_id);
+
         let orders = (await client.query(
             `select 
                 ord.id, 
                 ord.customer, 
                 ord.offer_id, 
                 os.name as status, 
-                ord.status as ststus_id,
+                ord.status as status_id,
                 o.title,
                 o.preview,
                 o.price
@@ -321,9 +331,10 @@ async function getOrdersByCustomer(vk_id) {
             where 
                 ord.status = os.id and
                 o.id = ord.offer_id and
-                ord.customer = $1
+                ${status}
+                ord.customer = $${params.length}
             order by ord.id desc`,
-            [vk_id]
+            params
         )).rows;
 
         await client.query('commit');

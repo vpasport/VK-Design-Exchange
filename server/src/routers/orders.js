@@ -34,7 +34,7 @@ async function getOrders({ query, session }, res) {
     let result;
 
     if (checkSign(query) && customer_vk_id !== undefined)
-        result = await getOrdersByCustomer_(customer_vk_id)
+        result = await getOrdersByCustomer_(customer_vk_id, query.status_id)
     if (query.designer_id !== undefined)
         result = await getOrdersByDesigner_(designer_id)
     if (session.role !== undefined && session.role.indexOf('admin') !== -1)
