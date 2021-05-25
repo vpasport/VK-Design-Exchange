@@ -45,7 +45,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
         let sort = 'p.id';
         let dir = 'desc';
 
-        let sortTypes = ['likes', 'views', 'id'];
+        let sortTypes = ['likes', 'views', 'id', 'popularity'];
         let dirTypes = ['desc', 'asc'];
 
         if (from_id) {
@@ -82,10 +82,11 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
             tmp as (
                 select 
                     p.id, 
+                    p.views,
                     p.title, 
                     p.preview, 
-                    p.views,
-                     l.likes,
+                    p.popularity,
+                    l.likes,
                     count( 1 ) over ()::int
                 from 
                     portfolio as p
@@ -153,7 +154,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
         let sort = 'p.id';
         let dir = 'desc';
 
-        let sortTypes = ['likes', 'views', 'id'];
+        let sortTypes = ['likes', 'views', 'id', 'popularity'];
         let dirTypes = ['desc', 'asc'];
 
         if (from_id) {
@@ -327,7 +328,8 @@ async function getWork(id, full, vk_id = undefined) {
                 `update
                     portfolio
                 set 
-                    views = views + 1
+                    views = views + 1,
+                    popularity = popularity + 1
                 where
                     id = $1`,
                 [id]
@@ -661,6 +663,7 @@ async function updateForSale(id) {
             [id]
         );
 
+        await client.query('commit');
         client.release();
 
         return {
@@ -930,7 +933,7 @@ async function addLike(id, vk_id) {
             )).rows[0];
 
             let likes = (await client.query(
-                ` select count(pl.*)
+                `select count(pl.*)
                     from portfolios_likes as pl
                 where
                     pl.portfolio_id = $1`,
@@ -946,6 +949,16 @@ async function addLike(id, vk_id) {
                     [id, vk_id]
                 );
 
+                await client.query(
+                    `update
+                        portfolio
+                    set
+                        popularity = popularity + 50
+                    where
+                        id = $1`,
+                    [id]
+                )
+
                 likes.count = Number.parseInt(likes.count) + 1;
                 likes.from_user = true;
             } else {
@@ -956,6 +969,16 @@ async function addLike(id, vk_id) {
                         portfolio_id = $1 and
                         vk_user_id = $2`,
                     [id, vk_id]
+                )
+
+                await client.query(
+                    `update
+                        portfolio
+                    set
+                        popularity = popularity - 50
+                    where
+                        id = $1`,
+                    [id]
                 )
 
                 likes.count = Number.parseInt(likes.count) - 1;
@@ -1023,6 +1046,16 @@ async function addComment(id, text, vk_id) {
                 returning id`,
                 [id, vk_id, text, date]
             )).rows[0].id;
+
+            await client.query(
+                `update
+                    portfolio
+                set
+                    popularity = popularity + 150
+                where
+                    id = $1`,
+                [id]
+            )
 
             await client.query('commit');
             client.release();
@@ -1208,21 +1241,47 @@ async function deleteComment(id) {
     await client.query('begin');
 
     try {
-        await client.query(
-            `delete
-            from portfolios_comments
+        let portfolio = (await client.query(
+            `select
+                portfolio_id
+            from
+                portfolios_comments
             where
                 id = $1`,
             [id]
-        );
+        )).rows[0];
 
-        await client.query('commit');
-        client.release();
+        if (portfolio) {
+            portfolio = portfolio.portfolio_id;
 
-        return {
-            isSuccess: true
+            await client.query(
+                `update
+                    portfolio
+                set
+                    popularity = popularity - 150
+                where
+                    id = $1`,
+                [portfolio]
+            )
+
+            await client.query(
+                `delete
+                from 
+                    portfolios_comments
+                where
+                    id = $1`,
+                [id]
+            );
+
+            await client.query('commit');
+            client.release();
+
+            return {
+                isSuccess: true
+            }
         }
 
+        throw 'Comment not found';
     } catch (e) {
         await client.query('rollback');
         client.release();
@@ -1304,6 +1363,68 @@ async function deleteImage(id, position) {
         return {
             isSuccess: false
         }
+    }
+}
+
+updatePopularity()
+
+async function updatePopularity() {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let { rows: portfolios } = await client.query(
+            `select
+                id,
+                views
+            from
+                portfolio`
+        );
+
+        for (let el of portfolios) {
+            let { rows: likes } = await client.query(
+                `select 
+                    count(*) 
+                from 
+                    portfolios_likes
+                where
+                    portfolio_id = $1`,
+                [el.id]
+            )
+
+            let { rows: comments } = await client.query(
+                `select
+                    count(*)
+                from
+                    portfolios_comments
+                where
+                    portfolio_id = $1`,
+                [el.id]
+            )
+
+            el.likes = parseInt(likes[0].count);
+            el.comments = parseInt(comments[0].count);
+
+            el.popularity = el.views + 50 * el.likes + 150 * el.comments;
+
+            await client.query(
+                `update
+                    portfolio
+                set
+                    popularity = $1
+                where
+                    id = $2`,
+                [el.popularity, el.id]
+            )
+        }
+
+        await client.query('commit');
+        client.release();
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
     }
 }
 

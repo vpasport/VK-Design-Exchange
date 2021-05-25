@@ -174,6 +174,30 @@ async function banUser(vk_id, delete_comment) {
         )
 
         if (delete_comment === 'all') {
+            let { rows: comments } = await client.query(
+                `select
+                    portfolio_id,
+                    count(distinct id) as count
+                from
+                    portfolios_comments
+                where
+                    vk_user_id = $1
+                group by portfolio_id`,
+                [vk_id]
+            )
+
+            for (let el of comments) {
+                await client.query(
+                    `update
+                        portfolio
+                    set
+                        popularity = popularity - $1
+                    where
+                        id = $2`,
+                    [parseInt(el.count) * 150, el.portfolio_id]
+                )
+            }
+
             await client.query(
                 `delete from
                     portfolios_comments
@@ -183,6 +207,23 @@ async function banUser(vk_id, delete_comment) {
             )
         } else if (delete_comment !== undefined) {
             await client.query(
+                `update
+                    portfolio
+                set
+                    popularity = popularity - 150
+                where
+                    id = (
+                        select
+                            portfolio_id
+                        from
+                            portfolios_comments
+                        where
+                            id = $1
+                    )`,
+                [delete_comment]
+            )
+
+            await client.query(
                 `delete from 
                     portfolios_comments
                 where
@@ -190,6 +231,8 @@ async function banUser(vk_id, delete_comment) {
                 [delete_comment]
             )
         }
+
+        // throw '';
 
         await client.query('commit');
         client.release();
