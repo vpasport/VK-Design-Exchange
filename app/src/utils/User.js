@@ -2,53 +2,61 @@ import bridge from '@vkontakte/vk-bridge';
 import axios from 'axios';
 import { store } from '..';
 import { addOrder } from '../store/OrdersList/actions';
+import { getUrlByJson } from './helpers';
 import Order from './Orders/Order';
 import OrderCard from './Orders/OrderCard';
 
-class User{
+class User {
 
-    constructor(user, vkUrlParams, banned){
+    constructor(user, vkUrlParams, banned) {
         this.id = user.id;
         this.firstName = user.first_name;
         this.lastName = user.last_name;
         this.photo = user.photo_200;
         this.vkUrlParams = vkUrlParams.slice(1);
         this._banned = banned;
-        console.log(vkUrlParams)
-        //axios.defaults.params.post['url_params'] = vkUrlParams;
     }
 
-    getId(){
+    getId() {
         return this.id;
     }
 
-    getFirstName(){
+    getFirstName() {
         return this.firstName;
     }
 
-    getLastName(){
+    getLastName() {
         return this.lastName;
     }
 
-    getPhoto(){
+    getPhoto() {
         return this.photo;
     }
 
-    get banned(){ return this._banned }
+    get banned() { return this._banned }
 
-    getVkUrlParams() {return this.vkUrlParams}
+    getVkUrlParams() { return this.vkUrlParams }
 
-    async getOrders(){
-        const { data } = await axios.get(`orders/?${this.getVkUrlParams()}`);
+    getOrders(startFilters) {
 
-        if(data.isSuccess){
-            const orders = data.orders.map(el => new OrderCard(el));
+        return async (newFilters) => {
 
-            return {
-                list: orders
+            newFilters = {...startFilters, ...newFilters};
+            let allParams = getUrlByJson(newFilters);
+
+            if(allParams.length) allParams = allParams.replace('?', '&');
+
+            const { data } = await axios.get(`orders/?${this.getVkUrlParams()}${allParams}`);
+
+            if (data.isSuccess) {
+                const orders = data.orders.map(el => new OrderCard(el));
+
+                return {
+                    list: orders
+                }
             }
+            else throw new Error('Ошибка при загрузке заказов')
         }
-        else throw new Error('Ошибка при загрузке заказов')
     }
 
     async createOrder(offerId) {
@@ -57,7 +65,7 @@ class User{
             url_params: this.getVkUrlParams()
         })
 
-        if(data.isSuccess){
+        if (data.isSuccess) {
             const order = new OrderCard(data.order);
             store.dispatch(addOrder(order));
             return true;
@@ -65,10 +73,10 @@ class User{
         else throw new Error('Ошибка при создании заказа')
     }
 
-    async getOrder(orderId){
+    async getOrder(orderId) {
         const { data } = await axios.get(`orders/${orderId}?${this.getVkUrlParams()}`);
 
-        if(data.isSuccess){
+        if (data.isSuccess) {
             const order = new Order(data.order);
             return order;
         }

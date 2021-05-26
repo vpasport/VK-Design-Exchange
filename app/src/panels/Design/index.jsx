@@ -60,7 +60,6 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     }
 
     const showImage = (index) => {
-        console.log(index)
         bridge.send("VKWebAppShowImages", {
             images: activeDesign.workImages,
             start_index: index
@@ -128,7 +127,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                             }
 
                             <div className={styles.cardBlock__footer}>
-                                <div>
+                                <div className={styles.footer__left}>
                                     <LikeButton
                                         isChecked={activeDesign.isLikeChecked}
                                         count={activeDesign.likes}

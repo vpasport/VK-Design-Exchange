@@ -45,7 +45,6 @@ const App = () => {
 					? ANDROID
 					: VKCOM
 		const fromMobile = Boolean(vkPlatform === IOS || vkPlatform === ANDROID);
-		console.log(`from mobile: ${fromMobile}`)
 		return [ activePlatform, vkPlatform, fromMobile ];
 	}, [])
 

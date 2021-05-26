@@ -41,6 +41,7 @@ class Gallery {
                 type: 'sort_by',
                 componentName: 'ModalRadioSelect',
                 filters: [
+                    {status: 'Популярности', type: 'popularity&direction=desc'},
                     {status: 'Дате публикации (сначала новые)', type: 'id&direction=desc'},
                     {status: 'Дате публикации (сначала старые)', type: 'id&direction=asc'},
                     {status: 'Лайкам (по убыванию)', type: 'likes&direction=desc'},

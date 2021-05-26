@@ -50,3 +50,12 @@
 .imageTitle{
     margin-bottom: 16px;
 }
+
+.footer{
+
+    &__left{
+        display: flex;
+        align-items: center;
+    }
+
+}

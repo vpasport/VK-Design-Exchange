@@ -62,7 +62,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
             story: 'orders',
             name: 'Настройки',
             icon: <Icon24User />,
-            defaultPanel: 'orders'
+            defaultPanel: 'user'
         }
     ]
 
