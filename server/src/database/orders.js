@@ -58,6 +58,8 @@ async function getOrders(from, to) {
                 o.offer_id, 
                 os.name as status, 
                 o.status as status_id,
+                o.create_date,
+                o.update_date,
                 ofs.title, 
                 count( 1 ) over ()::int
             from
@@ -82,6 +84,8 @@ async function getOrders(from, to) {
             count = orders[0].count;
             orders.forEach(element => {
                 users.push(element.customer);
+                element.create_date = parseInt(element.create_date);
+                element.update_date = parseInt(element.update_date);
                 delete element.count
             });
 
@@ -131,6 +135,9 @@ async function getOrder(id) {
         )).rows[0];
 
         if (order !== undefined) {
+            order.create_date = parseInt(order.create_date);
+            order.update_date = parseInt(order.update_date);
+
             await client.query('commit');
             client.release();
 
@@ -164,6 +171,8 @@ async function getOrderFull(id) {
                 ord.customer, 
                 d.vk_id as designer,
                 ord.offer_id, 
+                ord.create_date,
+                ord.update_date,
                 os.name as status, 
                 ord.status as status_id
             from 
@@ -180,6 +189,9 @@ async function getOrderFull(id) {
         )).rows[0];
 
         if (order !== undefined) {
+            order.create_date = parseInt(order.create_date);
+            order.update_date = parseInt(order.update_date);
+
             let offer = (await client.query(
                 `select *
                 from
@@ -407,13 +419,15 @@ async function createOrder(offer, customer) {
     await client.query('begin');
 
     try {
+        const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
         let order = (await client.query(
             `insert into orders
-                (customer, offer_id)
+                (customer, offer_id, create_date, update_date)
             values
-                ($1, $2)
+                ($1, $2, $3, $3)
             returning id`,
-            [customer, offer]
+            [customer, offer, date]
         )).rows[0].id;
 
         if (order !== undefined) {
@@ -475,12 +489,15 @@ async function inProcess(id) {
 
         if (order !== undefined) {
             if (order.status === 2) {
+                const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
                 await client.query(
                     `update orders
-                        set status = 3
+                        set status = 3,
+                        update_date = $2
                     where
                         id = $1`,
-                    [id]
+                    [id, date]
                 )
 
                 await client.query('commit');
@@ -512,7 +529,7 @@ async function readyToCheck(id) {
     await client.query('begin');
 
     try {
-        let status = (await client.query(
+        let order = (await client.query(
             `select status 
                 from orders
             where
@@ -520,14 +537,17 @@ async function readyToCheck(id) {
             [id]
         )).rows[0];
 
-        if (status !== undefined) {
+        if (order !== undefined) {
             if (status.status === 3) {
+                const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
                 await client.query(
                     `update orders
-                        set status = 4
+                        set status = 4,
+                        update_date = $2
                     where
                         id = $1`,
-                    [id]
+                    [id, date]
                 )
 
                 await client.query('commit');
@@ -564,20 +584,43 @@ async function finishOrder(id) {
     await client.query('begin');
 
     try {
-        await client.query(
-            `update orders
-                set status = 5
+        let order = (await client.query(
+            `select status 
+                from orders
             where
                 id = $1`,
             [id]
-        )
+        )).rows[0];
 
-        await client.query('commit');
-        client.release();
+        if (order !== undefined) {
+            if (order.status === 4) {
+                const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+                await client.query(
+                    `update orders
+                        set status = 5,
+                        update_date = $2
+                    where
+                        id = $1`,
+                    [id, date]
+                )
 
-        return {
-            isSuccess: true
+                await client.query('commit');
+                client.release();
+
+                return {
+                    isSuccess: true
+                }
+            }
+
+            await client.query('rollback');
+            client.release();
+
+            return {
+                isSuccess: false
+            }
         }
+
+        throw 'Order not found';
     } catch (e) {
         await client.query('rollback');
         client.release();
@@ -620,12 +663,15 @@ async function cancelOrder(id, comment, from_vk_id) {
                 order.designer_vk_id === from_vk_id ||
                 (admin !== undefined && admin.vk_id === from_vk_id)
             ) {
+                const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
                 await client.query(
                     `update orders
-                        set status = 1
+                        set status = 1,
+                        update_date = $2
                     where
                         id = $1`,
-                    [id]
+                    [id, date]
                 )
 
                 let comment_id = (await client.query(

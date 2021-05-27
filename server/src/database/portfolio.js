@@ -1036,7 +1036,7 @@ async function addComment(id, text, vk_id) {
         }
 
         if (work !== undefined) {
-            const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60)
+            const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
 
             const comment = (await client.query(
                 `insert into 
@@ -1366,7 +1366,7 @@ async function deleteImage(id, position) {
     }
 }
 
-updatePopularity()
+// updatePopularity()
 
 async function updatePopularity() {
     const client = await pool.connect();

@@ -335,6 +335,8 @@ async function getOrders(id, from, to) {
                 o.id, 
                 o.customer, 
                 o.offer_id, 
+                o.create_date,
+                o.update_date,
                 os.name as status, 
                 o.status as status_id,
                 ofs.title, 
@@ -362,6 +364,8 @@ async function getOrders(id, from, to) {
             count = orders[0].count;
             orders.forEach(element => {
                 users.push(element.customer);
+                element.create_date = parseInt(element.create_date);
+                element.update_date = parseInt(element.update_date);
                 delete element.count
             });
 

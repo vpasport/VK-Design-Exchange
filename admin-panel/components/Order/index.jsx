@@ -23,6 +23,8 @@ const Order = ({ order }) => {
         }
     ];
 
+    console.log(order)
+
     const itemTemplate = (item) => {
         return <img src={`${process.env.NEXT_PUBLIC_API_URL}/${item}`} alt='Отзыв' style={{ width: '100%', display: 'block' }} />;
     }
@@ -110,19 +112,29 @@ const Order = ({ order }) => {
                 </img>
             </div>
             <div style={{ width: '50%', margin: 'auto' }}>
-                <div>
+                <div className='p-d-flex p-ai-center'>
                     <h3>Статус:</h3>
-                    <p><b>{order?.status}</b></p>
+                    <p className='p-ml-2'><b>{order?.status}</b></p>
                 </div>
             </div>
             <div style={{ width: '50%', margin: 'auto' }}>
-                <div>
+                <div className='p-d-flex p-ai-center'>
                     <h3>Название:</h3>
-                    <p><b>{order?.offer?.title}</b></p>
+                    <p className='p-ml-2'><b>{order?.offer?.title}</b></p>
                 </div>
                 <div>
+                    <p>Дата создания заказа: {new Date((order?.create_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU", {
+                        year: 'numeric', month: 'numeric', day: 'numeric',
+                        hour: 'numeric', minute: 'numeric', hour12: false
+                    })}</p>
+                    <p>Дата последнего изменения статуса заказа: {new Date((order?.update_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU", {
+                        year: 'numeric', month: 'numeric', day: 'numeric',
+                        hour: 'numeric', minute: 'numeric', hour12: false
+                    })}</p>
+                </div>
+                <div className='p-d-flex p-ai-center'>
                     <h3>Стоимость:</h3>
-                    <p><b>{order?.offer?.price} ₽</b></p>
+                    <p className='p-ml-2'><b>{order?.offer?.price} ₽</b></p>
                 </div>
                 <div>
                     <h3>Описание:</h3>

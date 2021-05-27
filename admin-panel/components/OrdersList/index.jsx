@@ -42,7 +42,6 @@ const OrdersList = ({ user }) => {
         setOrders(orders);
     }
 
-
     useEffect(() => {
         getOrders(first, rows);
     }, []);
@@ -71,7 +70,7 @@ const OrdersList = ({ user }) => {
                 style={{ display: 'flex' }}
                 href={`https://vk.com/id${data.customer.id}`}
             >
-                <Avatar shape="circle" image={data.customer.photo_max} size='xlarge' />
+                <Avatar style={{ width: '50px', height: '50px' }} shape="circle" image={data.customer.photo_max} size='xlarge' />
                 <p className='p-ml-3'>{data.customer.first_name} {data.customer.last_name}</p>
             </a>
         )
@@ -197,6 +196,32 @@ const OrdersList = ({ user }) => {
         setError(true);
     }
 
+    const craeteDate = (data) => {
+        return (
+            <p>
+                {
+                    new Date((data.create_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU", {
+                        year: 'numeric', month: 'numeric', day: 'numeric',
+                        hour: 'numeric', minute: 'numeric', hour12: false
+                    })
+                }
+            </p>
+        )
+    }
+
+    const updateDate = (data) => {
+        return (
+            <p>
+                {
+                    new Date((data.update_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU", {
+                        year: 'numeric', month: 'numeric', day: 'numeric',
+                        hour: 'numeric', minute: 'numeric', hour12: false
+                    })
+                }
+            </p>
+        )
+    }
+
     return (
         <>
             <DataTable
@@ -214,6 +239,8 @@ const OrdersList = ({ user }) => {
                 <Column header="Заказ" body={offer}></Column>
                 <Column header="Заказчик" body={customer}></Column>
                 <Column field="status" header="Статус"></Column>
+                <Column header="Дата создания" body={craeteDate}></Column>
+                <Column header="Обновлен" body={updateDate}></Column>
                 <Column header='Обновление статуса' bodyStyle={{ textAlign: 'center' }} headerStyle={{ width: '30%', textAlign: 'center' }} body={statuses}></Column>
             </DataTable>
             <Dialog

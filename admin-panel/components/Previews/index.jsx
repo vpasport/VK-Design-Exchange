@@ -43,12 +43,27 @@ const Previews = ({ user }) => {
         );
 
         const header = (
-            <img
-                style={{ maxHeight: '330px' }}
-                alt={data.title}
-                src={`${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`}
-                onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'}
-            />
+            <div
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    paddingBottom: '100%',
+                }
+                }
+            >
+                <img
+                    style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'top',
+                    }}
+                    alt={data.title}
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`}
+                    onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'}
+                />
+            </div >
         );
 
         if (data.title === undefined) return (

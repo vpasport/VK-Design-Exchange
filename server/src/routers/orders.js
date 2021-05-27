@@ -50,9 +50,7 @@ async function getOrders({ query, session }, res) {
 
 async function getOrder({ params: { id }, query, session }, res) {
     let designer = await getDesignerByOrder_(id);
-
-    let check = checkSign(query);
-
+    
     if (designer.isSuccess) {
         if ((session.role !== undefined &&
             ((session.role.indexOf('designer') !== -1 && session.user.did === designer.designer)
