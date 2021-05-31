@@ -142,6 +142,102 @@ async function getBanInfo(vk_id) {
     }
 }
 
+async function getViewed(vk_id, from, to, from_id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        const params = [];
+        let filter = '';
+        let offset = '';
+        let limit = '';
+
+        if (from_id) {
+            params.push(from_id);
+            filter = `and p.id <= $${params.length}`;
+        }
+        if (from) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to && to !== 'all') {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+
+        params.push(vk_id);
+
+        let { rows: previews } = await client.query(
+            `with likes as (
+                select 
+                    portfolio_id, 
+                    count(vk_user_id) as likes
+                from 
+                    portfolios_likes
+                group by portfolio_id
+            ),
+            tmp as (
+                select 
+                    p.id, 
+                    p.title, 
+                    p.preview, 
+                    p.views,
+                    l.likes
+                from 
+                    portfolio as p
+                left outer join 
+                    likes as l 
+                on 
+                    p.id = l.portfolio_id
+            )
+            select
+                p.id, 
+                p.title, 
+                p.preview, 
+                count( 1 ) over ()::int
+            from 
+                tmp as p,
+                vieweds as v
+            where
+                p.id = v.portfolio_id and 
+                v.vk_id = $${params.length}
+                ${filter}
+            ${offset}
+            ${limit !== '' ? limit : ''}`,
+            params
+        )
+
+        let count = 0;
+        let result = {
+            isSuccess: true
+        };
+
+        if (previews.length > 0) {
+            count = previews[0].count;
+            previews.forEach(el => delete el.count);
+            result.from_id = from_id === undefined ? previews[0].id : Number(from_id);
+        }
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            ...result,
+            count,
+            previews
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function banUser(vk_id, delete_comment) {
     const client = await pool.connect();
     await client.query('begin');
@@ -287,6 +383,7 @@ module.exports = {
     getRoles,
     getBannedUsers,
     getBanInfo,
+    getViewed,
     banUser,
     unbanUser
 }

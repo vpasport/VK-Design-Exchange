@@ -9,9 +9,12 @@ const {
 const {
     getBannedUsers: getBannedUsers_,
     getBanInfo: getBanInfo_,
+    getViewed: getViewed_,
     banUser: banUser_,
     unbanUser: unbanUser_
 } = require('../database/users');
+
+const { checkSign } = require('../helper/vk');
 
 async function getInfo(req, res) {
     let result = await getUserInfo(req.session.vk_id);
@@ -74,6 +77,27 @@ async function getBanInfo({ query: { vk_id } }, res) {
     res.sendStatus(520);
 }
 
+async function getViewed({ query }, res) {
+    if (checkSign(query)) {
+        let result = await getViewed_(
+            query.vk_user_id,
+            query.from,
+            query.to,
+            query.from_id
+        );
+
+        if (result.isSuccess) {
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(403);
+}
+
 async function changeMainRole({ session }, res) {
     for (const role of session.role) {
         if (role !== session.mainRole) {
@@ -131,6 +155,7 @@ function index() {
     router.get('/check?:link', getInfoByLink);
     router.get('/banned', getBannedUsers);
     router.get('/ban', getBanInfo);
+    router.get('/viewed', getViewed)
 
     router.put('/change_role', changeMainRole);
 

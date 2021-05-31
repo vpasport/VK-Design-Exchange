@@ -28,8 +28,7 @@ async function getFavorites(vk_id, from, to, from_id) {
         params.push(vk_id);
 
         let { rows: previews } = await client.query(
-            `
-            with likes as (
+            `with likes as (
                 select 
                     portfolio_id, 
                     count(vk_user_id) as likes

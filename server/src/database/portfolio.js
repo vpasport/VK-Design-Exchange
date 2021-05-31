@@ -308,6 +308,28 @@ async function getWork(id, full, vk_id = undefined) {
             work.likes = likes;
 
             if (vk_id !== undefined) {
+                let viewed = (await client.query(
+                    `select
+                        id
+                    from
+                        vieweds
+                    where
+                        vk_id = $1 and
+                        portfolio_id = $2`,
+                    [vk_id, id]
+                )).rows[0];
+
+
+                if (viewed === undefined) {
+                    await client.query(
+                        `insert into
+                            vieweds (vk_id, portfolio_id)
+                        values
+                            ( $1, $2 )`,
+                        [vk_id, id]
+                    )
+                }
+
                 let likeFromUser = (await client.query(
                     `select pl.id
                         from portfolios_likes as pl
