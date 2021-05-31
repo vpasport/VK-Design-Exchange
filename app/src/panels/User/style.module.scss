@@ -1,0 +1,15 @@
+.button{
+
+    :global(.Button__content){
+        flex: 1 !important;
+    }
+
+}
+
+.buttonsBlock{
+
+    .button:not(:first-child){
+        margin-top: 8px;
+    }
+
+}

@@ -25,19 +25,24 @@ import GalleryView from './views/GalleryView';
 import AboutTableView from './views/AboutTableView';
 import { sessionContext } from './App';
 import RaitingView from './views/RaitingView';
-import useRouter from './utils/useRouter';
+import {useRouter} from '@unexp/router';
 import OrdersView from './views/OrdersView';
 import { Icon24Users } from '@vkontakte/icons';
 import { useDispatch } from 'react-redux';
 import { store } from '.';
 import { changeActiveDesignId } from './store/Design/actions';
+import {useStructure, useLocation, useHistory } from '@unexp/router';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
 
     const { isDesktop, setIsDesktop } = sessionContext();
     const dispatch = useDispatch();
 
-    const router = useRouter();
+    const {push} = useRouter();
+
+    const structure = useStructure({view: 'table', panel: 'table'});
+    const location = useLocation();
+    const history = useHistory();
 
     const params = [
         {
@@ -74,7 +79,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
             switch (key) {
                 case '#designId': {
                     dispatch(changeActiveDesignId(Number(value)));
-                    router.setActiveStoryAndPanel('gallery', 'design');
+                    push({view: 'gallery', panel: 'design'});
                     break;
                 }
             }
@@ -83,10 +88,11 @@ const Panels = withAdaptivity(({ viewWidth }) => {
         setIsDesktop(viewWidth >= ViewWidth.SMALL_TABLET);
     }, []);
 
-    const changeStory = (story, panel) => {
-        if (router.bind.activeStory === story && router.bind.activePanel === panel)
+    const changeStory = (view, panel) => {
+        if (location.view === view && location.panel === panel)
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        else router.setActiveStoryAndPanel(story, panel);
+        else 
+            push({view, panel});
     }
 
     return (
@@ -97,7 +103,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
             >
                 {isDesktop && (
                     <DesctopSideBar
-                        activeStory={router.bind.activeStory}
+                        activeStory={structure.view}
                         onStoryChange={changeStory}
                         isDesktop={isDesktop}
                         params={params}
@@ -110,18 +116,18 @@ const Panels = withAdaptivity(({ viewWidth }) => {
                     width={isDesktop ? '560px' : '100%'}
                     maxWidth={isDesktop ? '560px' : '100%'}
                 >
-                    <Epic activeStory={router.bind.activeStory}
+                    <Epic activeStory={structure.view}
                         tabbar={!isDesktop &&
                             <MobileSideBar
-                                activeStory={router.bind.activeStory}
+                                activeStory={structure.view}
                                 onStoryChange={changeStory}
                                 params={params}
                             />
                         }>
-                        <GalleryView id='gallery' />
-                        <AboutTableView id='table' />
-                        <RaitingView id='raiting' />
-                        <OrdersView id='orders' />
+                        <GalleryView id='gallery' activePanel={structure.panel}/>
+                        <AboutTableView id='table' activePanel={structure.panel}/>
+                        <RaitingView id='raiting' activePanel={structure.panel}/>
+                        <OrdersView id='orders' activePanel={structure.panel}/>
                     </Epic>
                 </SplitCol>
             </SplitLayout>

@@ -4,21 +4,22 @@ import { Panel, PanelHeader, Group, PanelHeaderBack } from '@vkontakte/vkui';
 import ListBlock from '../../components/ListBlock';
 import OrderCard from '../../components/OrderCard';
 import { connect } from 'react-redux';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 
 const UserOffers = ({ id, userInfo, status }) => {
 
-    const router = useRouter();
+    const {back} = useRouter();
 
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={() => router.back()} />}
+                left={<PanelHeaderBack onClick={back} />}
             >
                 Заказы
             </PanelHeader>
             <Group>
                 <ListBlock
+                    loadCount={10}
                     actionType='ordersList'
                     loadList={userInfo.getOrders.call(userInfo, {status_id: status})}
                     loadingCondition={() => true}

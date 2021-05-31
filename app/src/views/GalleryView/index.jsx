@@ -10,10 +10,9 @@ import ModalRoot from '../../components/ModalRoot';
 import FiltersModal from '../../components/FiltersList/FiltersModal';
 import SelectModal from '../../components/FiltersList/SelectModal';
 
-const GalleryView = ({ id }) => {
+const GalleryView = ({ id, activePanel}) => {
 
     const { poput } = alertContext();
-    const router = useRouter();
 
     const modal = (
         <ModalRoot>
@@ -26,7 +25,7 @@ const GalleryView = ({ id }) => {
     )
 
     return (
-        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={modal}>
+        <View id={id} activePanel={activePanel} popout={poput} modal={modal}>
             <Gallery id='gallery' />
             <Design id='design' />
         </View>

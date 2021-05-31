@@ -105,6 +105,12 @@ const parseDateFromServer = (date) => {
     return formatedDate;
 }
 
+const parseDatetoString = (date, format = {
+    day: 'numeric', month: 'long', hour: 'numeric', minute: 'numeric'
+}) => {
+    return new Intl.DateTimeFormat("ru", format).format(date);
+}
+
 export {
     sleep,
     getCardHeightBySize,
@@ -114,5 +120,6 @@ export {
     getOfferInfoById,
     checkPhotoAndGetSrc,
     parseDateFromServer,
-    openVkLink
+    openVkLink,
+    parseDatetoString
 }

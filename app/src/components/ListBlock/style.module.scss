@@ -25,4 +25,12 @@
 
 .block{
     padding-bottom: 55px;
+
+    &_spaceTop{
+        margin-top: 42px !important;
+    }
+}
+
+.nullTextBlock{
+    margin-top: 55px;
 }

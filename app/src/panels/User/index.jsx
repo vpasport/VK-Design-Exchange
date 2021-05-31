@@ -1,18 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CellButton, Group, PanelHeader, Panel, Div, Title, Header } from '@vkontakte/vkui';
+import { CellButton, Group, PanelHeader, Panel, Div, Title, Header} from '@vkontakte/vkui';
+import Button from './Button';
 import { useDispatch } from 'react-redux';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 import { changeStatus } from '../../store/OrdersList/actions';
 
-const User = ({id}) => {
+import styles from './style.module.scss';
+import { openVkLink } from '../../utils/helpers';
+import { sessionContext } from '../../App';
+
+const User = ({ id }) => {
 
     const dispatch = useDispatch();
-    const router = useRouter();
+    const {push} = useRouter();
+    const {fromMobile} = sessionContext();
 
     const showOrders = (status) => {
         dispatch(changeStatus(status));
-        router.setActivePanel('orders');
+        push({panel: 'orders'});
+    }
+
+    const handleGroupOpen = () => {
+        openVkLink('https://vk.com/im?media=&sel=-193986385', fromMobile)
     }
 
     return (
@@ -21,12 +31,20 @@ const User = ({id}) => {
             <Group header={(
                 <Header>Ваши заказы</Header>
             )}>
-                <CellButton onClick={() => showOrders(null)}>Все заказы</CellButton>
-                <CellButton onClick={() => showOrders(4)}>Готовые к проверке</CellButton>
-                <CellButton onClick={() => showOrders(3)}>В работе</CellButton>
-                <CellButton onClick={() => showOrders(2)}>На согласовании</CellButton>
-                <CellButton onClick={() => showOrders(1)}>Отмененные</CellButton>
-                <CellButton onClick={() => showOrders(5)}>Выполненые</CellButton>
+                <Div className={styles.buttonsBlock}>
+                    <Button onClick={() => showOrders(null)}>Все заказы</Button>
+                    <Button onClick={() => showOrders(4)}>Готовые к проверке</Button>
+                    <Button onClick={() => showOrders(3)}>В работе</Button>
+                    <Button onClick={() => showOrders(2)}>На согласовании</Button>
+                    <Button onClick={() => showOrders(1)}>Отмененные</Button>
+                    <Button onClick={() => showOrders(5)}>Выполненые</Button>
+                </Div>
+            </Group>
+            <Group>
+                <Div className={styles.buttonsBlock}>
+                    <Button onClick={() => push({panel: 'favorites'})}>Избранное</Button>
+                    <Button onClick={handleGroupOpen}>Техподдержка</Button>
+                </Div>
             </Group>
         </Panel>
     )

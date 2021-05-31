@@ -2,13 +2,16 @@ import { store } from '../../..';
 import { changeActiveDesign } from '../../../store/Design/actions';
 import DesignDefaultProps from './DesignDefaultProps';
 import axios from 'axios';
+import DesignCard from './DesignCard';
+import { changeList } from '../../../store/ListBlock/actions';
+import { parseDateFromServer, parseDatetoString } from '../../helpers';
 
 const { REACT_APP_API_URL } = process.env;
 
 class Design extends DesignDefaultProps {
 
     constructor(item) {
-        super(item.title, item.id);
+        super(item.title, item.id, item.preview);
 
         this._projectDescription = item.project_description;
         this._workImages = item.images.map(image => `${REACT_APP_API_URL}/${image.path}`);
@@ -18,6 +21,8 @@ class Design extends DesignDefaultProps {
         this._isLikeChecked = item.likes.from_user;
         this._author = item.author;
         this._isForSale = item.is_for_sale;
+        this._isFavoriteChecked = item.in_favorites;
+        this._createDate = item.create_date;
     }
 
     getProjectDescription() { return this._projectDescription }
@@ -32,6 +37,14 @@ class Design extends DesignDefaultProps {
     get author(){ return this._author }
     get workImages(){ return this._workImages }
     get isForSale(){ return this._isForSale }
+    get isFavoriteChecked() { return this._isFavoriteChecked }
+    get createDate(){
+        if(!this._createDate) return this._createDate;
+        else {
+            const date = parseDateFromServer(this._createDate);
+            return parseDatetoString(date, {day: 'numeric', month: 'long', year: 'numeric'});
+        }
+    }
 
     updateDesign() {
         store.dispatch(changeActiveDesign(Object.assign(Object.create(Object.getPrototypeOf(this)), this)));
@@ -71,6 +84,41 @@ class Design extends DesignDefaultProps {
             this._likes = data.likes.count;
 
         this.updateDesign()
+    }
+
+    async changeIsFavorite(){
+        const {user: {activeUser}, favoritesList: {list, fromId}} = store.getState();
+        this._isFavoriteChecked = !this._isFavoriteChecked;
+
+        const { status } = await axios.post(`/favorites`, {
+            url_params: activeUser.getVkUrlParams(),
+            portfolio_id: this.getId()
+        })
+
+        if(status !== 204){
+            this._isFavoriteChecked = !this._isFavoriteChecked;
+            this.updateDesign();
+            return;
+        }
+
+        this.updateDesign();
+        
+        const findedFavorite = list.findIndex(el => el.getId() === this.getId());
+
+        if(!fromId) return;
+
+        if(findedFavorite === -1){
+            list.unshift(new DesignCard({
+                title: this.getTitle(),
+                preview: this.preview,
+                id: this.getId()
+            }))
+        }
+        else{
+            list.splice(findedFavorite, 1);
+        }
+        
+        store.dispatch(changeList('FAVORITESLIST')([...list]))
     }
 
 }

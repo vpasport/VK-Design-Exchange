@@ -8,11 +8,17 @@ $drobGap: $gap / 2;
     grid-gap: 10px;
 }
 
+.fixedLayout{
+    top: 50px;
+}
+
 .bottom{
     display: grid;
     grid-template-areas: "left right";
     grid-auto-columns: min-content;
     justify-content: space-between;
+    background-color: var(--background_content);
+
 
     .right{
         grid-area: right;

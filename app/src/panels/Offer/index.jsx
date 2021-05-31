@@ -2,7 +2,7 @@ import { Div, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Text, Title, Gr
 import React, { useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { alertContext, modalContext } from '../../App';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 
 import { changeActiveOffer } from '../../store/Designer/DesignerListBlock/Offers/Offer/actions';
 import { getOfferInfoById } from '../../utils/helpers';
@@ -13,7 +13,7 @@ import Price from '../../components/Price';
 
 const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
 
-    const router = useRouter();
+    const {back} = useRouter();
     const { useAlert } = alertContext();
     const { setActiveModal } = modalContext();
 
@@ -29,7 +29,7 @@ const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
                 useAlert.show('Ошибка', error.message, [{
                     title: 'Назад',
                     autoclose: true,
-                    action: () => router.back()
+                    action: back
                 }])
             }
         }
@@ -41,7 +41,7 @@ const Offer = ({ id, activeOffer, activeOfferId, changeActiveOffer }) => {
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={router.back} />}
+                left={<PanelHeaderBack onClick={back} />}
             >
                 Услуга
             </PanelHeader>

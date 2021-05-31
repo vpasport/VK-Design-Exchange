@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@babel/register": "^7.13.8",
+    "@unexp/router": "0.0.30",
     "@vkontakte/icons": "^1.83.0",
     "@vkontakte/vk-bridge": "^2.4.1",
     "@vkontakte/vk-miniapps-deploy": "0.0.25",

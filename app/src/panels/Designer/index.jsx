@@ -6,7 +6,7 @@ import { connect, useSelector } from 'react-redux';
 
 import { changeActiveDesignerId, changeActiveDesigner } from '../../store/Designer/actions';
 import { getDesignerInfoById, openVkLink } from '../../utils/helpers';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 
 import styles from './style.module.scss';
 import StarRatings from '../../components/StarRatings';
@@ -18,7 +18,7 @@ import PreText from '../../components/PreText';
 const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }) => {
 
     const { useAlert } = alertContext();
-    const router = useRouter();
+    const {push, back} = useRouter();
     const { fromMobile } = sessionContext();
 
     const isFetchDesigner = useMemo(() => Boolean(!activeDesigner || activeDesigner.getId() !== activeDesignerId), [activeDesigner]);
@@ -35,7 +35,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                 useAlert.show('Ошибка', error.message, [{
                     title: 'Назад',
                     autoclose: true,
-                    action: () => router.setActivePanel('raiting')
+                    action: () => push({panel: 'raiting'})
                 }])
             }
         }
@@ -52,7 +52,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
     return (
         <Panel id={id}>
             <PanelHeader left={
-                <PanelHeaderBack onClick={() => router.back()} />}
+                <PanelHeaderBack onClick={back} />}
             >
                 Дизайнер
             </PanelHeader>
@@ -87,14 +87,14 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                         <SimpleCell 
                             before={<Icon24Work />} 
                             expandable
-                            onClick={() => router.setActivePanel('portfolio')}
+                            onClick={() => push({panel: 'portfolio'})}
                         >
                             Посмотреть портфолио
                         </SimpleCell>
                         <SimpleCell 
                             before={<Icon24Advertising />} 
                             expandable
-                            onClick={() => router.setActivePanel('reviews')}
+                            onClick={() => push({panel: 'reviews'})}
                         >
                             Отзывы
                         </SimpleCell>

@@ -20,6 +20,7 @@ const FiltersModal = ({ id, stateType, updateModalHeight }) => {
     const changeFilter = (newFilter, type) => {
         dispatch(changeActiveFilters(dispatchActionType)({ ...activeFilters, [type]: newFilter }));
         dispatch(updateList(dispatchActionType)());
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     useEffect(() => {

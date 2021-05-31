@@ -3,12 +3,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as listActions from '../../store/ListBlock/actions';
 
-const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, loadingCondition = () => {}) => {
+const useList = (loadList, loadFilters, from, to = 10, loadLength, useAlert, type, loadingCondition = () => {}) => {
 
     const dispatch = useDispatch();
     const { length, secondLength, fromId, list, filters, activeFilters, listFormat, isFetch } = useSelector(state => state[type]);
 
     const [ isLoad, setIsLoad ] = useState(Boolean(list && list.length));
+    const [ elemOffsetForListFormat, setElemOffsetForListFormat ] = useState(null);
     const dispatchActionType = useMemo(() => type.toUpperCase(), []);
 
     const changeHasMore = () => {
@@ -37,7 +38,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
             else if(loadLength === null || loadLength > to) nextStep = to;
             else nextStep = null;
             
-            const data = await loadList({from, to: nextStep, fromId, activeFilters});
+            const data = await loadList({from, to: nextStep || 'all', fromId, activeFilters});
 
             dispatch(listActions.changeList(dispatchActionType)(data.list));
 
@@ -63,7 +64,15 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
     }
 
     const updateList = () => dispatch(listActions.updateList(dispatchActionType)());
-    const changeListFormat = (listFormat) => dispatch(listActions.changeListFormat(dispatchActionType)(listFormat));
+    const changeListFormat = (listFormat, firstElem) => {
+        setElemOffsetForListFormat(firstElem)
+        dispatch(listActions.changeListFormat(dispatchActionType)(listFormat));
+    }
+
+    useEffect(() => {
+        if(elemOffsetForListFormat)
+            window.scrollTo({top: elemOffsetForListFormat.getBoundingClientRect().top + pageYOffset - 110})
+    }, [listFormat])
 
     useEffect(() => {
 

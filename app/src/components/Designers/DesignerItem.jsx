@@ -6,16 +6,16 @@ import StarRatings from '../StarRatings';
 import DesignerCardClass from '../../utils/Raiting/Designer/DesignerCard';
 import { useDispatch } from 'react-redux';
 import { changeActiveDesignerId } from '../../store/Designer/actions';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 
 const DesignerItem = ({ designerCard }) => {
 
     const dispatch = useDispatch();
-    const router = useRouter();
+    const {push} = useRouter();
 
     const handleDesignerChange = () => {
         dispatch(changeActiveDesignerId(designerCard.getId())); 
-        router.setActivePanel('designer');
+        push({panel: 'designer'});
     }
 
     return (

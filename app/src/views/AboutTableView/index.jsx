@@ -6,14 +6,14 @@ import PropTypes from 'prop-types';
 
 import { alertContext } from '../../App';
 import useRouter from '../../utils/useRouter';
+import { useLocation } from '@unexp/router';
 
-const AboutTableView = ({id}) => {
+const AboutTableView = ({id, activePanel}) => {
 
     const { poput } = alertContext();
-    const router = useRouter();
-
+    
     return (
-        <View id={id} popout={poput} activePanel={router.bind.activePanel}>
+        <View id={id} popout={poput} activePanel={activePanel}>
             <AboutTable id='table' />
         </View>
     )

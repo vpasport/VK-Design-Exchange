@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Panel, PanelHeader, PanelHeaderBack, Group } from '@vkontakte/vkui';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 import ReviewCard from '../../components/ReviewCard';
 import useUserListParams from '../../utils/useUserListParams';
 import UserListBlock from '../../components/UserListBlock';
 
 const Reviews = ({ id }) => {
 
-    const router = useRouter();
+    const {back} = useRouter();
 
     return (
         <Panel id={id}>
             <PanelHeader left={
-                <PanelHeaderBack onClick={router.back} />
+                <PanelHeaderBack onClick={back} />
             }>
                 Отзывы
             </PanelHeader>

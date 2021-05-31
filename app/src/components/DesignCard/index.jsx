@@ -9,18 +9,17 @@ import DesignCardClass from '../../utils/Gallery/Design/DesignCard';
 
 import styles from './style.module.scss';
 import { getCardHeightBySize } from '../../utils/helpers';
-import useRouter from '../../utils/useRouter';
-
+import {useRouter} from '@unexp/router';
 
 const GalleryItem = ({ designCard, listFormat }) => {
 
     const dispatch = useDispatch();
-    const router = useRouter();
+    const {push} = useRouter();
 
     const handleDesignChange = () => {
         
         dispatch(changeActiveDesignId(designCard.getId())); 
-        router.setActiveStoryAndPanel('gallery', 'design');
+        push({view: 'gallery', panel: 'design'});
     }
 
     return (

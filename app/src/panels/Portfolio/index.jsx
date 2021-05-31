@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import { Panel, PanelHeader, Group, PanelHeaderBack } from '@vkontakte/vkui';
 import { connect } from 'react-redux';
 import GalleryItem from '../../components/DesignCard';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 import UserListBlock from '../../components/UserListBlock';
 
 const Portfolio = ({ id, listFormat }) => {
 
-    const router = useRouter();
+    const {back} = useRouter();
 
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={() => router.back()} />}
+                left={<PanelHeaderBack onClick={back} />}
             >
                 Портфолио
             </PanelHeader>

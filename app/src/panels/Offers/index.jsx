@@ -1,6 +1,6 @@
 import { Panel, PanelHeader, PanelHeaderBack, Group } from '@vkontakte/vkui';
 import React from 'react';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 import PropTypes from 'prop-types';
 import UserListBlock from '../../components/UserListBlock';
 import OfferCard from '../../components/OfferCard';
@@ -8,12 +8,12 @@ import { connect } from 'react-redux';
 
 const Offers = ({id, listFormat}) => {
 
-    const router = useRouter();
+    const {back} = useRouter();
 
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={router.back}/>}
+                left={<PanelHeaderBack onClick={back}/>}
             >
                 Услуги
             </PanelHeader>

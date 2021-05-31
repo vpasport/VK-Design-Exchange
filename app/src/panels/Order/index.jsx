@@ -1,6 +1,6 @@
-import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, Title, Div, Button, Text } from '@vkontakte/vkui';
 import React, { useEffect, useMemo } from 'react';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 import { changeActiveOrder, changeActiveOrderStatus } from '../../store/Order/actions';
 import { connect } from 'react-redux';
 import { alertContext, modalContext } from '../../App';
@@ -11,7 +11,7 @@ import Price from '../../components/Price';
 
 const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, changeActiveOrderStatus }) => {
 
-    const router = useRouter();
+    const {push, back} = useRouter();
     const { useAlert, useSpinner } = alertContext();
     const { setActiveModal } = modalContext();
 
@@ -27,7 +27,7 @@ const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, ch
                 useAlert.show('Ошибка', error.message, [{
                     title: 'Назад',
                     autoclose: true,
-                    action: () => router.setActivePanel('orders')
+                    action: () => push({panel: 'orders'})
                 }])
             }
         }();
@@ -43,7 +43,7 @@ const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, ch
                 title: 'Да',
                 autoclose: true,
                 action: () => {
-                    router.setActivePanel('review')
+                    push({panel: 'review'})
                 }
             },
             {
@@ -78,13 +78,13 @@ const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, ch
     }
 
     const handleReviewOrder = () => {
-        router.setActivePanel('review')
+        push({panel: 'review'})
     }
 
     return (
         <Panel id={id}>
             <PanelHeader
-                left={<PanelHeaderBack onClick={router.back} />}
+                left={<PanelHeaderBack onClick={back} />}
             >
                 Заказ
             </PanelHeader>
@@ -97,7 +97,8 @@ const Order = ({ id, activeOrder, activeOrderId, changeActiveOrder, userInfo, ch
                     />
                     <Group>
                         <Div>
-                            <Title level='3'>Статус: <i>{activeOrder.getStatus().toLowerCase()}</i></Title>
+                            <Title level='3'>Статус: <i>{activeOrder.getStatus().toLowerCase()}</i> ({activeOrder.updateDate})</Title>
+                            <Text style={{marginTop: 8}}>Дата создания: {activeOrder.createDate}</Text>
                             {Boolean(activeOrder.getStatusId() !== 1 && !activeOrder.getReview()) &&
                                 <div className={styles.buttons}>
                                     {activeOrder.getStatusId() !== 5 &&

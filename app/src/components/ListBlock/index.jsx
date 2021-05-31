@@ -20,6 +20,9 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
 
     const listHook = useList(loadList, loadFilters, from, to, loadCount, useAlert, actionType, loadingCondition);
 
+    const isShowFilter = useMemo(() =>
+        Boolean(Boolean(listHook.bind.filters && Object.keys(listHook.bind.filters).length) || isChangeSize || isDesktop), [listHook])
+
     const content = (
         <>
             {showScrollTop &&
@@ -34,13 +37,6 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                     />
                 </ScrollUpButton>
             }
-            <FiltersList
-                filters={listHook.bind.filters}
-                size={listHook.bind.listFormat}
-                changeListFormat={listHook.changeListFormat}
-                isChangeSize={isChangeSize}
-                updateList={listHook.bind.updateList}
-            />
             {listHook.bind.list.length ?
                 <InfiniteScroll
                     loadMore={listHook.getList}
@@ -50,7 +46,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                 >
                     <CardGrid
                         size={listHook.bind.listFormat}
-                        className={Boolean(isDesktop || !showScrollTop) || styles.block}
+                        className={`${Boolean(isDesktop || !showScrollTop) || styles.block} ${isShowFilter && styles.block_spaceTop}`}
                     >
                         {listHook.bind.list.map((el) => (
                             children(el)
@@ -58,7 +54,7 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                     </CardGrid>
                 </InfiniteScroll>
                 :
-                <Div>
+                <Div className={isShowFilter && styles.nullTextBlock}>
                     <Text weight='semibold' style={{ textAlign: 'center' }}>{nullText}</Text>
                 </Div>
             }
@@ -77,6 +73,13 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
 
     return (
         <>
+            <FiltersList
+                filters={listHook.bind.filters}
+                size={listHook.bind.listFormat}
+                changeListFormat={listHook.changeListFormat}
+                isChangeSize={isChangeSize}
+                updateList={listHook.bind.updateList}
+            />
             {listHook.bind.isLoad ?
                 PullToRefreshOrDiv()
                 :

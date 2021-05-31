@@ -6,6 +6,7 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './store/reducers';
 import axios from 'axios';
+import { Router } from '@unexp/router';
 
 const { REACT_APP_API_URL } = process.env;
 
@@ -16,10 +17,13 @@ axios.defaults.baseURL = REACT_APP_API_URL;
 bridge.send("VKWebAppInit");
 
 ReactDOM.render(
-  <Provider store={store}>
-    <WrappedMainComponent />
-  </Provider>
-, document.getElementById("root"));
+  <Router>
+    <Provider store={store}>
+      <WrappedMainComponent />
+    </Provider>
+  </Router>
+
+  , document.getElementById("root"));
 if (process.env.NODE_ENV === "development") {
-  import("./eruda").then(({ default: eruda }) => {}); //runtime download
+  import("./eruda").then(({ default: eruda }) => { }); //runtime download
 }

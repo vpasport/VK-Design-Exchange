@@ -14,10 +14,9 @@ import Modal from '../../panels/Offer/Modal';
 import FiltersModal from '../../components/FiltersList/FiltersModal';
 import SelectModal from '../../components/FiltersList/SelectModal';
 
-const RaitingView = ({id}) => {
+const RaitingView = ({id, activePanel}) => {
 
     const { poput } = alertContext();
-    const router = useRouter();
 
     const modal = (
         <ModalRoot>
@@ -28,7 +27,7 @@ const RaitingView = ({id}) => {
     )
 
     return (
-        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={modal}>
+        <View id={id} activePanel={activePanel} popout={poput} modal={modal}>
             <Raiting id='raiting' />
             <Designer id='designer' />
             <Portfolio id='portfolio' />

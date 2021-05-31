@@ -1,7 +1,9 @@
+import { parseDateFromServer, parseDatetoString } from "../helpers";
+
 const { REACT_APP_API_URL } = process.env;
 
 class OrderDefaultProps {
-    constructor({id, offer_id, status, status_id, title, preview, price}){
+    constructor({id, offer_id, status, status_id, title, preview, price, update_date, create_date}){
         this.id = id;
         this.offerId = offer_id;
         this.status = status;
@@ -9,6 +11,8 @@ class OrderDefaultProps {
         this.title = title;
         this.preview = `${REACT_APP_API_URL}/${preview}`;
         this.price = price;
+        this._updateDate = update_date;
+        this._createDate = create_date;
     }
 
     getId(){ return this.id }
@@ -18,6 +22,16 @@ class OrderDefaultProps {
     getTitle(){ return this.title }
     getPreview(){ return this.preview }
     getPrice(){ return this.price }
+
+    get updateDate(){
+        const date = parseDateFromServer(this._updateDate);
+        return parseDatetoString(date);
+    }
+
+    get createDate(){
+        const date = parseDateFromServer(this._createDate);
+        return parseDatetoString(date);
+    }
 
     set setStatusId(id){ this.statusId = id }
     set setStatus(status){ this.status = status }

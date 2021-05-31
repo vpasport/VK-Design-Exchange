@@ -1,6 +1,8 @@
 .likeButtonBlock{
-    padding: 0;
-    padding-left: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 10px;
+    padding-right: 0;
 
     &_checked{
         color: var(--dynamic_red);

@@ -1,6 +1,6 @@
 import { PanelHeader, PanelHeaderBack, Panel, FormLayout, Group, FormItem, Textarea, File, Button } from '@vkontakte/vkui';
 import React, { useState } from 'react';
-import useRouter from '../../utils/useRouter';
+import {useRouter} from '@unexp/router';
 import { checkPhotoAndGetSrc } from '../../utils/helpers';
 import useInput from '../../utils/useInput';
 import StarRatings from '../../components/StarRatings';
@@ -12,7 +12,7 @@ import { alertContext } from '../../App';
 
 const ReviewCreator = ({ id, activeOrder }) => {
 
-    const router = useRouter();
+    const {back} = useRouter();
     const { useAlert, useSpinner } = alertContext();
 
     const [rating, setRating] = useState(1);
@@ -54,8 +54,8 @@ const ReviewCreator = ({ id, activeOrder }) => {
             useAlert.show('Отправка отзыва', 'Отзыв отправлен успешно!', [{
                 title: 'Вернуться',
                 autoclose: true,
-                action: router.back
-            }], router.back);
+                action: back
+            }], back);
 
         } catch (error) {
             useAlert.show('Ошибка', error.message)
@@ -64,7 +64,7 @@ const ReviewCreator = ({ id, activeOrder }) => {
 
     return (
         <Panel id={id}>
-            <PanelHeader left={<PanelHeaderBack onClick={router.back} />}>
+            <PanelHeader left={<PanelHeaderBack onClick={back} />}>
                 Отзыв
             </PanelHeader>
             <FormLayout onSubmit={submit}>

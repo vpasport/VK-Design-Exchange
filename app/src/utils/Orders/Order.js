@@ -14,7 +14,9 @@ class Order extends OrderDefaultProps {
             status_id: item.status_id,
             price: item.offer.price,
             title: item.offer.title,
-            preview: item.offer.preview
+            preview: item.offer.preview,
+            create_date: item.create_date,
+            update_date: item.update_date
         })
 
         this.description = item.offer.description;

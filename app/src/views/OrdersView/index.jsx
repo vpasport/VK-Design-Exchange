@@ -9,10 +9,10 @@ import ModalRoot from '../../components/ModalRoot';
 import CancelModal from './CancelModal';
 import ReviewCreator from '../../panels/ReviewCreator';
 import User from '../../panels/User';
+import Favorites from '../../panels/Favorites';
 
-const OffersView = ({id}) => {
+const OffersView = ({id, activePanel}) => {
 
-    const router = useRouter();
     const { poput } = alertContext();
 
     const modal = (
@@ -22,11 +22,12 @@ const OffersView = ({id}) => {
     )
 
     return (
-        <View id={id} activePanel={router.bind.activePanel} popout={poput} modal={modal}>
+        <View id={id} activePanel={activePanel} popout={poput} modal={modal}>
             <User id='user' />
             <UserOrders id='orders' />
             <Order id='order' />
             <ReviewCreator id='review' />
+            <Favorites id='favorites' />
         </View>
     )
 }
