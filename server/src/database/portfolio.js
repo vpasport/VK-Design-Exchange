@@ -708,13 +708,15 @@ async function createWork(
     await client.query('begin');
 
     try {
+        const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
         let id = (await client.query(
             `insert into
-                portfolio (title, preview, project_description, is_for_sale)
+                portfolio (title, preview, project_description, is_for_sale, create_date)
             values 
-                ($1, $2, $3, $4)
+                ($1, $2, $3, $4, $5)
             returning id`,
-            [title, preview, project_description, is_for_sale]
+            [title, preview, project_description, is_for_sale, date]
         )).rows[0].id;
 
         if (id !== undefined) {
@@ -1193,6 +1195,7 @@ async function deleteWork(id) {
             [id]
         )).rows[0];
 
+
         let { rows: workImages } = await client.query(
             `select 
                 path
@@ -1218,6 +1221,22 @@ async function deleteWork(id) {
                 `delete from portfolio
                 where
                     id = $1`,
+                [id]
+            );
+
+            await client.query(
+                `delete from
+                    favorites
+                where
+                    portfolio_id = $1`,
+                [id]
+            );
+
+            await client.query(
+                `delete from
+                    portfolios_likes
+                where
+                    portfolio_id = $1`,
                 [id]
             );
 
