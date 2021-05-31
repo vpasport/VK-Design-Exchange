@@ -43,8 +43,7 @@ async function getFavorites(vk_id, from, to, from_id) {
                     p.title, 
                     p.preview, 
                     p.views,
-                    l.likes,
-                    count( 1 ) over ()::int
+                    l.likes
                 from 
                     portfolio as p
                 left outer join 
@@ -53,10 +52,10 @@ async function getFavorites(vk_id, from, to, from_id) {
                     p.id = l.portfolio_id
             )
             select
-                 p.id, 
-                 p.title, 
-                 p.preview, 
-                 p.count
+                p.id, 
+                p.title, 
+                p.preview, 
+                count( 1 ) over ()::int
             from 
                 tmp as p,
                 favorites as f
