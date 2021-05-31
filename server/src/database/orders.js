@@ -311,14 +311,24 @@ async function getOrdersByDesigner(id) {
     }
 }
 
-async function getOrdersByCustomer(vk_id, status_id = undefined) {
+async function getOrdersByCustomer(vk_id, status_id = undefined, from, to) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
         let params = [];
         let status = '';
+        let offset = '';
+        let limit = '';
 
+        if (from) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to && to !== 'all') {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
         if (status_id) {
             params.push(status_id);
             status = `ord.status = $${params.length} and`;
@@ -331,11 +341,14 @@ async function getOrdersByCustomer(vk_id, status_id = undefined) {
                 ord.id, 
                 ord.customer, 
                 ord.offer_id, 
-                os.name as status, 
+                ord.create_date,
+                ord.update_date,
                 ord.status as status_id,
+                os.name as status, 
                 o.title,
                 o.preview,
-                o.price
+                o.price,
+                count( 1 ) over ()::int
             from 
                 orders as ord, 
                 orders_statuses as os,
@@ -345,15 +358,29 @@ async function getOrdersByCustomer(vk_id, status_id = undefined) {
                 o.id = ord.offer_id and
                 ${status}
                 ord.customer = $${params.length}
-            order by ord.id desc`,
+            order by ord.id desc
+            ${offset}
+            ${limit !== '' ? limit : ''}`,
             params
         )).rows;
+
+        let count = 0;
+
+        if (orders.length > 0) {
+            count = orders[0].count;
+            orders.forEach(element => {
+                element.create_date = parseInt(element.create_date);
+                element.update_date = parseInt(element.update_date);
+                delete element.count
+            });
+        }
 
         await client.query('commit');
         client.release();
 
         return {
             isSuccess: true,
+            count,
             orders
         }
 
@@ -364,7 +391,7 @@ async function getOrdersByCustomer(vk_id, status_id = undefined) {
         console.error(e);
 
         return {
-            isSuccess: true
+            isSuccess: false
         }
     }
 }
