@@ -62,6 +62,7 @@ async function getFavorites(vk_id, from, to, from_id) {
                 p.id = f.portfolio_id and 
                 f.vk_id = $${params.length}
                 ${filter}
+            order by f.id asc
             ${offset}
             ${limit !== '' ? limit : ''}`,
             params

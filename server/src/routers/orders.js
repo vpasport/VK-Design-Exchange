@@ -116,7 +116,7 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
                 result = await inProcess_(id);
 
                 if (result.isSuccess) {
-                    res.sendStatus(204);
+                    res.json(result);
                     return;
                 }
             }
@@ -134,7 +134,7 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
                     result = await readyToCheck_(id);
 
                     if (result.isSuccess) {
-                        res.sendStatus(204);
+                        res.json(result);
                         return;
                     }
                 }
@@ -173,7 +173,7 @@ async function cancelOrder({ params: { id }, body: { comment, from_vk_id, url_pa
         let result = await cancelOrder_(id, comment, from_vk_id);
 
         if (result.isSuccess) {
-            res.sendStatus(204);
+            res.json(result);
             return;
         }
 
@@ -212,7 +212,7 @@ async function finishOrder({ params: { id }, body: { url_params }, session }, re
                 result = await finishOrder_(id);
 
                 if (result.isSuccess) {
-                    res.sendStatus(204);
+                    res.json(result);
                     return;
                 }
 

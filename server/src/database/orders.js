@@ -531,7 +531,8 @@ async function inProcess(id) {
                 client.release();
 
                 return {
-                    isSuccess: true
+                    isSuccess: true,
+                    date
                 }
             }
 
@@ -565,7 +566,7 @@ async function readyToCheck(id) {
         )).rows[0];
 
         if (order !== undefined) {
-            if (status.status === 3) {
+            if (order.status === 3) {
                 const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
 
                 await client.query(
@@ -581,7 +582,8 @@ async function readyToCheck(id) {
                 client.release();
 
                 return {
-                    isSuccess: true
+                    isSuccess: true,
+                    date
                 }
             }
 
@@ -635,7 +637,8 @@ async function finishOrder(id) {
                 client.release();
 
                 return {
-                    isSuccess: true
+                    isSuccess: true,
+                    date
                 }
             }
 
@@ -708,15 +711,16 @@ async function cancelOrder(id, comment, from_vk_id) {
                         ($1, $2, $3)
                     returning id`,
                     [id, from_vk_id, comment]
-                ))
+                )).rows[0];
 
-                if (comment !== undefined) {
+                if (comment_id !== undefined) {
                     await client.query('commit');
                     client.release();
 
                     return {
                         isSuccess: true,
-                        comment_id
+                        comment_id: comment_id.id,
+                        date
                     }
                 }
 
