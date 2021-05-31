@@ -196,7 +196,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
                     p.title, 
                     p.preview, 
                     p.views,
-                     l.likes,
+                    l.likes,
                     count( 1 ) over ()::int
                 from 
                     portfolio as p
@@ -321,6 +321,23 @@ async function getWork(id, full, vk_id = undefined) {
                     work.likes.from_user = true;
                 } else {
                     work.likes.from_user = false;
+                }
+
+                let inFavorites = (await client.query(
+                    `select 
+                        id
+                    from
+                        favorites
+                    where
+                        vk_id = $1 and
+                        portfolio_id = $2`,
+                    [vk_id, id]
+                )).rows[0];
+
+                if (inFavorites !== undefined) {
+                    work.in_favorites = true;
+                } else {
+                    work.in_favorites = false;
                 }
             }
 

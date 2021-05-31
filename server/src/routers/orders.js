@@ -1,6 +1,6 @@
 "use strict";
 
-const { Router, query } = require('express');
+const { Router } = require('express');
 
 const {
     getStatuses: getStatuses_,
@@ -50,7 +50,7 @@ async function getOrders({ query, session }, res) {
 
 async function getOrder({ params: { id }, query, session }, res) {
     let designer = await getDesignerByOrder_(id);
-    
+
     if (designer.isSuccess) {
         if ((session.role !== undefined &&
             ((session.role.indexOf('designer') !== -1 && session.user.did === designer.designer)

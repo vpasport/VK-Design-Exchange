@@ -8,6 +8,7 @@ const users = require('./users');
 const admins = require('./admins');
 const orders = require('./orders');
 const offers = require('./offers');
+const favorites = require('./favorites');
 
 const {
     getRoles
@@ -86,6 +87,8 @@ function index(server) {
     server.use('/orders', orders);
 
     server.use('/offers', offers);
+
+    server.use('/favorites', favorites);
 
     server.get('/logout', logout);
 
