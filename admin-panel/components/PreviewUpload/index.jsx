@@ -49,6 +49,7 @@ const PreviewUpload = ({ lable, onChange, preview }) => {
                         opacity: '0',
                         pointerEvents: 'auto'
                     }}
+                    accept='.png, .jpg, .jpeg, .gif, .svg'
                 />
             </div>
             {

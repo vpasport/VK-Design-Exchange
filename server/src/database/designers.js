@@ -25,7 +25,7 @@ async function getDesigners(from, to, engaged, from_id, order) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to !== undefined) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -64,7 +64,7 @@ async function getDesigners(from, to, engaged, from_id, order) {
             ${_engaged} ${filter}
             order by d.rating ${_order}
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             [...params]
         )).rows;
 
@@ -211,11 +211,11 @@ async function getDesignerPreviews(id, from, to) {
         let offset = ''
         let limit = ''
 
-        if (from !== undefined) {
+        if (from) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to !== undefined) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -227,7 +227,7 @@ async function getDesignerPreviews(id, from, to) {
                 p.id = dp.portfolio_id and dp.designer_id = $1
             order by p.id desc
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             [...params]
         )).rows;
 
@@ -266,11 +266,11 @@ async function getDesignerOffers(id, from, to) {
         let offset = ''
         let limit = ''
 
-        if (from !== undefined) {
+        if (from) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to !== undefined) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -282,7 +282,7 @@ async function getDesignerOffers(id, from, to) {
                 o.id = od.offer_id and od.designer_id = $1
             order by o.id desc
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             [...params]
         )).rows;
 
@@ -321,11 +321,11 @@ async function getOrders(id, from, to) {
         let offset = '';
         let limit = '';
 
-        if (from !== undefined) {
+        if (from) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to !== undefined) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -353,7 +353,7 @@ async function getOrders(id, from, to) {
                 ofs.id = o.offer_id
             order by id desc
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             [...params]
         )).rows;
 

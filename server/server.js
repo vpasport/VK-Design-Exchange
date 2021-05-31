@@ -47,19 +47,24 @@ server.use(
     })
 );
 
-
-server.use((req, res, next) => {
-    // console.log(`[INFO] request to ${req.url}`);
-    // console.log(req.session.role);
-    next();
-});
-
 // const {
 //     updaetInfo
 // } = require('./src/helper/vk');
 
 server.post('/', ({ body: { vk_id, sign } }, res) => {
 })
+
+// test();
+
+// async function test() {
+//     const fetch = require('node-fetch');
+
+//     const response = await fetch('https://skyauto.me/cllbck/193986385/1042665/WXJhSVN6NXRDZ2V5R3huSnB3aTZjUT0?avtp=1&sid=172349355')
+
+//     const json = await response.json();
+
+//     console.log(json)
+// }
 
 initRouters(server);
 

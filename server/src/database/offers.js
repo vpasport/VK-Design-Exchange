@@ -11,11 +11,11 @@ async function getOffers(from, to) {
         let offset = '';
         let limit = '';
 
-        if (from !== undefined) {
+        if (from) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to !== undefined) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -25,7 +25,7 @@ async function getOffers(from, to) {
                 from offers
             order by id desc
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             [...params]
         )).rows;
 

@@ -10,7 +10,6 @@ const { promises: {
 
 const { Router } = require('express');
 const {
-    getAllPreviews: getAllPreviews_,
     getPreviewsFromTo: getPreviewsFromTo_,
     getPreviewsTags: getPreviewsTags_,
     getWork: getWork_,
@@ -42,9 +41,8 @@ async function getPreviews({ query: { from, to, from_id, tags, sort_by, directio
     let result;
 
     if (from === undefined && to === undefined) {
-        result = await getAllPreviews_();
         from = 0;
-        to = 20
+        to = 10;
     }
 
     if (tags === undefined) {
@@ -58,7 +56,7 @@ async function getPreviews({ query: { from, to, from_id, tags, sort_by, directio
         return;
     }
 
-    res.status(500).json(result);
+    res.sendStatus(500);
 }
 
 async function getWork({ params: { id }, query: { vk_id }, session }, res) {

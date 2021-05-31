@@ -46,7 +46,7 @@ async function getOrders(from, to) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -73,7 +73,7 @@ async function getOrders(from, to) {
                 ofs.id = o.offer_id
             order by o.id desc
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             [...params]
         )).rows;
 

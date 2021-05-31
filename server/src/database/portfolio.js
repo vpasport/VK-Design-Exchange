@@ -56,7 +56,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -105,7 +105,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
             ${filter}
             order by ${sort} ${dir}
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             params
         );
 
@@ -165,7 +165,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -217,7 +217,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
                 p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
             order by ${sort} ${dir}
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             params
         );
 
@@ -472,7 +472,7 @@ async function getWorkComments(id, from, to = 20, from_id, all = false) {
             params.push(from);
             offset = `offset $${params.length}`;
         }
-        if (to) {
+        if (to && to !== 'all') {
             params.push(to);
             limit = `limit $${params.length}`;
         }
@@ -486,7 +486,7 @@ async function getWorkComments(id, from, to = 20, from_id, all = false) {
             portfolio_id = $${params.length} ${filter}
             order by create_date desc
             ${offset}
-            ${limit}`,
+            ${limit !== '' ? limit : ''}`,
             params
         )
 
