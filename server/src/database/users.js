@@ -168,40 +168,19 @@ async function getViewed(vk_id, from, to, from_id) {
         params.push(vk_id);
 
         let { rows: previews } = await client.query(
-            `with likes as (
-                select 
-                    portfolio_id, 
-                    count(vk_user_id) as likes
-                from 
-                    portfolios_likes
-                group by portfolio_id
-            ),
-            tmp as (
-                select 
-                    p.id, 
-                    p.title, 
-                    p.preview, 
-                    p.views,
-                    l.likes
-                from 
-                    portfolio as p
-                left outer join 
-                    likes as l 
-                on 
-                    p.id = l.portfolio_id
-            )
-            select
-                p.id, 
-                p.title, 
-                p.preview, 
+            `select
+                p.id,
+                p.title,
+                p.preview,
                 count( 1 ) over ()::int
-            from 
-                tmp as p,
+            from
+                portfolio as p,
                 vieweds as v
             where
-                p.id = v.portfolio_id and 
-                v.vk_id = $${params.length}
+                p.id = v.portfolio_id and
+                v.vk_id =  $${params.length} 
                 ${filter}
+            order by v.id desc 
             ${offset}
             ${limit !== '' ? limit : ''}`,
             params

@@ -80,15 +80,15 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
                 group by portfolio_id
             ),
             tmp as (
-                select 
+                select distinct
                     p.id, 
                     p.views,
                     p.title, 
                     p.preview, 
                     p.popularity,
-                    l.likes,
-                    count( 1 ) over ()::int
+                    l.likes
                 from 
+                    tags_portfolios as tp,
                     portfolio as p
                 left outer join 
                     likes as l 
@@ -96,10 +96,10 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
                     p.id = l.portfolio_id
             )
             select
-                 id, 
-                 title, 
-                 preview, 
-                 count
+                p.id, 
+                p.title, 
+                p.preview, 
+                count( 1 ) over ()::int
             from 
                 tmp as p
             ${filter}
@@ -191,31 +191,31 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
                 group by portfolio_id
             ),
             tmp as (
-                select 
+                select distinct
                     p.id, 
                     p.views,
                     p.title, 
                     p.preview, 
                     p.popularity,
-                    l.likes,
-                    count( 1 ) over ()::int
+                    l.likes
                 from 
+                    tags_portfolios as tp,
                     portfolio as p
                 left outer join 
                     likes as l 
                 on 
                     p.id = l.portfolio_id
+                where
+                    p.id = tp.portfolio_id and 
+                    tp.tag_id = any($${params.length}) ${filter}
             )
             select
-                 p.id, 
-                 p.title, 
-                 p.preview, 
-                 p.count
+                p.id, 
+                p.title, 
+                p.preview, 
+                count( 1 ) over ()::int
             from 
-                tmp as p,
-                tags_portfolios as tp
-            where
-                p.id = tp.portfolio_id and tp.tag_id = any($${params.length}) ${filter}
+                tmp as p
             order by ${sort} ${dir}
             ${offset}
             ${limit !== '' ? limit : ''}`,
