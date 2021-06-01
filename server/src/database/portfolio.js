@@ -193,9 +193,10 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
             tmp as (
                 select 
                     p.id, 
+                    p.views,
                     p.title, 
                     p.preview, 
-                    p.views,
+                    p.popularity,
                     l.likes,
                     count( 1 ) over ()::int
                 from 
