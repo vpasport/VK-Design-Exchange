@@ -10,6 +10,7 @@ const {
     getOrdersByDesigner: getOrdersByDesigner_,
     getOrdersByCustomer: getOrdersByCustomer_,
     getDesignerByOrder: getDesignerByOrder_,
+    getOrdersCounts: getOrdersCounts_,
     createOrder: createOrder_,
     inProcess: inProcess_,
     readyToCheck: readyToCheck_,
@@ -79,6 +80,22 @@ async function getOrder({ params: { id }, query, session }, res) {
     }
 
     res.sendStatus(520);
+}
+
+async function getOrdersCounts({ query }, res) {
+    if (checkSign(query)) {
+        let result = await getOrdersCounts_(query.vk_user_id);
+
+        if (result.isSuccess) {
+            res.json(result);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(403);
 }
 
 async function createOrder({ body: { offer_id, url_params } }, res) {
@@ -236,6 +253,7 @@ function index() {
 
     router.get('/', getOrders);
     router.get('/statuses', getStatuses);
+    router.get('/counts', getOrdersCounts);
     router.get('/:id', getOrder);
 
     router.post('/', createOrder);

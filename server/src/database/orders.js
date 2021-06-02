@@ -441,6 +441,44 @@ async function getDesignerByOrder(id) {
     }
 }
 
+async function getOrdersCounts(vk_id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let { rows: orders } = await client.query(
+            `select 
+                status,
+                count( distinct id )
+            from 
+                orders
+            where
+                customer = $1
+            group by status`,
+            [vk_id]
+        )
+
+        orders.forEach(el => el.count = parseInt(el.count));
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            orders
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.log(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function createOrder(offer, customer) {
     const client = await pool.connect();
     await client.query('begin');
@@ -751,6 +789,7 @@ module.exports = {
     getOrdersByDesigner,
     getOrdersByCustomer,
     getDesignerByOrder,
+    getOrdersCounts,
     createOrder,
     inProcess,
     readyToCheck,
