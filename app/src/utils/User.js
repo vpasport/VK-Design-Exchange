@@ -38,8 +38,13 @@ class User {
 
     getVkUrlParams() { return this.vkUrlParams }
 
-    async getFavorites(){
-        const {data} = await axios.get(`/favorites?${this.getVkUrlParams()}`);
+    async getFavorites(params){
+
+        let allParams = getUrlByJson(params);
+
+        if(allParams.length) allParams = allParams.replace('?', '&');
+
+        const {data} = await axios.get(`/favorites?${this.getVkUrlParams()}${allParams}`);
 
         if(!data.isSuccess) throw new Error('Ошибка при загрузке избранных');
 
@@ -67,7 +72,9 @@ class User {
                 const orders = data.orders.map(el => new OrderCard(el));
 
                 return {
-                    list: orders
+                    list: orders,
+                    count: Number(data.count),
+                    fromId: data.from_id
                 }
             }
             else throw new Error('Ошибка при загрузке заказов')
@@ -96,6 +103,24 @@ class User {
             return order;
         }
         else throw new Error('Ошибка при загрузке заказа');
+    }
+
+    async getViewed(params){
+        let allParams = getUrlByJson(params);
+
+        if(allParams.length) allParams = allParams.replace('?', '&');
+
+        const {data} = await axios.get(`users/viewed?${this.getVkUrlParams()}${allParams}`);
+
+        if(!data.isSuccess) throw new Error('Ошибка при загрузке просмотренных работ');
+
+        const vieweds = data.previews.map(el => new DesignCard(el));
+
+        return {
+            list: vieweds,
+            count: Number(data.count),
+            fromId: data.from_id
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import CancelModal from './CancelModal';
 import ReviewCreator from '../../panels/ReviewCreator';
 import User from '../../panels/User';
 import Favorites from '../../panels/Favorites';
+import Viewed from '../../panels/Viewed';
 
 const OffersView = ({id, activePanel}) => {
 
@@ -28,6 +29,7 @@ const OffersView = ({id, activePanel}) => {
             <Order id='order' />
             <ReviewCreator id='review' />
             <Favorites id='favorites' />
+            <Viewed id='viewed' />
         </View>
     )
 }

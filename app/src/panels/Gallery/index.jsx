@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react';
 
-import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
-import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
-
 import PropTypes from 'prop-types';
-import { Group } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader } from '@vkontakte/vkui';
 
 import ListBlock from '../../components/ListBlock';
 import GalleryClass from '../../utils/Gallery';

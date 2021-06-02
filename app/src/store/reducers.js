@@ -14,6 +14,7 @@ import { userReducer } from './User/reducers';
 import { selectModalReducer } from './selectModal/reducer';
 import { commentsReducer } from './Design/Comments/reducer';
 import { favoritesListReducer } from './Favorites/reducer';
+import { viewedsListReducer } from './Vieweds/reducers';
 
 export default combineReducers({
     galleryList: galleryListReducer,
@@ -30,5 +31,6 @@ export default combineReducers({
     user: userReducer,
     selectModal: selectModalReducer,
     commentsList: commentsReducer,
-    favoritesList: favoritesListReducer
+    favoritesList: favoritesListReducer,
+    viewedsList: viewedsListReducer
 })

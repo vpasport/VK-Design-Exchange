@@ -11,7 +11,7 @@ const useUserListParams = (actionType) => {
 
     const { activeDesignerId, activeDesigner } = useSelector(state => state.designer);
     const { prevUserId } = useSelector(state => state[actionType]);
-    const [isShowList, setShowList] = useState(Boolean(activeDesigner && activeDesigner.getId() === prevUserId));
+    const [isShowList, setShowList] = useState(Boolean(activeDesigner && activeDesignerId === prevUserId));
     const dispatch = useDispatch();
     const { useAlert } = alertContext();
     const {back} = useRouter();
@@ -22,6 +22,7 @@ const useUserListParams = (actionType) => {
         const fetchData = async () => {
             try {
                 const activeDesigner = await getDesignerInfoById(activeDesignerId);
+
                 dispatch(changeActiveDesigner(activeDesigner));
             }
             catch(error){
@@ -33,13 +34,13 @@ const useUserListParams = (actionType) => {
             }
         }
 
-        if (!activeDesigner) fetchData();
+        if (!activeDesigner || activeDesigner.getId() !== activeDesignerId) fetchData();
         else if (!isShowList) {
             dispatch(changeList(dispatchActionType)([]));
             setShowList(true);
         }
 
-    }, [activeDesigner])
+    }, [activeDesigner, activeDesignerId])
 
     const checkId = () => {
         const condition = activeDesigner.getId() !== prevUserId;

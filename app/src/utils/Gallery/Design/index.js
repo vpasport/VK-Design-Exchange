@@ -3,7 +3,7 @@ import { changeActiveDesign } from '../../../store/Design/actions';
 import DesignDefaultProps from './DesignDefaultProps';
 import axios from 'axios';
 import DesignCard from './DesignCard';
-import { changeList } from '../../../store/ListBlock/actions';
+import { changeLength, changeList, changeSecondLength } from '../../../store/ListBlock/actions';
 import { parseDateFromServer, parseDatetoString } from '../../helpers';
 
 const { REACT_APP_API_URL } = process.env;
@@ -87,7 +87,7 @@ class Design extends DesignDefaultProps {
     }
 
     async changeIsFavorite(){
-        const {user: {activeUser}, favoritesList: {list, fromId}} = store.getState();
+        let {user: {activeUser}, favoritesList: {list, fromId, length}} = store.getState();
         this._isFavoriteChecked = !this._isFavoriteChecked;
 
         const { status } = await axios.post(`/favorites`, {
@@ -113,12 +113,15 @@ class Design extends DesignDefaultProps {
                 preview: this.preview,
                 id: this.getId()
             }))
+            length++;
         }
         else{
             list.splice(findedFavorite, 1);
+            length--;
         }
         
         store.dispatch(changeList('FAVORITESLIST')([...list]))
+        store.dispatch(changeLength('FAVORITESLIST')(length))
     }
 
 }

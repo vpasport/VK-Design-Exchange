@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Icon24ArrowUpOutline } from '@vkontakte/icons';
 
-import { PullToRefresh, Div, CardGrid, PanelSpinner, Text, Button } from '@vkontakte/vkui';
+import { PullToRefresh, Div, CardGrid, PanelSpinner, Text, Button, Group } from '@vkontakte/vkui';
 
 import InfiniteScroll from 'react-infinite-scroller';
 import { alertContext, sessionContext } from '../../App';

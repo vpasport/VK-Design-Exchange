@@ -54,7 +54,7 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize, updateList
         <>
             {Boolean(isChangeSize || showFilterButton || isDesktop) &&
                 React.createElement(isDesktop ? 'div' : FixedLayout,
-                    isDesktop ? null : { verical: 'top', className: styles.fixedLayout },
+                    isDesktop ? null : { vertical: 'top'},
                     <Div className={styles.bottom}>
                         {isChangeSize &&
                             <Button

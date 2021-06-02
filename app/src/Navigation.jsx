@@ -35,6 +35,8 @@ import {useStructure, useLocation, useHistory } from '@unexp/router';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
 
+    const hash = useMemo(() => window.location.hash, []);
+
     const { isDesktop, setIsDesktop } = sessionContext();
     const dispatch = useDispatch();
 
@@ -42,7 +44,6 @@ const Panels = withAdaptivity(({ viewWidth }) => {
 
     const structure = useStructure({view: 'table', panel: 'table'});
     const location = useLocation();
-    const history = useHistory();
 
     const params = [
         {
@@ -72,8 +73,6 @@ const Panels = withAdaptivity(({ viewWidth }) => {
     ]
 
     useEffect(() => {
-        const hash = window.location.hash;
-
         if (hash) {
             const [key, value] = hash.split('=');
             switch (key) {

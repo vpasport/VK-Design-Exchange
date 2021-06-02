@@ -9,6 +9,7 @@ import { changeStatus } from '../../store/OrdersList/actions';
 import styles from './style.module.scss';
 import { openVkLink } from '../../utils/helpers';
 import { sessionContext } from '../../App';
+import { Icon28BrushOutline, Icon28More, Icon28RecentOutline, Icon28DoneOutline, Icon28CancelOutline, Icon24FavoriteOutline, Icon28ChatsOutline, Icon24ViewOutline } from '@vkontakte/icons';
 
 const User = ({ id }) => {
 
@@ -32,18 +33,59 @@ const User = ({ id }) => {
                 <Header>Ваши заказы</Header>
             )}>
                 <Div className={styles.buttonsBlock}>
-                    <Button onClick={() => showOrders(null)}>Все заказы</Button>
-                    <Button onClick={() => showOrders(4)}>Готовые к проверке</Button>
-                    <Button onClick={() => showOrders(3)}>В работе</Button>
-                    <Button onClick={() => showOrders(2)}>На согласовании</Button>
-                    <Button onClick={() => showOrders(1)}>Отмененные</Button>
-                    <Button onClick={() => showOrders(5)}>Выполненые</Button>
+                    <Button 
+                        onClick={() => showOrders(null)}
+                        before={<Icon28More />}
+                    >
+                        Все заказы
+                    </Button>
+                    <Button 
+                        onClick={() => showOrders(4)}
+                        before={<Icon28RecentOutline />}
+                    >
+                        Готовые к проверке
+                    </Button>
+                    <Button 
+                        onClick={() => showOrders(3)}
+                        before={<Icon28BrushOutline />}
+                    >
+                        В работе
+                    </Button>
+                    {/* <Button onClick={() => showOrders(2)}>На согласовании</Button> */}
+                    <Button 
+                        onClick={() => showOrders(1)}
+                        before={<Icon28CancelOutline />}
+                    >
+                        Отмененные
+                    </Button>
+                    <Button 
+                        onClick={() => showOrders(5)}
+                        before={<Icon28DoneOutline />}
+                    >
+                        Выполненые
+                    </Button>
                 </Div>
             </Group>
             <Group>
                 <Div className={styles.buttonsBlock}>
-                    <Button onClick={() => push({panel: 'favorites'})}>Избранное</Button>
-                    <Button onClick={handleGroupOpen}>Техподдержка</Button>
+                    <Button 
+                        onClick={() => push({panel: 'favorites'})}
+                        before={<Icon24FavoriteOutline />}
+                    >
+                        Избранное
+                    </Button>
+                    {/* <Button 
+                        onClick={() => push({panel: 'viewed'})}
+                        before={<Icon24ViewOutline />}
+                    >
+                        Просмотренные
+                    </Button> */}
+                    <Button 
+                        onClick={handleGroupOpen}
+                        before={<Icon28ChatsOutline />}
+                    >
+                        Техподдержка
+                    </Button>
                 </Div>
             </Group>
         </Panel>

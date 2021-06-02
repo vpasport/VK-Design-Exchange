@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as listActions from '../../store/ListBlock/actions';
 
-const useList = (loadList, loadFilters, from, to = 10, loadLength, useAlert, type, loadingCondition = () => {}) => {
+const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, loadingCondition = () => {}) => {
 
     const dispatch = useDispatch();
     const { length, secondLength, fromId, list, filters, activeFilters, listFormat, isFetch } = useSelector(state => state[type]);
@@ -23,7 +23,6 @@ const useList = (loadList, loadFilters, from, to = 10, loadLength, useAlert, typ
         isHasMore = Boolean(isHasMore && loadLength !== null);
         if(to !== null)
             isHasMore = Boolean(isHasMore && loadLength < to);
-
 
         return isHasMore;
     }
