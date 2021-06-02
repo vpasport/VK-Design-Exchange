@@ -38,8 +38,6 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize, updateList
             );
         });
         for (const elem of allVisible) {
-            //Calculaate the offset to the document 
-            //See: https://stackoverflow.com/a/18673641/7448536
             const offY = elem.getBoundingClientRect().top + document.documentElement.scrollTop
             if (first == null || offY < firstOffY) {
                 first = elem;

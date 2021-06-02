@@ -26,7 +26,7 @@ const ModalRadioSelect = ({ params, changeFilter, activeFilters }) => {
                     value: activeFilters[filterType]
                 })}
             >
-                {params.filters.find(el => el.type === activeFilters[filterType]).status}
+                {params.filters.find(el => el.type + '' === activeFilters[filterType] + '').status}
             </SelectMimicry>
         </FormItem>
     )

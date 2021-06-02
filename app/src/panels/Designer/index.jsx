@@ -64,7 +64,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             <div className={styles.userBlock__info}>
                                 <Title weight='bold'>{`${activeDesigner.getFirstName()} ${activeDesigner.getLastName()}`}</Title>
                                 <StarRatings rating={activeDesigner.getRating()} className={styles.userBlock__raiting} />
-                                <Text className={styles.userBlock__status}>
+                                <Text className={`${styles.userBlock__status} ${!activeDesigner.getEngaged() && styles.userBlock__status_active}`}>
                                     {activeDesigner.getEngaged() ?
                                         `Занят до ${activeDesigner.getEngagedDate()}`
                                     :
@@ -99,14 +99,14 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                             Отзывы
                         </SimpleCell>
                         <Div>
-                            {/* <Button 
+                            <Button 
                                 stretched 
                                 mode='outline' 
                                 size='l'
-                                onClick={() => router.setActivePanel('offers')}
+                                onClick={() => push({panel: 'offers'})}
                             >
                                 Посмотреть услуги
-                            </Button> */}
+                            </Button>
                             <Button 
                                 stretched 
                                 mode='outline' 

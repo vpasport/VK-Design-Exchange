@@ -8,7 +8,7 @@
     }
 
     &__raiting{
-        margin-top: 15px;
+        margin-top: 6px;
     }
 
     &__experience{
@@ -16,7 +16,23 @@
     }
 
     &__status{
-        margin-top: 6px;
+        margin-top: 16px;
+        position: relative;
+        padding-left: 15px;
+
+        &::before{
+            position: absolute;
+            top: 50%;
+            transform: translateY(calc(-50% - 1px));
+            left: 0;
+            font-size: 25px;
+            content: '•';
+            color: var(--dynamic_red);
+        }
+
+        &_active:before{
+            color: var(--dynamic_green);
+        }
     }
 }
 

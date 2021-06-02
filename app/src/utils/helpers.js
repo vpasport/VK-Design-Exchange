@@ -41,6 +41,16 @@ const getUrlByJson = (obj) => {
     return allParams;
 }
 
+const getOrdersCountWithStatus = async () => {
+    const {user: {activeUser}} = store.getState();
+
+    const {data} = await axios(`orders/counts?${activeUser.getVkUrlParams()}`);
+
+    if(!data.isSuccess) throw new Error('Не удалось получить информацию о количестве заказов');
+
+    return data.orders;
+}
+
 const getDesignInfoById = async (id) => {
     const { user: { activeUser } } = store.getState();
     const { data } = await axios(`portfolio/work/${id}?vk_id=${activeUser.getId()}`);
@@ -121,5 +131,6 @@ export {
     checkPhotoAndGetSrc,
     parseDateFromServer,
     openVkLink,
-    parseDatetoString
+    parseDatetoString,
+    getOrdersCountWithStatus
 }
