@@ -12,7 +12,7 @@ const ShareButton = ({hash, className, style}) => {
 
     const handleShare = () => {
         bridge.send("VKWebAppShare", {
-            link: `https://m.vk.com/app${REACT_APP_API_APP_ID}${hash}`
+            link: `https://vk.com/app${REACT_APP_API_APP_ID}${hash}`
         })
     }
 

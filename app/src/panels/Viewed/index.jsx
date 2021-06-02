@@ -18,11 +18,13 @@ const Viewed = ({id, userInfo}) => {
                 loadCount={10}
                 actionType='viewedsList'
                 loadList={userInfo.getViewed.bind(userInfo)}
-                loadingCondition={() => true}
                 isChangeSize={true}
             >
                 {el => (
-                    <DesignCard designCard={el} />
+                    <DesignCard 
+                        designCard={el}
+                        key={el.getId()}
+                    />
                 )}
             </ListBlock>
         </Panel>

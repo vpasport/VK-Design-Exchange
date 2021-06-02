@@ -13,7 +13,7 @@ import ScrollUpButton from "react-scroll-up-button";
 import styles from './style.module.scss';
 
 const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
-    loadCount = null, actionType, isChangeSize = false, loadingCondition, nullText = 'Список пустой', pullToRefresh = true, showScrollTop = true }) => {
+    loadCount = null, actionType, isChangeSize = false, loadingCondition, nullText = 'Список пустой', pullToRefresh = true, showScrollTop = true, hideFilter = false }) => {
 
     const { useAlert } = alertContext();
     const { isDesktop } = sessionContext();
@@ -46,7 +46,10 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                 >
                     <CardGrid
                         size={listHook.bind.listFormat}
-                        className={`${Boolean(isDesktop || !showScrollTop) || styles.block} ${isShowFilter && styles.block_spaceTop}`}
+                        className={`
+                        ${Boolean(isDesktop || !showScrollTop) || styles.block} 
+                        ${Boolean(isShowFilter && !hideFilter && !isDesktop) && styles.block_spaceTop}`
+                        }
                     >
                         {listHook.bind.list.map((el) => (
                             children(el)
@@ -73,13 +76,15 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
 
     return (
         <>
-            <FiltersList
-                filters={listHook.bind.filters}
-                size={listHook.bind.listFormat}
-                changeListFormat={listHook.changeListFormat}
-                isChangeSize={isChangeSize}
-                updateList={listHook.bind.updateList}
-            />
+            {!hideFilter &&
+                <FiltersList
+                    filters={listHook.bind.filters}
+                    size={listHook.bind.listFormat}
+                    changeListFormat={listHook.changeListFormat}
+                    isChangeSize={isChangeSize}
+                    updateList={listHook.bind.updateList}
+                />
+            }
             {listHook.bind.isLoad ?
                 PullToRefreshOrDiv()
                 :

@@ -6,6 +6,7 @@ import styles from './style.module.scss';
 import { useDispatch } from 'react-redux';
 import { changeActiveOrderId } from '../../store/Order/actions';
 import {useRouter} from '@unexp/router';
+import Price from '../Price';
 
 const OrderCard = ({ order }) => {
 
@@ -23,7 +24,7 @@ const OrderCard = ({ order }) => {
             header={order.getTitle()}
             text={
                 <>
-                    <Title level='3' className={styles.card__price}>{order.getPrice()}₽</Title>
+                    <Title level='3' className={styles.card__price}><Price price={order.getPrice()} /></Title>
                     <Text className={styles.card__status}>
                         Статус: {order.getStatus().toLowerCase()}
                     </Text>

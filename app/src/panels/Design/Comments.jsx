@@ -69,6 +69,7 @@ const Comments = ({ id }) => {
                 loadingCondition={() => true}
                 showScrollTop={false}
                 nullText='Комментарии отсутствуют'
+                hideFilter={true}
             >
                 {el => (
                     <CommentsCard

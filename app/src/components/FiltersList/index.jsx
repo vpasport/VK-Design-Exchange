@@ -94,7 +94,7 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize, updateList
 }
 
 FiltersList.propTypes = {
-    filters: PropTypes.array,
+    filters: PropTypes.any,
     size: PropTypes.string,
     changeListFormat: PropTypes.func,
     isChangeSize: PropTypes.bool.isRequired

@@ -74,12 +74,12 @@ const User = ({ id }) => {
                     >
                         Избранное
                     </Button>
-                    {/* <Button 
+                    <Button 
                         onClick={() => push({panel: 'viewed'})}
                         before={<Icon24ViewOutline />}
                     >
                         Просмотренные
-                    </Button> */}
+                    </Button>
                     <Button 
                         onClick={handleGroupOpen}
                         before={<Icon28ChatsOutline />}

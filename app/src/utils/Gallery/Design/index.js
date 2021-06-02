@@ -13,6 +13,8 @@ class Design extends DesignDefaultProps {
     constructor(item) {
         super(item.title, item.id, item.preview);
 
+        console.log(item)
+
         this._projectDescription = item.project_description;
         this._workImages = item.images.map(image => `${REACT_APP_API_URL}/${image.path}`);
         this._designerId = item.author?.id;
@@ -23,6 +25,8 @@ class Design extends DesignDefaultProps {
         this._isForSale = item.is_for_sale;
         this._isFavoriteChecked = item.in_favorites;
         this._createDate = item.create_date;
+        this._isViewed = item.viewed;
+        this._preview = item.preview;
     }
 
     getProjectDescription() { return this._projectDescription }
@@ -45,6 +49,8 @@ class Design extends DesignDefaultProps {
             return parseDatetoString(date, {day: 'numeric', month: 'long', year: 'numeric'});
         }
     }
+    get isViewed() { return this._isViewed}
+    get preview(){return this._preview}
 
     updateDesign() {
         store.dispatch(changeActiveDesign(Object.assign(Object.create(Object.getPrototypeOf(this)), this)));
@@ -122,6 +128,41 @@ class Design extends DesignDefaultProps {
         
         store.dispatch(changeList('FAVORITESLIST')([...list]))
         store.dispatch(changeLength('FAVORITESLIST')(length))
+    }
+
+    checkIsViewed(){
+        let {viewedsList: {list, length, fromId}} = store.getState();
+
+        if(!fromId) return;
+
+        let _list = [...list];
+
+        if(!this.isViewed){
+            _list = this.addDesignCard(_list);
+            length++;
+
+            store.dispatch(changeList('VIEWEDSLIST')(_list))
+            store.dispatch(changeLength('VIEWEDSLIST')(length))
+
+            return;
+        }
+
+        const findedItem = list.findIndex(el => el.getId() === this.getId());
+
+        if(findedItem === -1) _list.splice(findedItem, 1);
+        _list = this.addDesignCard(_list);
+
+        store.dispatch(changeList('VIEWEDSLIST')(_list));
+    }
+
+    addDesignCard(_list){
+        _list.unshift(new DesignCard({
+            title: this.getTitle(),
+            preview: this.preview,
+            id: this.getId()
+        }))
+
+        return _list;
     }
 
 }

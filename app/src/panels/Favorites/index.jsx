@@ -1,5 +1,5 @@
 import { useRouter } from '@unexp/router';
-import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui';
+import { Group, Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui';
 import React from 'react';
 import { connect } from 'react-redux';
 import ListBlock from '../../components/ListBlock';
@@ -16,16 +16,18 @@ const Favorites = ({ id, userInfo }) => {
             >
                 Избранные
             </PanelHeader>
-            <ListBlock
-                loadCount={10}
-                loadList={userInfo.getFavorites.bind(userInfo)}
-                actionType='favoritesList'
-                isChangeSize={true}
-            >
-                {el => (
-                    <DesignCard designCard={el} key={el.getId()} />
-                )}
-            </ListBlock>
+            <Group>
+                <ListBlock
+                    loadCount={10}
+                    loadList={userInfo.getFavorites.bind(userInfo)}
+                    actionType='favoritesList'
+                    isChangeSize={true}
+                >
+                    {el => (
+                        <DesignCard designCard={el} key={el.getId()} />
+                    )}
+                </ListBlock>
+            </Group>
         </Panel>
     )
 }

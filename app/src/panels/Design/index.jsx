@@ -55,6 +55,12 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
 
     }, [])
 
+    useEffect(() => {
+        if(!isFetchDesign){
+            activeDesign.checkIsViewed();
+        }
+    }, [activeDesign])
+
     const changeAuthor = () => {
         changeActiveDesignerId(activeDesign.getDesignerId());
         push({ view: 'raiting', panel: 'designer' });
