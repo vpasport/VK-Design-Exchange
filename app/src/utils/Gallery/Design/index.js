@@ -149,7 +149,9 @@ class Design extends DesignDefaultProps {
 
         const findedItem = list.findIndex(el => el.getId() === this.getId());
 
-        if(findedItem === -1) _list.splice(findedItem, 1);
+        console.log(findedItem)
+
+        if(findedItem !== -1) _list.splice(findedItem, 1);
         _list = this.addDesignCard(_list);
 
         store.dispatch(changeList('VIEWEDSLIST')(_list));

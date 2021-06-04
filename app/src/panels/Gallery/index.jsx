@@ -28,7 +28,6 @@ const Gallery = ({ id, listFormat }) => {
                         designCard={el}
                         key={el.getId()}
                         listFormat={listFormat}
-                        //height={getCardHeightBySize(size)}
                     />
                 )}
                 </ListBlock>

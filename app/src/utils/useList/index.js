@@ -31,11 +31,10 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
 
     const getList = async () => {
         try{
-            let nextStep;
+            let nextStep = null;
             
             if(hasMore) nextStep = secondLength + loadLength;
             else if(loadLength === null || loadLength > to) nextStep = to;
-            else nextStep = null;
             
             const data = await loadList({from, to: nextStep || 'all', fromId, activeFilters});
 
