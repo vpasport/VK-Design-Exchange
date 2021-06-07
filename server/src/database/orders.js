@@ -547,8 +547,16 @@ async function inProcess(id) {
 
     try {
         let order = (await client.query(
-            `select status from orders
-            where id = $1`,
+            `select 
+                o.status,
+                o.customer,
+                ofs.title
+            from 
+                orders as o,
+                offers as ofs
+            where 
+                o.offer_id = ofs.id and
+                o.id = $1`,
             [id]
         )).rows[0];
 
@@ -570,6 +578,7 @@ async function inProcess(id) {
 
                 return {
                     isSuccess: true,
+                    order,
                     date
                 }
             }
@@ -596,10 +605,16 @@ async function readyToCheck(id) {
 
     try {
         let order = (await client.query(
-            `select status 
-                from orders
-            where
-                id = $1`,
+            `select 
+                o.status,
+                o.customer,
+                ofs.title
+            from 
+                orders as o,
+                offers as ofs
+            where 
+                o.offer_id = ofs.id and
+                o.id = $1`,
             [id]
         )).rows[0];
 
@@ -621,6 +636,7 @@ async function readyToCheck(id) {
 
                 return {
                     isSuccess: true,
+                    order,
                     date
                 }
             }
@@ -652,10 +668,16 @@ async function finishOrder(id) {
 
     try {
         let order = (await client.query(
-            `select status 
-                from orders
-            where
-                id = $1`,
+            `select 
+                o.status,
+                o.customer,
+                ofs.title
+            from 
+                orders as o,
+                offers as ofs
+            where 
+                o.offer_id = ofs.id and
+                o.id = $1`,
             [id]
         )).rows[0];
 
@@ -676,6 +698,7 @@ async function finishOrder(id) {
 
                 return {
                     isSuccess: true,
+                    order,
                     date
                 }
             }
@@ -707,14 +730,19 @@ async function cancelOrder(id, comment, from_vk_id) {
 
     try {
         let order = (await client.query(
-            `select o.*, d.vk_id as designer_vk_id
+            `select 
+                o.*, 
+                d.vk_id as designer_vk_id,
+                ofs.title
             from 
                 orders as o,
                 designers_offers as od,
-                designers as d
+                designers as d,
+                offers as ofs
             where
                 o.id = $1 and 
                 od.offer_id = o.offer_id and
+                ofs.id = o.offer_id and
                 od.designer_id = d.id`,
             [id]
         )).rows[0];
@@ -758,7 +786,8 @@ async function cancelOrder(id, comment, from_vk_id) {
                     return {
                         isSuccess: true,
                         comment_id: comment_id.id,
-                        date
+                        date,
+                        order
                     }
                 }
 
