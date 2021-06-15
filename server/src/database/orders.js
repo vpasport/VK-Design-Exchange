@@ -844,8 +844,10 @@ async function setPaid(id) {
                         orders
                     set
                         paid = true,
-                        paid_date = $1`,
-                    [date]
+                        paid_date = $1
+                    where
+                        id = $2`,
+                    [date, id]
                 );
 
                 result.isSuccess = true;
