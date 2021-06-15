@@ -132,7 +132,7 @@ async function setPaid({ params: { id }, body: { token } }, res) {
         if (response.isSuccess) {
             res.json({
                 Success: true,
-                Id: id,
+                Id: parseInt(id),
                 status: 200
             });
             return;
@@ -140,7 +140,7 @@ async function setPaid({ params: { id }, body: { token } }, res) {
             if (response.paid === true) {
                 res.status(403).json({
                     Success: true,
-                    Id: id,
+                    Id: parseInt(id),
                     status: 403
                 });
                 return;
@@ -148,7 +148,7 @@ async function setPaid({ params: { id }, body: { token } }, res) {
 
             res.status(422).json({
                 Success: false,
-                Id: id,
+                Id: parseInt(id),
                 status: 422
             });
             return;
