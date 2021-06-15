@@ -125,16 +125,32 @@ async function createOrder({ body: { offer_id, url_params } }, res) {
     res.sendStatus(401);
 }
 
-async function setPaid({params: {id}, body: {token}}, res){
-    if(token === process.env.SKYAUTO_TOKEN){
+async function setPaid({ params: { id }, body: { token } }, res) {
+    if (token === process.env.SKYAUTO_TOKEN) {
         let response = await setPaid_(id)
 
-        if(response.isSuccess){
-            res.sendStatus(204);
+        if (response.isSuccess) {
+            res.json({
+                Success: true,
+                Id: id
+            });
+            return;
+        } else {
+            if (response.paid === true) {
+                res.status(403).json({
+                    Success: true,
+                    Id: id
+                });
+                return;
+            }
+
+            res.status(422).json({
+                Success: false,
+                Id: id
+            });
             return;
         }
 
-        res.sendStatus(422);
         return;
     }
 

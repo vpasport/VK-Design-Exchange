@@ -853,6 +853,7 @@ async function setPaid(id) {
                 result.isSuccess = true;
             } else {
                 result.isSuccess = false;
+                result.paid = true;
             }
 
             await client.query('commit');
