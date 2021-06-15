@@ -1,6 +1,6 @@
 "use strict";
 
-const { Router, urlencoded } = require('express');
+const { Router, urlencoded, response } = require('express');
 
 const {
     getStatuses: getStatuses_,
@@ -15,7 +15,8 @@ const {
     inProcess: inProcess_,
     readyToCheck: readyToCheck_,
     finishOrder: finishOrder_,
-    cancelOrder: cancelOrder_
+    cancelOrder: cancelOrder_,
+    setPaid: setPaid_,
 } = require('../database/orders');
 const { checkSign } = require('../helper/vk');
 
@@ -124,6 +125,22 @@ async function createOrder({ body: { offer_id, url_params } }, res) {
     res.sendStatus(401);
 }
 
+async function setPaid({params: {id}, body: {token}}, res){
+    if(token === process.env.SKYAUTO_TOKEN){
+        let response = await setPaid_(id)
+
+        if(response.isSuccess){
+            res.sendStatus(204);
+            return;
+        }
+
+        res.sendStatus(400);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session }, res) {
     let result;
     let order = await getOrder_(id);
@@ -140,7 +157,11 @@ async function updateOrderStatus({ params: { id }, body: { from_vk_id }, session
 
                 if (result.isSuccess) {
                     const response = await fetch(
-                        `${process.env.SKYAUTO_IN_PROCESS_ORDER}?avtp=1&sid=${result.order.customer}&title=${encodeURIComponent(result.order.title)}`
+                        `${process.env.SKYAUTO_IN_PROCESS_ORDER}?avtp=1&sid=${result.order.customer}
+                        &title=${encodeURIComponent(result.order.title)}
+                        &order_id=${result.order.order_id}
+                        &price=${result.order.price}
+                        &id_designer=${result.order.designer_vk_id}`
                     )
 
                     res.json(result);
@@ -283,6 +304,7 @@ function index() {
     router.get('/:id', getOrder);
 
     router.post('/', createOrder);
+    router.post('/paid/:id', setPaid);
 
     router.put('/:id', updateOrderStatus);
     router.put('/:id/cancel', cancelOrder);

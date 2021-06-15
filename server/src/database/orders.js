@@ -1,5 +1,6 @@
 "use strict";
 
+const { response } = require('express');
 const { getUsersInfo } = require('../helper/vk');
 
 const pool = require('./pg/pool').getPool();
@@ -548,14 +549,21 @@ async function inProcess(id) {
     try {
         let order = (await client.query(
             `select 
+                o.id as order_id,
                 o.status,
                 o.customer,
-                ofs.title
+                ofs.title,
+                ofs.price,
+                d.vk_id as designer_vk_id
             from 
                 orders as o,
-                offers as ofs
+                offers as ofs,
+                designers_offers as od,
+                designers as d
             where 
                 o.offer_id = ofs.id and
+                od.offer_id = ofs.id and
+                d.id = od.designer_id and
                 o.id = $1`,
             [id]
         )).rows[0];
@@ -810,6 +818,60 @@ async function cancelOrder(id, comment, from_vk_id) {
     }
 }
 
+async function setPaid(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let order = (await client.query(
+            `select
+                paid
+            from 
+                orders
+            where
+                id = $1`,
+            [id]
+        )).rows[0];
+
+        if (order !== undefined) {
+            let result = {}
+
+            if (order.paid === false) {
+                const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
+                await client.query(
+                    `update
+                        orders
+                    set
+                        paid = true,
+                        paid_date = $1`,
+                    [date]
+                );
+
+                result.isSuccess = true;
+            } else {
+                result.isSuccess = false;
+            }
+
+            await client.query('commit');
+            client.release();
+
+            return result;
+        }
+
+        throw 'Order not found';
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 module.exports = {
     getStatuses,
     getOrders,
@@ -823,5 +885,6 @@ module.exports = {
     inProcess,
     readyToCheck,
     finishOrder,
-    cancelOrder
+    cancelOrder,
+    setPaid
 }

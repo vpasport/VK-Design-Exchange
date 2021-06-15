@@ -262,7 +262,7 @@ async function getWork(id, full, vk_id = undefined) {
 
     try {
         let work = (await client.query(
-            `${full !== true ? 'select *' : 'select p.project_description, p.work_image'}
+            `select *
                 from portfolio as p
             where p.id = $1`,
             [id]
