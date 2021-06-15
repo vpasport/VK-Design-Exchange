@@ -134,7 +134,7 @@ async function setPaid({params: {id}, body: {token}}, res){
             return;
         }
 
-        res.sendStatus(400);
+        res.sendStatus(422);
         return;
     }
 
