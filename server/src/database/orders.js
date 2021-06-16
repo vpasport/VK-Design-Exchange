@@ -818,7 +818,7 @@ async function cancelOrder(id, comment, from_vk_id) {
     }
 }
 
-async function setPaid(id) {
+async function setPaid(id, vk_id, balance, total) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -855,6 +855,18 @@ async function setPaid(id) {
                 result.isSuccess = false;
                 result.paid = true;
             }
+
+            await client.query(
+                `insert into 
+                    balances(vk_id, balance, total)
+                values
+                    ( $1, $2, $3 )
+                on conflict (vk_id) do update
+                set
+                    balance = $2,
+                    total = $3`,
+                [vk_id, balance, total]
+            )
 
             await client.query('commit');
             client.release();
