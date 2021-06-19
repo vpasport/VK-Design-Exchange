@@ -33,7 +33,7 @@ async function getAllPreviews() {
     }
 }
 
-async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
+async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidden) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -86,6 +86,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
                     p.title, 
                     p.preview, 
                     p.popularity,
+                    p.is_hidden,
                     l.likes
                 from 
                     tags_portfolios as tp,
@@ -94,11 +95,13 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
                     likes as l 
                 on 
                     p.id = l.portfolio_id
+                ${!viewHidden ? `where p.is_hidden = false` : ''}
             )
             select
                 p.id, 
                 p.title, 
                 p.preview, 
+                p.is_hidden,
                 count( 1 ) over ()::int
             from 
                 tmp as p
@@ -142,7 +145,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction) {
     }
 }
 
-async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
+async function getPreviewsTags(from, to, from_id, tags, sort_by, direction, viewHidden) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -207,7 +210,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction) {
                     p.id = l.portfolio_id
                 where
                     p.id = tp.portfolio_id and 
-                    tp.tag_id = any($${params.length}) ${filter}
+                    tp.tag_id = any($${params.length}) ${filter} ${!viewHidden ? `and p.is_hidden = false` : ''}
             )
             select
                 p.id, 
@@ -711,6 +714,36 @@ async function updateForSale(id) {
                 id = $1`,
             [id]
         );
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function updateHidden(id) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        await client.query(
+            `update portfolio
+            set is_hidden = not is_hidden
+            where id = $1`,
+            [id]
+        )
 
         await client.query('commit');
         client.release();
@@ -1515,6 +1548,7 @@ module.exports = {
     updateDescription,
     updatePreviewPaths,
     updateForSale,
+    updateHidden,
     deleteWork,
     deleteComment,
     deleteImage

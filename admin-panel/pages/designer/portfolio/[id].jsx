@@ -4,7 +4,7 @@ import Header from "../../../components/Header";
 import { useRouter } from "next/router";
 import dynamic from 'next/dynamic';
 import { Dialog } from "primereact/dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
 
@@ -224,6 +224,20 @@ const Work = ({ user }) => {
         router.push('/designer/profile');
     }
 
+    const updateHidden = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/hidden`, {
+            method: 'PUT',
+            credentials: 'include'
+        })
+
+        if (response.ok) {
+            setWork(prev => ({
+                ...prev,
+                is_hidden: !prev.is_hidden
+            }))
+        }
+    }
+
     return (
         <Container>
             <Header
@@ -231,6 +245,7 @@ const Work = ({ user }) => {
                 url='/designer/portfolio'
             />
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
+                <Button label={work?.is_hidden ? 'Открыть' : 'Скрыть'} className='p-m-2' icon={`pi pi-eye${work?.is_hidden ? '' : '-slash'}`} onClick={() => updateHidden()}></Button>
                 <Button label='Редактировать' className='p-m-2' icon='pi pi-pencil' disabled={edit} onClick={() => setEdit(true)}></Button>
                 {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
                 <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>

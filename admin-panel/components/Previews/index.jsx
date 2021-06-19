@@ -15,13 +15,16 @@ const Previews = ({ user }) => {
     const [first, setFirst] = useState(0);
 
     const getPreviews = async (from, to) => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route === '/admin/portfolios' ? 'portfolio/previews/' : `designers/${user.db.did}/previews/`}?from=${from}&to=${to}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route === '/admin/portfolios' ? 'portfolio/previews/' : `designers/${user.db.did}/previews/`}?from=${from}&to=${to}`, {
+            credentials: 'include'
+        });
 
         const { previews, count } = await res.json();
 
         for (let i = previews.length; i < rows; i++) {
             previews.push({})
         }
+        console.log(previews)
 
         setFirst(from);
         setPreviews(previews);
@@ -34,12 +37,31 @@ const Previews = ({ user }) => {
 
     const renderGridItem = (data) => {
         const footer = (
-            <span>
-                <Button>
-                    {user.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>}
-                    {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/portfolio/${data.id}`}>Обзор</Link>}
-                </Button>
-            </span>
+            <>
+                <span
+                    className='p-d-flex p-ai-center'
+                    style={{
+                        position: 'absolute',
+                        bottom: 15
+                    }}
+                >
+                    <Button>
+                        {user.mainRole === 'admin' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/portfolios/${data.id}`}>Обзор</Link>}
+                        {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/portfolio/${data.id}`}>Обзор</Link>}
+                    </Button>
+                    {data.is_hidden &&
+                        <span 
+                            className='p-d-flex p-ai-center p-ml-4'
+                            style={{
+                                height: 40
+                            }}
+                            >
+                            <i className="pi pi-eye-slash" style={{ 'fontSize': '1.5em', color: '#2196F3' }}></i>
+                            <p className='p-ml-2'>Скрыто</p>
+                        </span>
+                    }
+                </span>
+            </>
         );
 
         const header = (
@@ -48,8 +70,7 @@ const Previews = ({ user }) => {
                     position: 'relative',
                     width: '100%',
                     paddingBottom: '100%',
-                }
-                }
+                }}
             >
                 <img
                     style={{
@@ -73,7 +94,11 @@ const Previews = ({ user }) => {
         return (
             <Card
                 className='p-m-2'
-                style={{ width: 'calc(100%/3 - 1em)' }}
+                style={{
+                    width: 'calc(100%/3 - 1em)',
+                    position: 'relative',
+                    paddingBottom: 40
+                }}
                 title={data.title}
                 footer={footer}
                 header={header}

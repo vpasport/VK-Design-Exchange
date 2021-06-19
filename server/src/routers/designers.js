@@ -79,8 +79,14 @@ async function getReviews({ params: { id } }, res) {
     res.sendStatus(204);
 }
 
-async function getDesignerPreviews({ params: { id }, query: { from, to } }, res) {
-    let result = await getDesignerPreviews_(id, from, to);
+async function getDesignerPreviews({ params: { id }, query: { from, to }, session }, res) {
+    let viewHidden = false;
+    if (session.role !== undefined &&
+        (session.role.indexOf('admin') !== -1 || session.role.indexOf('designer') !== -1)) {
+        viewHidden = true;
+    }
+
+    let result = await getDesignerPreviews_(id, from, to, viewHidden);
 
     if (result.isSuccess) {
         res.json(result);

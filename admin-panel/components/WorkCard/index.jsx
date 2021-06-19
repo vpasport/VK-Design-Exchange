@@ -3,7 +3,7 @@ import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from 'primereact/multiselect';
-import FileUpload from '../FileUpload';
+import { Message } from 'primereact/message';
 import Quill from '../Quill';
 import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
@@ -49,13 +49,18 @@ const WorkCard = ({
         <>
             <div style={{ width: '70%', margin: 'auto' }} className='p-mt-6'>
                 <div className='p-d-flex p-ai-center'>
-                    <Avatar shape="circle" image={work?.author?.photo} size="xlarge" />
-                    <div className='p-ml-3'>
-                        <div>
-                            <b>{work?.author?.first_name} {work?.author?.last_name}</b>
+                    <div className='p-d-flex p-ai-center'>
+                        <Avatar shape="circle" image={work?.author?.photo} size="xlarge" />
+                        <div className='p-ml-3'>
+                            <div>
+                                <b>{work?.author?.first_name} {work?.author?.last_name}</b>
+                            </div>
+                            <Rating value={work?.author?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                         </div>
-                        <Rating value={work?.author?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                     </div>
+                    {work?.is_hidden &&
+                        <Message severity='info' text='Работа скрыта, пользователи приложения ее не видят' className='p-ml-4' />
+                    }
                 </div>
                 <div className='p-mt-3'>
                     {!edit ?

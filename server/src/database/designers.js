@@ -105,29 +105,54 @@ async function getDesigners(from, to, engaged, from_id, order) {
     }
 }
 
-async function getDesigner(id, vk_id) {
+async function getDesigner(id) {
     const client = await pool.connect();
     await client.query('begin');
 
     try {
-        let params = [];
-        let where = '';
-
-        if (id !== undefined) {
-            params.push(id);
-            where = `id = $${params.length}`;
-        }
-        if (vk_id !== undefined) {
-            params.push(id);
-            where = `vk_id = $${params.length}`;
-        }
-
         let designer = (await client.query(
-            `select d.id, d.vk_id, d.rating, d.bio, d.photo, d.first_name, d.last_name, d.engaged_date
-                from designers as d
-            where 
-                ${where}`,
-            [...params]
+            `with offers as (
+                select 
+                    count(*)
+                from 
+                    designers_offers
+                where
+                    designer_id = $1
+            ), reviews as (
+                select 
+                    count(*)
+                from 
+                    reviews_designers
+                where
+                    designer_id = $1
+            ), portfolios as (
+                select 
+                    count(*)
+                from 
+                    designers_portfolios
+                where
+                    designer_id = $1
+            )
+            select 
+                d.id,
+                d.vk_id,
+                d.rating,
+                d.bio,
+                d.photo,
+                d.first_name,
+                d.last_name,
+                d.engaged_date,
+                o.count::integer as offers_count,
+                r.count::integer as reviews_count,
+                p.count::integer as portfolios_count
+            from
+                designers as d,
+                offers as o,
+                reviews as r,
+                portfolios as p
+            where
+                d.id = $1`,
+            [id]
         )).rows[0];
 
         if (designer !== undefined) {
@@ -202,7 +227,7 @@ async function getReviews(id) {
     }
 }
 
-async function getDesignerPreviews(id, from, to) {
+async function getDesignerPreviews(id, from, to, viewHidden) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -221,10 +246,18 @@ async function getDesignerPreviews(id, from, to) {
         }
 
         let previews = (await client.query(
-            `select p.id, p.title, p.preview, count( 1 ) over ()::int
-                from portfolio as p, designers_portfolios as dp
+            `select 
+                p.id, 
+                p.title, 
+                p.preview, 
+                p.is_hidden,
+                count( 1 ) over ()::int
+            from 
+                portfolio as p, 
+                designers_portfolios as dp
             where 
-                p.id = dp.portfolio_id and dp.designer_id = $1
+                p.id = dp.portfolio_id and 
+                dp.designer_id = $1 ${!viewHidden ? 'and p.is_hidden = false' : ''}
             order by p.id desc
             ${offset}
             ${limit !== '' ? limit : ''}`,

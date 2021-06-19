@@ -29,13 +29,14 @@ const {
     updateDescription: updateDescription_,
     updatePreviewPaths: updatePreviewPaths_,
     updateForSale: updateForSale_,
+    updateHidden: updateHidden_,
     deleteImage: deleteImage_,
 } = require('../database/portfolio');
 const {
     checkSign
 } = require('../helper/vk');
 
-async function getPreviews({ query: { from, to, from_id, tags, sort_by, direction } }, res) {
+async function getPreviews({ query: { from, to, from_id, tags, sort_by, direction }, session }, res) {
     if (tags !== undefined) tags = tags.split(',')
 
     let result;
@@ -45,10 +46,17 @@ async function getPreviews({ query: { from, to, from_id, tags, sort_by, directio
         to = 10;
     }
 
+    let viewHidden = false;
+
+    if (session.role !== undefined &&
+        (session.role.indexOf('admin') !== -1 || session.role.indexOf('designer') !== -1)) {
+        viewHidden = true;
+    }
+
     if (tags === undefined) {
-        result = await getPreviewsFromTo_(from, to, from_id, sort_by, direction);
+        result = await getPreviewsFromTo_(from, to, from_id, sort_by, direction, viewHidden);
     } else {
-        result = await getPreviewsTags_(from, to, from_id, tags, sort_by, direction)
+        result = await getPreviewsTags_(from, to, from_id, tags, sort_by, direction, viewHidden)
     }
 
     if (result.isSuccess) {
@@ -410,6 +418,33 @@ async function updateForSale({ session, params: { id } }, res) {
     res.sendStatus(401);
 }
 
+async function updateHidden({ params: { id }, session }, res) {
+    if (session.role !== undefined) {
+        let designer = await getDesignerByPortfolio_(id);
+        if (designer.isSuccess) {
+            if (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && designer.designer === session.user.did)) {
+                let result = await updateHidden_(id);
+
+                if (result.isSuccess) {
+                    res.sendStatus(204);
+                    return;
+                }
+
+                res.sendStatus(520);
+                return;
+            }
+
+            res.sendStatus(403);
+            return;
+        }
+
+        res.sendStatus(520);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 async function deleteWork({ body: { id }, session }, res) {
     if (session.role !== undefined) {
         let designer = await getDesignerByPortfolio_(id);
@@ -518,6 +553,7 @@ function index() {
     router.put('/:id/description', updateDescription);
     router.put('/:id/preview', upload.single('preview'), updatePreview);
     router.put('/:id/for-sale', updateForSale);
+    router.put('/:id/hidden', updateHidden);
 
     router.delete('/work', deleteWork);
     router.delete('/comment', deleteComment);
