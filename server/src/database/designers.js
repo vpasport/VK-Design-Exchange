@@ -129,9 +129,12 @@ async function getDesigner(id) {
                 select 
                     count(*)
                 from 
-                    designers_portfolios
+                    designers_portfolios as dp,
+                    portfolio as p
                 where
-                    designer_id = $1
+                    dp.designer_id = $1 and
+                    p.id = dp.portfolio_id and
+                    p.is_hidden = false
             )
             select 
                 d.id,
