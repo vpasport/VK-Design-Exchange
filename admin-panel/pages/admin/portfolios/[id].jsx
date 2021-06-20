@@ -223,7 +223,7 @@ const Work = ({ user }) => {
             return;
         }
 
-        router.push('/admin/portfolios');
+        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios`);
     }
 
     const updateHidden = async () => {

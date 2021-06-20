@@ -184,7 +184,7 @@ const Create = ({ user }) => {
 
         setProgress(false);
 
-        router.push(`/admin/portfolios/${id}`);
+        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios/${id}`);
     }
 
     return (

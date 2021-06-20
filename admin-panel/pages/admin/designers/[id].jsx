@@ -97,7 +97,7 @@ const Designer = ({ user }) => {
         })
 
         if (response.ok) {
-            router.push('/admin/designers');
+            router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/designers`);
             return;
         }
 

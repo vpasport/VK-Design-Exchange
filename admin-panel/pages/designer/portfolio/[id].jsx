@@ -221,7 +221,7 @@ const Work = ({ user }) => {
             return;
         }
 
-        router.push('/designer/profile');
+        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile`);
     }
 
     const updateHidden = async () => {

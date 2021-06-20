@@ -28,7 +28,7 @@ const Offers = ({ user }) => {
                 <Button
                     label='Добавить предложение'
                     icon='pi pi-plus'
-                    onClick={() => router.push('/designer/offers/create')}
+                    onClick={() => router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/offers/create`)}
                 >
                 </Button>
             </div>

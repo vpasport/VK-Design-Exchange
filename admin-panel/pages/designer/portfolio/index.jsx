@@ -1,5 +1,6 @@
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
+import style from './style.module.scss';
 
 import { Button } from 'primereact/button';
 
@@ -35,10 +36,21 @@ const Portfolio = ({ user }) => {
                 url='/designer/portfolio'
             ></Header>
             <div className='p-m-4' style={{ textAlign: 'center' }}>
+                <div className={style.videoContainer}>
+                    <iframe
+                        className={style.videoContainer__video}
+                        src="https://www.youtube.com/embed/vL117frmxUI"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                    >
+                    </iframe>
+                </div>
                 <Button
                     label='Добавить работу'
                     icon='pi pi-plus'
-                    onClick={() => router.push('/designer/portfolio/create')}
+                    onClick={() => router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/portfolio/create`)}
                 >
                 </Button>
             </div>

@@ -33,7 +33,7 @@ const Create = ({ user }) => {
 
         const json = await response.json();
 
-        router.push(`/admin/designers/${json.id}`);
+        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/designers/${json.id}`);
     }
 
     return (

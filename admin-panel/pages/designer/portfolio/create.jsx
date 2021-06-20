@@ -177,7 +177,7 @@ const Create = ({ user }) => {
 
         setProgress(false);
 
-        router.push(`/designer/profile`);
+        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile`);
     }
 
     return (

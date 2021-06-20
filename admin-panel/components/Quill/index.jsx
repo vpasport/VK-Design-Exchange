@@ -6,6 +6,7 @@ const Quill = ({ text, setText }) => {
             [{ 'header': [1, 2, false] }],
             ['bold', 'italic', 'underline', 'strike'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+            ['link']
         ],
         clipboard: {
             matchVisual: false
