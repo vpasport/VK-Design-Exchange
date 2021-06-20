@@ -4,16 +4,17 @@ import { Rating } from 'primereact/rating';
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from 'primereact/multiselect';
 import { Message } from 'primereact/message';
-import Quill from '../Quill';
 import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
+import Quill from '../Quill';
 import MyImage from '../Image';
 import Comment from '../Comment';
 import PreviewUpload from '../PreviewUpload';
 import WorkImagesUpload from '../WorkImagesUpload';
 import { Checkbox } from 'primereact/checkbox';
+import style from './style.module.scss';
 
 const WorkCard = ({
     work, edit,
@@ -118,7 +119,7 @@ const WorkCard = ({
                 <div>
                     <h3>Описание проекта:</h3>
                     {!edit ?
-                        <div dangerouslySetInnerHTML={{ __html: work?.project_description }} />
+                        <div className={style.description} dangerouslySetInnerHTML={{ __html: work?.project_description }} />
                         :
                         <Quill
                             text={updateWork?.project_description}
