@@ -1045,6 +1045,29 @@ async function addLike(id, vk_id) {
 
                 likes.count = Number.parseInt(likes.count) + 1;
                 likes.from_user = true;
+
+                const designer = (await client.query(
+                    `select 
+                        d.vk_id 
+                    from
+                        designers as d,
+                        designers_portfolios as dp
+                    where
+                        dp.portfolio_id = $1 and
+                        dp.designer_id = d.id`,
+                    [id]
+                )).rows[0].vk_id;
+
+                await client.query(
+                    `insert into 
+                        notifications (vk_id, likes)
+                    values 
+                        ($1, true)
+                    on conflict (vk_id) do update
+                    set 
+                        likes = true`,
+                    [designer]
+                )
             } else {
                 await client.query(
                     `delete from
@@ -1121,6 +1144,29 @@ async function addComment(id, text, vk_id) {
 
         if (work !== undefined) {
             const date = Math.floor(new Date().getTime() / 1000) - (new Date().getTimezoneOffset() * 60);
+
+            const designer = (await client.query(
+                `select 
+                    d.vk_id 
+                from
+                    designers as d,
+                    designers_portfolios as dp
+                where
+                    dp.portfolio_id = $1 and
+                    dp.designer_id = d.id`,
+                [id]
+            )).rows[0].vk_id;
+
+            await client.query(
+                `insert into 
+                    notifications (vk_id, comments)
+                values 
+                    ($1, true)
+                on conflict (vk_id) do update
+                set 
+                    comments = true`,
+                [designer]
+            )
 
             const comment = (await client.query(
                 `insert into 

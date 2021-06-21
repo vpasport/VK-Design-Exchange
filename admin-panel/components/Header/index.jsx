@@ -54,8 +54,8 @@ const Header = ({ url, user }) => {
 
         user.mainRole = mainRole;
 
-        if (user.mainRole === 'designer') router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile`);
-        if (user.mainRole === 'admin') router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios`);
+        if (user.mainRole === 'designer') router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile`);
+        if (user.mainRole === 'admin') router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios`);
 
         setAdmin(!admin)
     }
