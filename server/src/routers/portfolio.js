@@ -278,7 +278,7 @@ async function addLike({ params: { id }, body: { url_params, vk_id } }, res) {
     res.sendStatus(401);
 }
 
-async function addComment({ params: { id }, body: { url_params, text, vk_id } }, res) {
+async function addComment({ params: { id }, body: { url_params, text, vk_id, reply_id, reply_to_vk_id } }, res) {
     let result;
 
     let params = JSON.parse('{"' + decodeURI(url_params).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
@@ -289,7 +289,7 @@ async function addComment({ params: { id }, body: { url_params, text, vk_id } },
             return;
         }
 
-        result = await addComment_(id, text, vk_id);
+        result = await addComment_(id, text, vk_id, reply_id, reply_to_vk_id);
 
         if (result.isSuccess) {
             res.json(result);

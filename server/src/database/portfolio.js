@@ -517,10 +517,11 @@ async function getWorkComments(id, from, to = 20, from_id, all = false) {
 
                 if (userVkId.isSuccess) {
                     userVkId = userVkId.users;
-
                     comments.forEach(element => {
-                        let user = userVkId.find(el => el.id === element.vk_user_id);
-                        element.user = user;
+                        element.user = userVkId.find(el => el.id === element.vk_user_id);
+                        if(element.reply_to_vk_id !== null){
+                            element.reply_to = userVkId.find(el => el.id === element.reply_to_vk_id);
+                        }
                     })
                 }
             }
@@ -579,8 +580,10 @@ async function getWorkComments(id, from, to = 20, from_id, all = false) {
                 userVkId = userVkId.users;
 
                 comments.forEach(element => {
-                    let user = userVkId.find(el => el.id === element.vk_user_id);
-                    element.user = user;
+                    element.user = userVkId.find(el => el.id === element.vk_user_id);
+                    if(element.reply_to_vk_id !== null){
+                        element.reply_to = userVkId.find(el => el.id === element.reply_to_vk_id);
+                    }
                 })
             }
         }
@@ -1188,7 +1191,7 @@ async function addLike(id, vk_id) {
     }
 }
 
-async function addComment(id, text, vk_id) {
+async function addComment(id, text, vk_id, reply_id, reply_to_vk_id) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -1243,11 +1246,11 @@ async function addComment(id, text, vk_id) {
 
             const comment = (await client.query(
                 `insert into 
-                    portfolios_comments(portfolio_id, vk_user_id, text, create_date)
+                    portfolios_comments(portfolio_id, vk_user_id, text, create_date, reply_id, reply_to_vk_id)
                 values
-                    ($1, $2, $3, $4)
+                    ($1, $2, $3, $4, $5, $6)
                 returning id`,
-                [id, vk_id, text, date]
+                [id, vk_id, text, date, reply_id, reply_to_vk_id]
             )).rows[0].id;
 
             await client.query(
