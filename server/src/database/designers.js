@@ -7,37 +7,6 @@ const {
     getUsersInfo
 } = require('../helper/vk')
 
-async function getSpecializations() {
-    const client = await pool.connect();
-    client.query('begin');
-
-    try {
-        const { rows: specializations } = await client.query(
-            `select
-                *
-            from
-                specializations`
-        )
-
-        await client.query('commit');
-        client.release();
-
-        return {
-            isSuccess: true,
-            specializations
-        }
-    } catch (e) {
-        await client.query('rollback');
-        client.release();
-
-        console.log(e);
-
-        return {
-            isSuccess: false
-        }
-    }
-}
-
 async function getDesigners(from, to, engaged, from_id, order) {
     const client = await pool.connect();
     await client.query('begin');
@@ -70,9 +39,9 @@ async function getDesigners(from, to, engaged, from_id, order) {
         if (from_id !== undefined) {
             params.push(from_id);
             if (_engaged !== '') {
-                filter = `and d.id < $${params.length}`;
+                filter = `and d.id <= $${params.length}`;
             } else {
-                filter = `where d.id < $${params.length}`;
+                filter = `where d.id <= $${params.length}`;
             }
         }
         if (order !== undefined) {
@@ -97,6 +66,139 @@ async function getDesigners(from, to, engaged, from_id, order) {
             ${offset}
             ${limit !== '' ? limit : ''}`,
             [...params]
+        )).rows;
+
+        let count = 0;
+        let result = {
+            isSuccess: true
+        }
+
+        if (designers.length > 0) {
+            count = designers[0].count;
+
+            const designers_id = [];
+
+            designers.forEach(element => {
+                designers_id.push(element.id);
+                element.engaged = element.engaged_date < date;
+                element.engaged_date = Number(element.engaged_date);
+                element.rating = Number(element.rating);
+                delete element.count
+            });
+
+            const { rows: specializations } = await client.query(
+                `select 
+                    s.id,
+                    s.name,
+                    ds.designer_id
+                from 
+                    designers_specializations as ds,
+                    specializations as s
+                where
+                    ds.designer_id = any($1) and 
+                    s.id = ds.specialization_id`,
+                [designers_id]
+            )
+
+            designers.map(element => {
+                element.specializations = specializations.filter(el => {
+                    if (el.designer_id === element.id) {
+                        delete el.designer_id;
+                        return el;
+                    }
+                });
+            })
+
+
+            result.from_id = from_id === undefined ? designers[0].id : Number(from_id);
+        }
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            ...result,
+            count,
+            designers
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function getDesignersBySpecializations(from, to, engaged, from_id, order, specializations) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        let params = [];
+        let offset = '';
+        let limit = '';
+        let _engaged = '';
+        let filter = '';
+        let _order = 'desc';
+
+        let date = Math.floor(new Date() / 1000) - (new Date().getTimezoneOffset() * 60);
+
+        if (from !== undefined) {
+            params.push(from);
+            offset = `offset $${params.length}`;
+        }
+        if (to && to !== 'all') {
+            params.push(to);
+            limit = `limit $${params.length}`;
+        }
+        if (engaged !== undefined) {
+            params.push(date);
+            if (Number(engaged) === 1)
+                _engaged = `and d.engaged_date < $${params.length}`;
+            else if (Number(engaged) === 2)
+                _engaged = `and d.engaged_date > $${params.length}`
+        }
+        if (from_id !== undefined) {
+            params.push(from_id);
+            filter = `and d.id <= $${params.length}`;
+        }
+        if (order !== undefined) {
+            if (order === 'asc') _order = order;
+            else if (order === 'desc') _order = order;
+        }
+
+        let designers = (await client.query(
+            `with specializations as (
+                select distinct
+                    ds.designer_id
+                from
+                    designers_specializations as ds
+                where
+                    ds.specialization_id = any($${params.length + 1})
+            )
+            select distinct
+                d.id,
+                d.vk_id,
+                d.rating,
+                d.first_name,
+                d.last_name,
+                d.photo,
+                d.engaged_date,
+                count( 1 ) over ()::int
+            from
+                designers as d,
+                specializations as s
+            where
+                s.designer_id = d.id
+                ${_engaged} ${filter}
+            order by d.rating ${_order}
+            ${offset}
+            ${limit !== '' ? limit : ''}`,
+            [...params, specializations]
         )).rows;
 
         let count = 0;
@@ -854,8 +956,8 @@ async function updateVkInfo(id) {
 }
 
 module.exports = {
-    getSpecializations,
     getDesigners,
+    getDesignersBySpecializations,
     getDesigner,
     getReviews,
     getDesignerPreviews,

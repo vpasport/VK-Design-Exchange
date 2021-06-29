@@ -7,7 +7,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 
-const DesignersTable = ({ designers, deleteDesigner }) => {
+const DesignersTable = ({
+    designers, deleteDesigner,
+    createProfile
+}) => {
     const [deleteId, setDeleteId] = useState(null);
 
     const photo = (designer) => {
@@ -41,8 +44,16 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
 
     const header = () => {
         return (
-            <div style={{ textAlign: 'center' }}>
+            <div className='p-d-flex p-jc-between' style={{ textAlign: 'center' }}>
                 <h3>Список дизайнеров</h3>
+                <span>
+                    <Button
+                        label='Добавить'
+                        icon='pi pi-plus'
+                        className='p-ml-2'
+                        onClick={() => createProfile()}
+                    />
+                </span>
             </div>
         );
     }
@@ -61,10 +72,10 @@ const DesignersTable = ({ designers, deleteDesigner }) => {
                     emptyMessage="No customers found"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" rowsPerPageOptions={[10, 25, 50]}>
-                    <Column field="vk_id" headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="VK" sortable filter filterPlaceholder="Search" />
+                    <Column field="vk_id" headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="VK" sortable filter filterPlaceholder="Поиск" />
                     <Column field='photo' headerStyle={{ width: '10%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} header="Фото" body={photo} />
-                    <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Search" />
-                    <Column field='last_name' header='Фамилия' sortable filter filterPlaceholder="Search" />
+                    <Column field='first_name' header='Имя' sortable filter filterPlaceholder="Поиск" />
+                    <Column field='last_name' header='Фамилия' sortable filter filterPlaceholder="Поиск" />
                     <Column field="rating" header="Рейтинг" body={rating} />
                     <Column header='Управление' body={buttons} headerStyle={{ width: '30%', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} />
                 </DataTable>

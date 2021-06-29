@@ -7,7 +7,7 @@ const { promises: {
 
 const {
     getDesigners: getDesigners_,
-    getSpecializations: getSpecializations_,
+    getDesignersBySpecializations: getDesignersBySpecializations_,
     getDesigner: getDesigner_,
     getReviews: getReviews_,
     getDesignerPreviews: getDesignerPreviews_,
@@ -23,19 +23,16 @@ const {
     getUsersInfo
 } = require('../helper/vk');
 
-async function getDesigners({ query: { from, to, engaged, from_id, order } }, res) {
-    let result = await getDesigners_(from, to, engaged, from_id, order);
+async function getDesigners({ query: { from, to, engaged, from_id, order, specializations } }, res) {
+    if (specializations !== undefined) specializations = specializations.split(',');
 
-    if (result.isSuccess) {
-        res.json(result);
-        return;
+    let result;
+
+    if (specializations === undefined) {
+        result = await getDesigners_(from, to, engaged, from_id, order);
+    } else {
+        result = await getDesignersBySpecializations_(from, to, engaged, from_id, order, specializations);
     }
-
-    res.sendStatus(520);
-}
-
-async function getSpecializations(req, res) {
-    let result = await getSpecializations_();
 
     if (result.isSuccess) {
         res.json(result);
@@ -234,7 +231,6 @@ function index() {
     const router = new Router();
 
     router.get('/', getDesigners);
-    router.get('/specializations', getSpecializations);
     router.get('/:id', getDesigner);
     router.get('/:id/reviews', getReviews);
     router.get('/:id/previews', getDesignerPreviews);

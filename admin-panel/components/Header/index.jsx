@@ -19,7 +19,7 @@ const Header = ({ url, user }) => {
             // { label: 'Главная', url: '/admin' },
             { label: 'Все работы', icon: 'pi pi-fw pi-briefcase', url: `/admin/portfolios` },
             { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: `/admin/designers` },
-            { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: `/admin/tags` },
+            { label: 'Теги', icon: 'pi pi-fw pi-tags', url: `/admin/tags` },
             { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: `/admin/admins` },
             { label: 'Предложения', icon: 'pi pi-fw pi-list', url: `/admin/offers` },
             { label: 'Заказы', icon: 'pi pi-fw pi-shopping-cart', url: `/admin/orders` },

@@ -84,18 +84,13 @@ const Designers = ({ user }) => {
                 user={user}
                 url='/admin/designers'
             />
-            <div className='p-m-6' style={{ textAlign: 'center' }}>
-                <Button
-                    label='Cоздать'
-                    onClick={() => createProfile()}
-                >
-                    {/* <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/admin/designers/create`}>Создать</Link> */}
-                </Button>
+            <div className='p-mt-4 p-mb-6'>
+                <DesignersTable
+                    createProfile={createProfile}
+                    designers={designers}
+                    deleteDesigner={deleteDesigner}
+                />
             </div>
-            <DesignersTable
-                designers={designers}
-                deleteDesigner={deleteDesigner}
-            />
             <Dialog
                 header={creareDesignerProfile ? 'Создать' : 'Ошибка'}
                 visible={dialog}

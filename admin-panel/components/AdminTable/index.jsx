@@ -5,7 +5,10 @@ import { Avatar } from 'primereact/avatar';
 import { Dialog } from 'primereact/dialog';
 import { useState } from 'react';
 
-const AdminTable = ({ admins, deleteAdmin }) => {
+const AdminTable = ({
+    admins, deleteAdmin,
+    createAdmin
+}) => {
     const [adminId, setAdminId] = useState(null);
 
     const photo = (admin) => {
@@ -19,15 +22,27 @@ const AdminTable = ({ admins, deleteAdmin }) => {
     const buttons = (admin) => {
         return (
             <div style={{ display: 'inline-block' }}>
-                <Button className='p-ml-2 p-button-danger' label='Удалить' onClick={() => setAdminId(admin.id)} />
+                <Button
+                    className='p-ml-2 p-button-danger'
+                    label='Удалить'
+                    onClick={() => setAdminId(admin.id)}
+                />
             </div>
         )
     }
 
     const header = () => {
         return (
-            <div style={{ textAlign: 'center' }}>
+            <div className='p-d-flex p-jc-between' style={{ textAlign: 'center' }}>
                 <h3>Список администраторов</h3>
+                <span>
+                    <Button
+                        label='Добавить'
+                        icon='pi pi-plus'
+                        className='p-ml-2'
+                        onClick={() => createAdmin()}
+                    />
+                </span>
             </div>
         );
     }

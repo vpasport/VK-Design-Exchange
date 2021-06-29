@@ -99,17 +99,13 @@ const Admins = ({ user }) => {
                 user={user}
                 url='/admin/admins'
             />
-            <div style={{ textAlign: 'center' }}>
-                <Button
-                    label='Создать'
-                    className='p-mt-4'
-                    onClick={() => createProfile()}
+            <div className='p-mt-4 p-mb-6'>
+                <AdminTable
+                    admins={admins}
+                    deleteAdmin={deleteAdmin}
+                    createAdmin={createAdmin}
                 />
             </div>
-            <AdminTable
-                admins={admins}
-                deleteAdmin={deleteAdmin}
-            />
             <Dialog
                 header={createAdminProfile ? 'Создать' : 'Ошибка'}
                 visible={dialog}

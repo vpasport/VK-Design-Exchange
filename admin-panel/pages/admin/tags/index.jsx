@@ -1,11 +1,12 @@
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dialog } from 'primereact/dialog';
 
 import dynamic from 'next/dynamic';
+
+import Container from '../../../components/Container';
+import Header from '../../../components/Header';
 
 const TagsTable = dynamic(
     () => import('../../../components/TagsTable'),
@@ -13,94 +14,11 @@ const TagsTable = dynamic(
 )
 
 const Tags = ({ user }) => {
-    const [tags, setTags] = useState(null);
     const [name, setName] = useState('');
 
     const [error, setError] = useState();
     const [dialog, setDialog] = useState(false);
     const [create, setCreate] = useState(false);
-
-    useEffect(async () => {
-        const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/`);
-        const { tags } = await result.json();
-
-        setTags(tags);
-    }, [])
-
-    const createTag = async () => {
-        setError('');
-        if (name !== '') {
-            let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name
-                })
-            })
-
-            if (response.status !== 200) {
-                setError('Не удалось создать тэг');
-                setDialog(true);
-                return;
-            }
-
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/`);
-            const { tags } = await response.json();
-
-            setTags(tags);
-            setCreate(false);
-            return;
-        }
-
-        setError('Заполните поле названия тэга');
-        setDialog(true);
-    }
-
-    const deleteTag = async (id) => {
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${id}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/`);
-        const { tags } = await response.json();
-
-        setTags(tags);
-    }
-
-    const updateTag = async (id, name) => {
-        setError('')
-        if (name !== '') {
-            let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${id}`, {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name
-                })
-            })
-
-            if (response.status !== 204) {
-                setError('Не удалось изменить тэг');
-                setDialog(true);
-                return;
-            }
-
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/`);
-            const { tags } = await response.json();
-
-            setTags(tags);
-            return;
-        }
-
-        setError('Заполните поле названия тэга');
-        setDialog(true);
-    }
 
     return (
         <Container>
@@ -108,18 +26,12 @@ const Tags = ({ user }) => {
                 user={user}
                 url='/admin/tags'
             />
-            <div className='p-m-6' style={{ textAlign: 'center' }}>
-                <Button
-                    label='Добавить тэг'
-                    onClick={() => setCreate(true)}
-                >
-                </Button>
+            <div className='p-mt-4 p-mb-6'>
+                <TagsTable
+                    setDialog={setDialog}
+                    setError={setError}
+                />
             </div>
-            <TagsTable
-                tags={tags}
-                deleteTag={deleteTag}
-                updateTag={updateTag}
-            ></TagsTable>
             <Dialog header="Ошибка" visible={dialog} style={{ width: '50vw' }} onHide={() => setDialog(false)}>
                 <p>
                     {error}
