@@ -25,6 +25,14 @@ async function sendNotifications(users, message) {
         random_id: date
     })
 
+    console.log(
+        `------------------------------------------------
+        ${new Date()}
+        ------------------------------------------------
+        ${response}
+        ------------------------------------------------`
+    )
+
     const update = [];
     const del = [];
 
