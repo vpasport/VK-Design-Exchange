@@ -3,8 +3,10 @@ import Header from '../../../components/Header';
 import style from './style.module.scss';
 
 import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
 
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -17,6 +19,7 @@ const Portfolio = ({ user }) => {
     const router = useRouter();
 
     const [previews, setPreviews] = useState();
+    const [dialog, setDialog] = useState(false);
 
     const getPreviews = async () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/${user.db.did}/previews`);
@@ -35,30 +38,51 @@ const Portfolio = ({ user }) => {
                 user={user}
                 url='/designer/portfolio'
             ></Header>
-            <div className='p-m-4' style={{ textAlign: 'center' }}>
-                <div className={style.videoContainer}>
-                    <iframe
-                        className={style.videoContainer__video}
-                        src="https://www.youtube.com/embed/vL117frmxUI"
-                        title="YouTube video player"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                    >
-                    </iframe>
-                </div>
-                <Button
-                    label='Добавить работу'
-                    icon='pi pi-plus'
-                    onClick={() => router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/portfolio/create`)}
+            <div
+                style={{
+                    width: '90%',
+                    margin: 'auto'
+                }}
+            >
+                <h2>Гайды по упаковке кейсов:</h2>
+                <div
+                    className={`p-m-4 ${style.card}`}
                 >
-                </Button>
+                    <Image
+                        src={'/images/animatePreview.jpg'}
+                        width={398}
+                        height={398}
+                    />
+                    <div
+                        className='p-m-4'
+                    >
+                        <Button
+                            label='Смотреть видео'
+                            onClick={() => setDialog(true)}
+                        />
+                    </div>
+                </div>
             </div>
             <Previews
                 previews={previews}
                 user={user}
             ></Previews>
-        </Container>
+            <Dialog header='Создание анимации для кейса на доске почета' visible={dialog} style={{ width: '50vw', minWidth: '700px' }} onHide={() => setDialog(false)}>
+                <div className='p-m-4' style={{ textAlign: 'center' }}>
+                    <div className={style.videoContainer}>
+                        <iframe
+                            className={style.videoContainer__video}
+                            src="https://www.youtube.com/embed/vL117frmxUI"
+                            title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                        >
+                        </iframe>
+                    </div>
+                </div>
+            </Dialog>
+        </Container >
     )
 }
 

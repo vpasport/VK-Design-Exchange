@@ -7,6 +7,7 @@ const { promises: {
     rename,
     unlink
 } } = require('fs');
+const fetch = require('node-fetch');
 
 const { Router } = require('express');
 const {
@@ -30,6 +31,7 @@ const {
     updatePreviewPaths: updatePreviewPaths_,
     updateForSale: updateForSale_,
     updateHidden: updateHidden_,
+    updateVerified: updateVerified_,
     deleteImage: deleteImage_,
 } = require('../database/portfolio');
 const {
@@ -47,16 +49,18 @@ async function getPreviews({ query: { from, to, from_id, tags, sort_by, directio
     }
 
     let viewHidden = false;
+    let viewNotVerified = false;
 
     if (session.role !== undefined &&
         (session.role.indexOf('admin') !== -1 || session.role.indexOf('designer') !== -1)) {
         viewHidden = true;
+        viewNotVerified = true;
     }
 
     if (tags === undefined) {
-        result = await getPreviewsFromTo_(from, to, from_id, sort_by, direction, viewHidden);
+        result = await getPreviewsFromTo_(from, to, from_id, sort_by, direction, viewHidden, viewNotVerified);
     } else {
-        result = await getPreviewsTags_(from, to, from_id, tags, sort_by, direction, viewHidden)
+        result = await getPreviewsTags_(from, to, from_id, tags, sort_by, direction, viewHidden, viewNotVerified);
     }
 
     if (result.isSuccess) {
@@ -445,6 +449,37 @@ async function updateHidden({ params: { id }, session }, res) {
     res.sendStatus(401);
 }
 
+async function updateVerified({ params: { id }, query: { status }, session }, res) {
+    if (session.role !== undefined) {
+        if (session.role.indexOf('admin') !== -1) {
+            let result = await updateVerified_(id, status);
+
+            if (result.isSuccess) {
+                if (result.is_verified) {
+                    await fetch(
+                        `${process.env.SKYAUTO_WORK_VERIFIED}?avtp=1&sid=${result.vk_id}&work_id=${id}&title=${encodeURIComponent(result.title)}`
+                    )
+                } else {
+                    await fetch(
+                        `${process.env.SKYAUTO_WORK_NOT_VERIFIED}?avtp=1&sid=${result.vk_id}&work_id=${id}&title=${encodeURIComponent(result.title)}`
+                    )
+                }
+
+                res.sendStatus(204);
+                return;
+            }
+
+            res.sendStatus(520);
+            return;
+        }
+
+        res.sendStatus(403);
+        return;
+    }
+
+    res.sendStatus(401);
+}
+
 async function deleteWork({ body: { id }, session }, res) {
     if (session.role !== undefined) {
         let designer = await getDesignerByPortfolio_(id);
@@ -554,6 +589,7 @@ function index() {
     router.put('/:id/preview', upload.single('preview'), updatePreview);
     router.put('/:id/for-sale', updateForSale);
     router.put('/:id/hidden', updateHidden);
+    router.put('/:id/verified', updateVerified);
 
     router.delete('/work', deleteWork);
     router.delete('/comment', deleteComment);

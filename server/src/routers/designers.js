@@ -7,6 +7,7 @@ const { promises: {
 
 const {
     getDesigners: getDesigners_,
+    getSpecializations: getSpecializations_,
     getDesigner: getDesigner_,
     getReviews: getReviews_,
     getDesignerPreviews: getDesignerPreviews_,
@@ -24,6 +25,17 @@ const {
 
 async function getDesigners({ query: { from, to, engaged, from_id, order } }, res) {
     let result = await getDesigners_(from, to, engaged, from_id, order);
+
+    if (result.isSuccess) {
+        res.json(result);
+        return;
+    }
+
+    res.sendStatus(520);
+}
+
+async function getSpecializations(req, res) {
+    let result = await getSpecializations_();
 
     if (result.isSuccess) {
         res.json(result);
@@ -167,10 +179,10 @@ async function deleteDesigner({ body: { id }, session }, res) {
     res.sendStatus(401);
 }
 
-async function updateInfo({ params: { id }, body: { bio }, session }, res) {
+async function updateInfo({ params: { id }, body: { bio, specializations }, session }, res) {
     if (session.role !== undefined &&
         (session.role.indexOf('admin') !== -1 || (session.role.indexOf('designer') !== -1 && session.user.did === Number(id)))) {
-        let result = await updateInfo_(id, bio);
+        let result = await updateInfo_(id, bio, specializations);
 
         if (result.isSuccess) {
             res.sendStatus(204);
@@ -222,19 +234,20 @@ function index() {
     const router = new Router();
 
     router.get('/', getDesigners);
+    router.get('/specializations', getSpecializations);
     router.get('/:id', getDesigner);
     router.get('/:id/reviews', getReviews);
     router.get('/:id/previews', getDesignerPreviews);
     router.get('/:id/offers', getDesignerOffers);
     router.get('/:id/orders', getOrders);
 
-    router.post('/', createDesigner);
-
-    router.delete('/', deleteDesigner);
-
     router.put('/:id', updateInfo);
     router.put('/:id/engaged', updateEngaged);
     router.put('/:id/vk', updateVkInfo);
+
+    router.post('/', createDesigner);
+
+    router.delete('/', deleteDesigner);
 
     return router;
 }

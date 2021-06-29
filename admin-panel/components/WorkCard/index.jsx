@@ -50,7 +50,7 @@ const WorkCard = ({
         <>
             <div style={{ width: '70%', margin: 'auto' }} className='p-mt-6'>
                 <div className='p-d-flex p-ai-center'>
-                    <div className='p-d-flex p-ai-center'>
+                    <div className='p-d-flex p-ai-center' style={{ width: '100%' }}>
                         <Avatar shape="circle" image={work?.author?.photo} size="xlarge" />
                         <div className='p-ml-3'>
                             <div>
@@ -59,9 +59,28 @@ const WorkCard = ({
                             <Rating value={work?.author?.rating} readOnly stars={5} cancel={false} className='p-mt-2' />
                         </div>
                     </div>
-                    {work?.is_hidden &&
-                        <Message severity='info' text='Работа скрыта, пользователи приложения ее не видят' className='p-ml-4' />
-                    }
+                    <div>
+                        {work?.is_hidden &&
+                            <Message
+                                severity='info'
+                                text='Работа скрыта, пользователи приложения ее не видят'
+                                className='p-ml-4 p-mt-2'
+                            />
+                        }
+                        {!work?.is_verified ?
+                            <Message
+                                severity='error'
+                                text='Работа ожидает проверки администратора'
+                                className='p-ml-4 p-mt-2'
+                            />
+                            :
+                            <Message
+                                severity='success'
+                                text='Работа проверена администратором'
+                                className='p-ml-4 p-mt-2'
+                            />
+                        }
+                    </div>
                 </div>
                 <div className='p-mt-3'>
                     {!edit ?

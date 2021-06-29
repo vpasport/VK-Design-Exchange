@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Dialog } from "primereact/dialog";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
+import { Toolbar } from 'primereact/toolbar';
 import { ProgressSpinner } from "primereact/progressspinner";
 
 const WorkCard = dynamic(
@@ -221,7 +222,7 @@ const Work = ({ user }) => {
             return;
         }
 
-        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile`);
+        router.push(`/designer/profile`);
     }
 
     const updateHidden = async () => {
@@ -238,6 +239,18 @@ const Work = ({ user }) => {
         }
     }
 
+    const ToolbarRight =
+        <>
+            <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
+            {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
+            <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>
+        </>
+
+    const ToolbarLeft =
+        <>
+            <Button label={work?.is_hidden ? 'Открыть' : 'Скрыть'} className='p-m-2' icon={`pi pi-eye${work?.is_hidden ? '' : '-slash'}`} onClick={() => updateHidden()}></Button>
+        </>
+
     return (
         <Container>
             <Header
@@ -245,10 +258,10 @@ const Work = ({ user }) => {
                 url='/designer/portfolio'
             />
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
-                <Button label={work?.is_hidden ? 'Открыть' : 'Скрыть'} className='p-m-2' icon={`pi pi-eye${work?.is_hidden ? '' : '-slash'}`} onClick={() => updateHidden()}></Button>
-                <Button label='Редактировать' className='p-m-2' icon='pi pi-pencil' disabled={edit} onClick={() => setEdit(true)}></Button>
-                {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>
+                <Toolbar
+                    left={ToolbarLeft}
+                    right={ToolbarRight}
+                />
             </div>
             <WorkCard
                 work={work}

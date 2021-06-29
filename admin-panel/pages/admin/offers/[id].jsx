@@ -140,7 +140,7 @@ const Offer = ({ user }) => {
             return;
         }
 
-        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/offers`);
+        router.push(`/admin/offers`);
     }
 
     return (

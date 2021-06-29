@@ -57,7 +57,6 @@ const Designer = ({ user }) => {
     }, [])
 
     const updateDesigner = async (_designer) => {
-        if (_designer.specialization === null) _designer.specialization = designer.specialization;
         if (_designer.experience === null) _designer.experience = designer.experience;
 
         setError('');
@@ -69,6 +68,7 @@ const Designer = ({ user }) => {
             },
             body: JSON.stringify({
                 bio: _designer?.bio,
+                specializations: _designer?.specializations?.map(el => el.id)
             })
         })
 
@@ -97,7 +97,7 @@ const Designer = ({ user }) => {
         })
 
         if (response.ok) {
-            router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/designers`);
+            router.push(`/admin/designers`);
             return;
         }
 

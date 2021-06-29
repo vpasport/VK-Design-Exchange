@@ -75,7 +75,7 @@ const Designers = ({ user }) => {
 
         const json = await response.json();
 
-        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/designers/${json.id}`);
+        router.push(`/admin/designers/${json.id}`);
     }
 
     return (

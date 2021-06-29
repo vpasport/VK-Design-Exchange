@@ -1,13 +1,14 @@
-import Container from '../../../components/Container';
-import Header from '../../../components/Header';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-
-import dynamic from 'next/dynamic';
+import { Toolbar } from 'primereact/toolbar';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+import Container from '../../../components/Container';
+import Header from '../../../components/Header';
 
 const WorkCard = dynamic(
     () => import('../../../components/WorkCard'),
@@ -223,7 +224,7 @@ const Work = ({ user }) => {
             return;
         }
 
-        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios`);
+        router.push(`/admin/portfolios`);
     }
 
     const updateHidden = async () => {
@@ -240,6 +241,55 @@ const Work = ({ user }) => {
         }
     }
 
+    const updateVerified = async (status) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio/${work.id}/verified?status=${status}`, {
+            method: 'PUT',
+            credentials: 'include'
+        })
+
+        if (response.ok) {
+            setWork(prev => ({
+                ...prev,
+                is_verified: status
+            }))
+        }
+    }
+
+    const ToolbarRight =
+        <>
+            <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
+            {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
+            <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>
+        </>
+
+    const ToolbarLeft =
+        <>
+            <Button label={work?.is_hidden ? 'Открыть' : 'Скрыть'} className='p-m-2' icon={`pi pi-eye${work?.is_hidden ? '' : '-slash'}`} onClick={() => updateHidden()}></Button>
+            {work?.is_verified ?
+                <Button
+                    label={'Отправить на доработку'}
+                    className={`p-m-2 p-button-danger`}
+                    icon={`pi pi-times-circle`}
+                    onClick={() => updateVerified(false)}
+                />
+                :
+                <>
+                    <Button
+                        label={'Отправить на доработку'}
+                        className={`p-m-2 p-button-danger`}
+                        icon={`pi pi-times-circle`}
+                        onClick={() => updateVerified(false)}
+                    />
+                    <Button
+                        label={'Одобрить'}
+                        className={`p-m-2 p-button-warning`}
+                        icon={`pi pi-check-circle`}
+                        onClick={() => updateVerified(true)}
+                    />
+                </>
+            }
+        </>
+
     return (
         <Container>
             <Header
@@ -247,10 +297,10 @@ const Work = ({ user }) => {
                 url='/admin/portfolios'
             />
             <div style={{ textAlign: 'center' }} className='p-mt-6'>
-                <Button label={work?.is_hidden ? 'Открыть' : 'Скрыть'} className='p-m-2' icon={`pi pi-eye${work?.is_hidden ? '' : '-slash'}`} onClick={() => updateHidden()}></Button>
-                <Button label='Редактировать' className='p-m-2' disabled={edit} onClick={() => setEdit(true)}></Button>
-                {edit && <Button label='Отменить' className='p-m-2' disabled={!edit} onClick={() => setEdit(false)} />}
-                <Button label='Удалить' className='p-m-2 p-button-danger' onClick={() => setDeleteWork(true)}></Button>
+                <Toolbar
+                    left={ToolbarLeft}
+                    right={ToolbarRight}
+                />
             </div>
             <WorkCard
                 user={user}

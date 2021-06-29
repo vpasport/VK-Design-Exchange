@@ -51,7 +51,6 @@ const Profile = ({ user }) => {
     }, []);
 
     const update = async (_designer) => {
-        if (_designer.specialization === null) _designer.specialization = designer.specialization;
         if (_designer.experience === null) _designer.experience = designer.experience;
 
         setError('');
@@ -63,6 +62,7 @@ const Profile = ({ user }) => {
             },
             body: JSON.stringify({
                 bio: _designer?.bio,
+                specializations: _designer?.specializations?.map(el => el.id)
             })
         })
 

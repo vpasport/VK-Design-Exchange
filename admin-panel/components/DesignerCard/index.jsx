@@ -1,16 +1,17 @@
+import { useEffect, useRef, useState } from 'react';
 import { Avatar } from 'primereact/avatar';
 import { Rating } from 'primereact/rating';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import Link from 'next/link';
 import { Calendar } from 'primereact/calendar';
-import Quill from '../Quill';
-import { useEffect, useRef, useState } from 'react';
 import { Galleria } from 'primereact/galleria';
 import { Dialog } from 'primereact/dialog';
-
+import { MultiSelect } from 'primereact/multiselect';
 import { addLocale } from 'primereact/api';
 
+import Link from 'next/link';
+
+import Quill from '../Quill';
 import styles from './style.module.scss';
 
 const DesignerCard = ({
@@ -31,6 +32,9 @@ const DesignerCard = ({
     const [deleteReviewId, setDeleteReviewId] = useState(null);
 
     const [errorText, setErrorText] = useState(null);
+
+    const [specializations, setSpecializations] = useState([]);
+    const [selectedSpecializations, setSelectedSpecializations] = useState([]);
 
     const responsiveOptions = [
         {
@@ -64,6 +68,20 @@ const DesignerCard = ({
         }));
     }
 
+    const getSpecialization = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/specializations`);
+        const json = await response.json();
+
+        if (json.isSuccess) {
+            setSpecializations(json.specializations);
+        }
+
+    }
+
+    useEffect(() => {
+        getSpecialization();
+    }, [])
+
     useEffect(() => {
         let date = new Date((designer?.engaged_date + new Date().getTimezoneOffset() * 60) * 1000);
 
@@ -71,6 +89,8 @@ const DesignerCard = ({
 
         setDate(date);
         setDesignerUpdated(designer);
+
+        setSelectedSpecializations(designer?.specializations);
     }, [designer]);
 
     const renderCard = (data, key) => {
@@ -281,7 +301,7 @@ const DesignerCard = ({
                 <h1>Карточка дизайнера:</h1>
             </div>
             <div style={{ width: '50%', margin: 'auto' }} className='p-mt-6 p-mb-4'>
-                <div className='p-d-flex p-ai-top'>
+                <div className='p-d-flex p-ai-start'>
                     <img src={designer?.photo} style={{ borderRadius: '45px' }} />
                     <div className='p-ml-3'>
                         <div>
@@ -290,6 +310,12 @@ const DesignerCard = ({
                         <div className='p-d-flex p-ai-center p-mt-3'>
                             <Rating value={designer?.rating} readOnly stars={5} cancel={false} />
                             <span className='p-ml-3'>{designer?.rating}</span>
+                        </div>
+                        <div>
+                            <p style={{
+                                fontSize: '13px',
+                                color: '#9AA2AC'
+                            }}>{designer?.specializations?.map(el => el.name)?.join(', ')}</p>
                         </div>
                         <div className='p-d-flex p-ai-center'>
                             <span className='p-mr-3'>
@@ -339,6 +365,25 @@ const DesignerCard = ({
                     </div>
                 </div>
                 <div>
+                    {edit &&
+                        <>
+                            <h3>Специализация:</h3>
+                            <span className="p-float-label p-mt-6" style={{ width: '100%' }}>
+                                <MultiSelect
+                                    style={{ width: '100%' }}
+                                    id="multiselect"
+                                    value={selectedSpecializations}
+                                    options={specializations}
+                                    onChange={(e) => {
+                                        setSelectedSpecializations(e.value)
+                                        setDesigner({specializations: e.value})
+                                    }}
+                                    optionLabel="name"
+                                />
+                                <label htmlFor="multiselect">Специализаци</label>
+                            </span>
+                        </>
+                    }
                     <h3>О себе:</h3>
                     {edit ?
                         <div style={{ width: '100%', height: '300px' }}>

@@ -114,7 +114,7 @@ const Create = ({ user }) => {
 
         setProgress(false);
 
-        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/designers/${designer.id}`);
+        router.push(`/admin/designers/${designer.id}`);
     }
 
     return (

@@ -2,12 +2,13 @@ import { DataView } from 'primereact/dataview';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
 const Previews = ({ user }) => {
     const router = useRouter();
     const route = router.route;
+    console.log(route, user)
 
     const [previews, setPreviews] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -50,16 +51,35 @@ const Previews = ({ user }) => {
                         {user.mainRole === 'designer' && <Link href={`${process.env.NEXT_PUBLIC_SELF_URL}/designer/portfolio/${data.id}`}>Обзор</Link>}
                     </Button>
                     {data.is_hidden &&
-                        <span 
+                        <span
                             className='p-d-flex p-ai-center p-ml-4'
                             style={{
                                 height: 40
                             }}
-                            >
+                        >
                             <i className="pi pi-eye-slash" style={{ 'fontSize': '1.5em', color: '#2196F3' }}></i>
                             <p className='p-ml-2'>Скрыто</p>
                         </span>
                     }
+                    {/* {data.is_verified !== undefined && */}
+                    <span
+                        className='p-d-flex p-ai-center p-ml-4'
+                        style={{
+                            height: 40
+                        }}
+                    >
+                        <i
+                            className={`pi ${data.is_verified ? 'pi-check-circle' : 'pi-times-circle'}`}
+                            style={{
+                                'fontSize': '1.5em',
+                                color: data.is_verified ? 'var(--green-400)' : 'red'
+                            }}
+                        />
+                        <p className='p-ml-2'>
+                            {data.is_verified ? 'Проверено' : 'Не проверено'}
+                        </p>
+                    </span>
+                    {/* } */}
                 </span>
             </>
         );
@@ -116,8 +136,15 @@ const Previews = ({ user }) => {
 
     const header = () => {
         return (
-            <div style={{ textAlign: 'center' }}>
+            <div className='p-d-flex p-jc-between' style={{ textAlign: 'center' }}>
                 <h3>Список работ</h3>
+                {user?.mainRole === 'designer' &&
+                    <Button
+                        label='Добавить работу'
+                        icon='pi pi-plus'
+                        onClick={() => router.push('/designer/portfolio/create')}
+                    />
+                }
             </div>
         );
     }

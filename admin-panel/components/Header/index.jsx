@@ -17,22 +17,22 @@ const Header = ({ url, user }) => {
     if (user.mainRole === 'admin') {
         items.push(...[
             // { label: 'Главная', url: '/admin' },
-            { label: 'Все работы', icon: 'pi pi-fw pi-briefcase', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios` },
-            { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/designers` },
-            { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/tags` },
-            { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/admins` },
-            { label: 'Предложения', icon: 'pi pi-fw pi-list', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/offers` },
-            { label: 'Заказы', icon: 'pi pi-fw pi-shopping-cart', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/orders` },
-            { label: 'Бан-лист', icon: 'pi pi-fw pi-user-minus', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/admin/banned` }
+            { label: 'Все работы', icon: 'pi pi-fw pi-briefcase', url: `/admin/portfolios` },
+            { label: 'Дизайнеры', icon: 'pi pi-fw pi-users', url: `/admin/designers` },
+            { label: 'Тэги', icon: 'pi pi-fw pi-tags', url: `/admin/tags` },
+            { label: 'Администраторы', icon: 'pi pi-fw pi-shield', url: `/admin/admins` },
+            { label: 'Предложения', icon: 'pi pi-fw pi-list', url: `/admin/offers` },
+            { label: 'Заказы', icon: 'pi pi-fw pi-shopping-cart', url: `/admin/orders` },
+            { label: 'Бан-лист', icon: 'pi pi-fw pi-user-minus', url: `/admin/banned` }
         ])
     }
     if (user.mainRole === 'designer') {
         items.push(...[
             // { label: 'Главная', url: '/designer' },
-            { label: 'Мой профиль', icon: 'pi pi-fw pi-user', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile` },
-            { label: 'Моё портфолио', icon: 'pi pi-fw pi-briefcase', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/designer/portfolio` },
-            { label: 'Мои предложения', icon: 'pi pi-fw pi-list', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/designer/offers` },
-            { label: 'Мои заказы', icon: 'pi pi-fw pi-shopping-cart', url: `${process.env.NEXT_PUBLIC_BASE_PATH}/designer/orders` }
+            { label: 'Мой профиль', icon: 'pi pi-fw pi-user', url: `/designer/profile` },
+            { label: 'Моё портфолио', icon: 'pi pi-fw pi-briefcase', url: `/designer/portfolio` },
+            { label: 'Мои предложения', icon: 'pi pi-fw pi-list', url: `/designer/offers` },
+            { label: 'Мои заказы', icon: 'pi pi-fw pi-shopping-cart', url: `/designer/orders` }
         ])
     }
 
@@ -42,7 +42,7 @@ const Header = ({ url, user }) => {
             credentials: 'include'
         });
 
-        router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/`);
+        router.push(`/`);
     }
 
     const changeRole = async (event) => {
@@ -54,8 +54,8 @@ const Header = ({ url, user }) => {
 
         user.mainRole = mainRole;
 
-        if (user.mainRole === 'designer') router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/designer/profile`);
-        if (user.mainRole === 'admin') router.push(`${process.env.NEXT_PUBLIC_BASE_PATH}/admin/portfolios`);
+        if (user.mainRole === 'designer') router.push(`/designer/profile`);
+        if (user.mainRole === 'admin') router.push(`/admin/portfolios`);
 
         setAdmin(!admin)
     }

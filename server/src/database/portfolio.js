@@ -33,7 +33,7 @@ async function getAllPreviews() {
     }
 }
 
-async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidden) {
+async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidden, viewNotVerified) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -44,6 +44,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidd
         let limit = '';
         let sort = 'p.id';
         let dir = 'desc';
+        let where = 'where';
 
         let sortTypes = ['likes', 'views', 'id', 'popularity'];
         let dirTypes = ['desc', 'asc'];
@@ -69,6 +70,15 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidd
             else
                 dir = 'desc nulls last';
         }
+        if (!viewHidden) {
+            where += ' p.is_hidden = false';
+            if (!viewNotVerified)
+                where += ' and p.is_verified = true'
+        } else {
+            if (!viewNotVerified)
+                where += ' p.is_verified = true'
+        }
+
 
         let { rows: previews } = await client.query(
             `with likes as (
@@ -87,6 +97,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidd
                     p.preview, 
                     p.popularity,
                     p.is_hidden,
+                    p.is_verified,
                     l.likes
                 from 
                     tags_portfolios as tp,
@@ -95,13 +106,14 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidd
                     likes as l 
                 on 
                     p.id = l.portfolio_id
-                ${!viewHidden ? `where p.is_hidden = false` : ''}
+                ${Boolean(!viewNotVerified || !viewHidden) ? where : ''}
             )
             select
                 p.id, 
                 p.title, 
                 p.preview, 
                 p.is_hidden,
+                p.is_verified,
                 count( 1 ) over ()::int
             from 
                 tmp as p
@@ -145,7 +157,7 @@ async function getPreviewsFromTo(from, to, from_id, sort_by, direction, viewHidd
     }
 }
 
-async function getPreviewsTags(from, to, from_id, tags, sort_by, direction, viewHidden) {
+async function getPreviewsTags(from, to, from_id, tags, sort_by, direction, viewHidden, viewNotVerified) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -156,6 +168,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction, view
         let limit = '';
         let sort = 'p.id';
         let dir = 'desc';
+        let where = '';
 
         let sortTypes = ['likes', 'views', 'id', 'popularity'];
         let dirTypes = ['desc', 'asc'];
@@ -180,6 +193,14 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction, view
                 dir = 'asc nulls first';
             else
                 dir = 'desc nulls last';
+        }
+        if (!viewHidden) {
+            where += 'and p.is_hidden = false';
+            if (!viewNotVerified)
+                where += ' and p.is_verified = true'
+        } else {
+            if (!viewNotVerified)
+                where += 'and p.is_verified = true'
         }
 
         params.push(tags);
@@ -210,7 +231,7 @@ async function getPreviewsTags(from, to, from_id, tags, sort_by, direction, view
                     p.id = l.portfolio_id
                 where
                     p.id = tp.portfolio_id and 
-                    tp.tag_id = any($${params.length}) ${filter} ${!viewHidden ? `and p.is_hidden = false` : ''}
+                    tp.tag_id = any($${params.length}) ${filter} ${Boolean(!viewHidden || !viewNotVerified) ? where : ''}
             )
             select
                 p.id, 
@@ -753,6 +774,58 @@ async function updateHidden(id) {
         }
     } catch (e) {
         await client.query('rollback');
+        client.release();
+
+        console.error(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
+async function updateVerified(id, status) {
+    const client = await pool.connect();
+    await client.query('begin');
+
+    try {
+        const is_verified = (await client.query(
+            `update 
+                portfolio
+            set 
+                is_verified = $2
+            where 
+                id = $1
+            returning 
+                is_verified`,
+            [id, status]
+        )).rows[0].is_verified;
+
+        const work = (await client.query(
+            `select 
+                d.vk_id,
+                p.title
+            from 
+                designers_portfolios as dp,
+                designers as d,
+                portfolio as p
+            where
+                dp.portfolio_id = $1 and 
+                d.id = dp.designer_id and
+                p.id = $1`,
+            [id]
+        )).rows[0];
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            is_verified,
+            ...work
+        }
+    } catch (e) {
+        await client.query();
         client.release();
 
         console.error(e);
@@ -1595,6 +1668,7 @@ module.exports = {
     updatePreviewPaths,
     updateForSale,
     updateHidden,
+    updateVerified,
     deleteWork,
     deleteComment,
     deleteImage

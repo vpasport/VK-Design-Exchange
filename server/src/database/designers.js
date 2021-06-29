@@ -7,6 +7,37 @@ const {
     getUsersInfo
 } = require('../helper/vk')
 
+async function getSpecializations() {
+    const client = await pool.connect();
+    client.query('begin');
+
+    try {
+        const { rows: specializations } = await client.query(
+            `select
+                *
+            from
+                specializations`
+        )
+
+        await client.query('commit');
+        client.release();
+
+        return {
+            isSuccess: true,
+            specializations
+        }
+    } catch (e) {
+        await client.query('rollback');
+        client.release();
+
+        console.log(e);
+
+        return {
+            isSuccess: false
+        }
+    }
+}
+
 async function getDesigners(from, to, engaged, from_id, order) {
     const client = await pool.connect();
     await client.query('begin');
@@ -75,12 +106,40 @@ async function getDesigners(from, to, engaged, from_id, order) {
 
         if (designers.length > 0) {
             count = designers[0].count;
+
+            const designers_id = [];
+
             designers.forEach(element => {
+                designers_id.push(element.id);
                 element.engaged = element.engaged_date < date;
                 element.engaged_date = Number(element.engaged_date);
                 element.rating = Number(element.rating);
                 delete element.count
             });
+
+            const { rows: specializations } = await client.query(
+                `select 
+                    s.id,
+                    s.name,
+                    ds.designer_id
+                from 
+                    designers_specializations as ds,
+                    specializations as s
+                where
+                    ds.designer_id = any($1) and 
+                    s.id = ds.specialization_id`,
+                [designers_id]
+            )
+
+            designers.map(element => {
+                element.specializations = specializations.filter(el => {
+                    if (el.designer_id === element.id) {
+                        delete el.designer_id;
+                        return el;
+                    }
+                });
+            })
+
 
             result.from_id = from_id === undefined ? designers[0].id : Number(from_id);
         }
@@ -164,6 +223,21 @@ async function getDesigner(id) {
                 let date = new Date();
                 designer.engaged = designer.engaged_date > (date.getTime() / 1000 + date.getTimezoneOffset() * 60);
             }
+
+            const { rows: specializations } = await client.query(
+                `select 
+                    s.id,
+                    s.name
+                from 
+                    designers_specializations as ds,
+                    specializations as s
+                where
+                    ds.designer_id = $1 and 
+                    s.id = ds.specialization_id`,
+                [id]
+            );
+
+            designer.specializations = specializations;
 
             await client.query('commit');
             client.release();
@@ -646,7 +720,7 @@ async function deleteDesigner(id) {
     }
 }
 
-async function updateInfo(id, bio) {
+async function updateInfo(id, bio, specializations) {
     const client = await pool.connect();
     await client.query('begin');
 
@@ -658,6 +732,21 @@ async function updateInfo(id, bio) {
                 id = $2`,
             [bio, id]
         ));
+
+        await client.query(
+            `delete from designers_specializations
+            where designer_id = $1`,
+            [id]
+        )
+
+        const s = specializations.map((_, i) => (i += 2, `($1, $${i})`)).join(',');
+
+        await client.query(
+            `insert into 
+                designers_specializations (designer_id, specialization_id)
+            values ${s}`,
+            [id, ...specializations]
+        )
 
         await client.query('commit');
         client.release();
@@ -765,6 +854,7 @@ async function updateVkInfo(id) {
 }
 
 module.exports = {
+    getSpecializations,
     getDesigners,
     getDesigner,
     getReviews,
