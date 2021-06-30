@@ -50,7 +50,15 @@ async function getDesigners(from, to, engaged, from_id, order) {
         }
 
         let designers = (await client.query(
-            `select 
+            `with tmp as (
+                select 
+                    designer_id,
+                    count(*)
+                from 
+                    reviews_designers
+                group by designer_id
+            )
+            select 
                 d.id, 
                 d.vk_id, 
                 d.rating, 
@@ -58,9 +66,14 @@ async function getDesigners(from, to, engaged, from_id, order) {
                 d.last_name, 
                 d.photo,
                 d.engaged_date,
-                count( 1 ) over ()::int 
+                coalesce(t.count, 0)::int as reviews_count,
+                count( 1 ) over ()::int
             from 
                 designers as d
+            left outer join
+                tmp as t 
+            on 
+                t.designer_id = d.id
             ${_engaged} ${filter}
             order by d.rating ${_order}
             ${offset}
@@ -80,8 +93,8 @@ async function getDesigners(from, to, engaged, from_id, order) {
 
             designers.forEach(element => {
                 designers_id.push(element.id);
-                element.engaged = element.engaged_date < date;
                 element.engaged_date = Number(element.engaged_date);
+                element.engaged = element.engaged_date < date;
                 element.rating = Number(element.rating);
                 delete element.count
             });
@@ -179,6 +192,14 @@ async function getDesignersBySpecializations(from, to, engaged, from_id, order, 
                     designers_specializations as ds
                 where
                     ds.specialization_id = any($${params.length + 1})
+            ),
+            tmp as (
+                select 
+                    designer_id,
+                    count(*)
+                from 
+                    reviews_designers
+                group by designer_id
             )
             select distinct
                 d.id,
@@ -188,9 +209,14 @@ async function getDesignersBySpecializations(from, to, engaged, from_id, order, 
                 d.last_name,
                 d.photo,
                 d.engaged_date,
+                coalesce(t.count, 0)::int as reviews_count,
                 count( 1 ) over ()::int
             from
-                designers as d,
+                designers as d
+            left outer join
+                tmp as t 
+            on 
+                t.designer_id = d.id,
                 specializations as s
             where
                 s.designer_id = d.id
@@ -213,8 +239,8 @@ async function getDesignersBySpecializations(from, to, engaged, from_id, order, 
 
             designers.forEach(element => {
                 designers_id.push(element.id);
-                element.engaged = element.engaged_date < date;
                 element.engaged_date = Number(element.engaged_date);
+                element.engaged = element.engaged_date < date;
                 element.rating = Number(element.rating);
                 delete element.count
             });
