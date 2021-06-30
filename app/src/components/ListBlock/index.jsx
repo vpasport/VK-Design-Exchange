@@ -13,7 +13,8 @@ import ScrollUpButton from "react-scroll-up-button";
 import styles from './style.module.scss';
 
 const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
-    loadCount = null, actionType, isChangeSize = false, loadingCondition, nullText = 'Список пустой', pullToRefresh = true, showScrollTop = true, hideFilter = false }) => {
+    loadCount = null, actionType, isChangeSize = false, loadingCondition, nullText = 'Список пустой', 
+    pullToRefresh = true, showScrollTop = true, hideFilter = false, useSpacing = true }) => {
 
     const { useAlert } = alertContext();
     const { isDesktop } = sessionContext();
@@ -48,7 +49,8 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                         size={listHook.bind.listFormat}
                         className={`
                         ${Boolean(isDesktop || !showScrollTop) || styles.block} 
-                        ${Boolean(isShowFilter && !hideFilter && !isDesktop) && styles.block_spaceTop}`
+                        ${Boolean(isShowFilter && !hideFilter && !isDesktop) && styles.block_spaceTop}
+                        ${!useSpacing && styles.block_clearSpacing}`
                         }
                     >
                         {listHook.bind.list.map((el) => (
@@ -83,12 +85,13 @@ const ListBlock = ({ children, loadList, loadFilters, from = null, to = null,
                     changeListFormat={listHook.changeListFormat}
                     isChangeSize={isChangeSize}
                     updateList={listHook.bind.updateList}
+                    posibleListFormats={listHook.bind.posibleListFormats}
                 />
             }
             {listHook.bind.isLoad ?
                 PullToRefreshOrDiv()
                 :
-                <PanelSpinner size='large' />
+                <PanelSpinner size='large' style={{marginTop: 60}}/>
             }
         </>
     )

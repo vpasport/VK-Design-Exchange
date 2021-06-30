@@ -1,15 +1,13 @@
-.button{
+.after {
+    display: flex;
+    align-items: center;
 
-    :global(.Button__content){
-        flex: 1 !important;
+    > *:not(:first-child) {
+        margin-left: 12px;
     }
 
-}
-
-.buttonsBlock{
-
-    .button:not(:first-child){
-        margin-top: 8px;
+    &_text {
+        color: var(--text_primary);
+        opacity: 0.5;
     }
-
 }

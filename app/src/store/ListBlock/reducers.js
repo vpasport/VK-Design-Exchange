@@ -18,7 +18,8 @@ export const defaultState = {
     fromId: null,
     filters: {},
     activeFilters: {},
-    isFetch: false
+    isFetch: false,
+    posibleListFormats: ['m', 'l']
 }
 
 export const listBlockReducerMap = (typeName) => new Map([

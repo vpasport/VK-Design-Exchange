@@ -4,19 +4,14 @@ import DesignDefaultProps from './DesignDefaultProps';
 import axios from 'axios';
 import DesignCard from './DesignCard';
 import { changeLength, changeList, changeSecondLength } from '../../../store/ListBlock/actions';
-import { parseDateFromServer, parseDatetoString } from '../../helpers';
-
-const { REACT_APP_API_URL } = process.env;
-
+import { getApiLink, parseDateFromServer, parseDatetoString } from '../../helpers';
 class Design extends DesignDefaultProps {
 
     constructor(item) {
         super(item.title, item.id, item.preview);
 
-        console.log(item)
-
         this._projectDescription = item.project_description;
-        this._workImages = item.images.map(image => `${REACT_APP_API_URL}/${image.path}`);
+        this._workImages = item.images.map(image => `${getApiLink(true)}/${image.path}`);
         this._designerId = item.author?.id;
         this._viewCount = item.views;
         this._likes = item.likes.count;
@@ -29,7 +24,7 @@ class Design extends DesignDefaultProps {
         this._preview = item.preview;
     }
 
-    getProjectDescription() { return this._projectDescription }
+    getProjectDescription() { return this._projectDescription?.trim() }
     getWorkImage() { return this._workImage }
     getDesignerId() { return this._designerId }
 
@@ -51,6 +46,7 @@ class Design extends DesignDefaultProps {
     }
     get isViewed() { return this._isViewed}
     get preview(){return this._preview}
+    get isEmptyDescription(){return !Boolean(this.getProjectDescription().replace( /(<([^>]+)>)/ig, '').trim())}
 
     updateDesign() {
         store.dispatch(changeActiveDesign(Object.assign(Object.create(Object.getPrototypeOf(this)), this)));
@@ -148,8 +144,6 @@ class Design extends DesignDefaultProps {
         }
 
         const findedItem = list.findIndex(el => el.getId() === this.getId());
-
-        console.log(findedItem)
 
         if(findedItem !== -1) _list.splice(findedItem, 1);
         _list = this.addDesignCard(_list);

@@ -6,7 +6,7 @@ import DesignerItem from '../../components/Designers/DesignerItem';
 
 import RaitingClass from '../../utils/Raiting';
 
-const Raiting = ({id}) => {
+const Raiting = ({ id }) => {
 
     const raiting = useMemo(() => new RaitingClass());
 
@@ -14,19 +14,22 @@ const Raiting = ({id}) => {
         <Panel id={id}>
             <PanelHeader>Рейтинг</PanelHeader>
             <Group>
-                <ListBlock
-                    loadList={raiting.getRaiting}
-                    actionType='designerList'
-                    loadCount={10}
-                    loadFilters={raiting.getFilters}
-                >
-                    {el => (
-                        <DesignerItem
-                            designerCard={el}
-                            key={el.getId()}
-                        />
-                    )}
-                </ListBlock>
+                <div className="designersList">
+                    <ListBlock
+                        loadList={raiting.getRaiting}
+                        actionType='designerList'
+                        loadCount={15}
+                        loadFilters={raiting.getFilters}
+                        isChangeSize={true}
+                    >
+                        {el => (
+                            <DesignerItem
+                                designerCard={el}
+                                key={el.getId()}
+                            />
+                        )}
+                    </ListBlock>
+                </div>
             </Group>
         </Panel>
     )

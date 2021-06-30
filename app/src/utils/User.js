@@ -88,8 +88,8 @@ class User {
         })
 
         if (data.isSuccess) {
-            const order = new OrderCard(data.order);
-            store.dispatch(addOrder(order));
+            // const order = new OrderCard(data.order);
+            // store.dispatch(addOrder(order));
             return true;
         }
         else throw new Error('Ошибка при создании заказа')

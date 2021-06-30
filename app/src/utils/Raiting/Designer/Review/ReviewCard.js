@@ -1,4 +1,4 @@
-const { REACT_APP_API_URL } = process.env;
+import { getApiLink } from "../../../helpers";
 
 class ReviewCard {
 
@@ -8,7 +8,7 @@ class ReviewCard {
         this._text = item.text;
         this._userVkId = item.userVkId;
         this._author = item.user;
-        this._image = `${REACT_APP_API_URL}/${item.image}`
+        this._image = `${getApiLink(true)}/${item.image}`
     }
 
     getId() {return this._id}
@@ -17,7 +17,6 @@ class ReviewCard {
     getUserVkId() {return this._userVkId}
     getAuthor() {return this._author}
     getImage() { return this._image }
-
 }
 
 export default ReviewCard;

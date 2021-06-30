@@ -21,7 +21,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
 
     const { useAlert } = alertContext();
     const { push, back } = useRouter();
-    const { fromMobile } = sessionContext();
+    const { fromMobile, isDesktop } = sessionContext();
     const dispatch = useDispatch();
 
     const isFetchDesign = useMemo(() => Boolean(!activeDesign || activeDesign.getId() !== activeDesignId), [activeDesign]);
@@ -56,7 +56,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
     }, [])
 
     useEffect(() => {
-        if(!isFetchDesign){
+        if (!isFetchDesign) {
             activeDesign.checkIsViewed();
         }
     }, [activeDesign])
@@ -87,7 +87,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
 
     const handleDesignerPortfolio = () => {
         dispatch(changeActiveDesignerId(activeDesign.author.id));
-        push({view: 'raiting', panel: 'portfolio'})
+        push({ view: 'raiting', panel: 'portfolio' })
     }
 
     return (
@@ -99,7 +99,7 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
             </PanelHeader>
             {!isFetchDesign ?
                 <>
-                    <Group>
+                    <Group separator={!isDesktop && 'hide'}>
                         {activeDesign.author &&
                             <Cell
                                 description={
@@ -115,27 +115,28 @@ const Design = ({ id, activeDesignId, activeDesign, changeActiveDesignerId, chan
                         }
                         <Div className={styles.cardBlock}>
                             <Title level='1'>{activeDesign.getTitle()}</Title>
-
-                            {activeDesign.getProjectDescription() &&
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: activeDesign.getProjectDescription() }}
-                                    className={styles.descriptionBlock}
-                                />
-                            }
-
-                            <div className={styles.cardBlock__group_image}>
-                                <Title level='1' className={styles.imageTitle}>Дизайн</Title>
-                                {activeDesign.workImages.map((image, i) => (
-                                    <img
-                                        src={image}
-                                        alt={`image ${i + 1}`}
-                                        key={i}
-                                        onClick={() => showImage(i)}
+                            {!activeDesign.isEmptyDescription &&
+                                <>
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: activeDesign.getProjectDescription() }}
+                                        className={styles.descriptionBlock}
                                     />
-                                ))}
-                            </div>
+                                    <Title level='1' className={styles.imageTitle}>Дизайн</Title>
+                                </>
+                            }
+                        </Div>
+                        <div className={styles.cardBlock__group_image}>
+                            {activeDesign.workImages.map((image, i) => (
+                                <img
+                                    src={image}
+                                    alt={`image ${i + 1}`}
+                                    key={i}
+                                    onClick={() => showImage(i)}
+                                />
+                            ))}
+                        </div>
+                        <Div>
                             <Button
-                                mode='outline'
                                 stretched
                                 size='l'
                                 className={styles.cardBlock__button}

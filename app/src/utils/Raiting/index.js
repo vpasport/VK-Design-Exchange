@@ -28,12 +28,15 @@ class Raiting {
 
     async getFilters(){
 
+        const { data } = await axios.get(`/specializations`);
+
+        if(!data.isSuccess) throw new Error('Ошибка при загрузке фильтров');
+
         const filters = [
             {
                 name: 'Статус дизайнера',
-                header: 'Выберите статус',
                 type: 'engaged',
-                componentName: 'ModalRadioSelect',
+                componentName: 'RadioList',
                 filters: [
                     {status: 'Все дизайнеры', type: null},
                     {status: 'Свободные', type: 1},
@@ -42,13 +45,18 @@ class Raiting {
             },
             {
                 name: 'Сортировка дизайнеров',
-                header: 'Тип сортировки',
                 type: 'order',
-                componentName: 'ModalRadioSelect',
+                componentName: 'RadioList',
                 filters: [
                     {status: 'По убыванию рейтинга', type: 'desc'},
                     {status: 'По возрастанию рейтинга', type: 'asc'}
                 ]
+            },
+            {
+                name: 'Специализация',
+                type: 'specializations',
+                componentName: 'CheckboxList',
+                filters: data.specializations
             }
         ]
 

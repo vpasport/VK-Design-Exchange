@@ -7,11 +7,12 @@ import { Provider } from 'react-redux';
 import rootReducer from './store/reducers';
 import axios from 'axios';
 import { Router } from '@unexp/router';
+import { getApiLink } from "./utils/helpers";
 
-const { REACT_APP_API_URL } = process.env;
 
 export const store = createStore(rootReducer);
-axios.defaults.baseURL = REACT_APP_API_URL;
+
+axios.defaults.baseURL = getApiLink();
 
 // Init VK  Mini App
 bridge.send("VKWebAppInit");

@@ -1,4 +1,4 @@
-import { Avatar, Button, Div, Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, SimpleCell, Text, Title } from '@vkontakte/vkui';
+import { Avatar, Button, Div, FixedLayout, Group, Panel, PanelHeader, PanelHeaderBack, PanelSpinner, SimpleCell, Text, Title } from '@vkontakte/vkui';
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { alertContext, sessionContext } from '../../App';
@@ -6,20 +6,23 @@ import { connect, useSelector } from 'react-redux';
 
 import { changeActiveDesignerId, changeActiveDesigner } from '../../store/Designer/actions';
 import { getDesignerInfoById, openVkLink } from '../../utils/helpers';
-import {useRouter} from '@unexp/router';
+import { useRouter } from '@unexp/router';
 
 import styles from './style.module.scss';
 import StarRatings from '../../components/StarRatings';
 
 import { Icon24Work } from '@vkontakte/icons';
 import { Icon24Advertising } from '@vkontakte/icons';
-import PreText from '../../components/PreText';
+import OutlineCellButtonBlock from '../../components/OutlineCellButtonBlock';
+import OutlineCellButton from '../../components/OutlineCellButton';
+import { Icon24ComputerOutline } from '@vkontakte/icons';
+import { Icon24CommentOutline } from '@vkontakte/icons';
 
 const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }) => {
 
     const { useAlert } = alertContext();
-    const {push, back} = useRouter();
-    const { fromMobile } = sessionContext();
+    const { push, back } = useRouter();
+    const { fromMobile, isDesktop } = sessionContext();
 
     const isFetchDesigner = useMemo(() => Boolean(!activeDesigner || activeDesigner.getId() !== activeDesignerId), [activeDesigner]);
 
@@ -35,12 +38,12 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                 useAlert.show('Ошибка', error.message, [{
                     title: 'Назад',
                     autoclose: true,
-                    action: () => push({panel: 'raiting'})
+                    action: () => push({ panel: 'raiting' })
                 }])
             }
         }
 
-        if(isFetchDesigner)
+        if (isFetchDesigner)
             fetchData();
 
     }, [])
@@ -50,7 +53,7 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
     }
 
     return (
-        <Panel id={id}>
+        <Panel id={id} className={styles.panel}>
             <PanelHeader left={
                 <PanelHeaderBack onClick={back} />}
             >
@@ -67,58 +70,81 @@ const Designer = ({ id, activeDesignerId, activeDesigner, changeActiveDesigner }
                                 <Text className={`${styles.userBlock__status} ${!activeDesigner.getEngaged() && styles.userBlock__status_active}`}>
                                     {activeDesigner.getEngaged() ?
                                         `Занят до ${activeDesigner.getEngagedDate()}`
-                                    :
+                                        :
                                         `Свободен`
                                     }
                                 </Text>
                             </div>
                         </Div>
                     </Group>
-                    <Group>
+                    {activeDesigner.hasSpecialisations && (
+                        <Group>
+                            <Div>
+                                <Title level="3">Специализация:</Title>
+                                <ul className={styles.specializationList}>
+                                    {activeDesigner.specializations.map(({name, id}) => (
+                                        <li className={styles.specializationItem}>
+                                            <Button
+                                                hasActive={false}
+                                                hasHover={false}
+                                                key={id}
+                                            >
+                                                {name}
+                                            </Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </Div>
+                        </Group>
+                    )}
+                    <Group separator={!isDesktop && 'hide'}>
                         <Div className={styles.specialisation}>
                             <Title level='3'>Биография</Title>
-                            <div 
-                                className={styles.specialisation__text} 
-                                dangerouslySetInnerHTML={{__html: activeDesigner.getBio() || 'Нет данных'}}
+                            <div
+                                className={styles.specialisation__text}
+                                dangerouslySetInnerHTML={{ __html: activeDesigner.getBio() || 'Нет данных' }}
                             />
                         </Div>
                     </Group>
-                    <Group>
-                        <SimpleCell 
-                            before={<Icon24Work />} 
-                            expandable
-                            onClick={() => push({panel: 'portfolio'})}
-                        >
-                            Посмотреть портфолио
-                        </SimpleCell>
-                        <SimpleCell 
-                            before={<Icon24Advertising />} 
-                            expandable
-                            onClick={() => push({panel: 'reviews'})}
-                        >
-                            Отзывы
-                        </SimpleCell>
-                        <Div>
-                            <Button 
-                                stretched 
-                                mode='outline' 
-                                size='l'
-                                onClick={() => push({panel: 'offers'})}
+                    <Group className={styles.bottom}>
+                        <OutlineCellButtonBlock>
+                            <OutlineCellButton
+                                before={<Icon24ComputerOutline />}
+                                onClick={() => push({ panel: 'portfolio' })}
+                                indicator={activeDesigner.portfoliosCount}
                             >
-                                Посмотреть услуги
-                            </Button>
-                            <Button 
-                                stretched 
-                                mode='outline' 
-                                size='l'
-                                onClick={openDesignerPage}
+                                Посмотреть портфолио
+                            </OutlineCellButton>
+                            <OutlineCellButton
+                                before={<Icon24CommentOutline />}
+                                onClick={() => push({ panel: 'reviews' })}
+                                indicator={activeDesigner.reviewsCount}
                             >
-                                Связаться с дизайнером
-                            </Button>
-                        </Div>
+                                Отзывы
+                            </OutlineCellButton>
+                        </OutlineCellButtonBlock>
+                        {React.createElement(isDesktop ? 'div' : FixedLayout, isDesktop ? null : { filled: true, vertical: 'bottom' },
+                            <Div>
+                                {/* <Button
+                                    stretched
+                                    mode='outline'
+                                    size='l'
+                                    onClick={() => push({ panel: 'offers' })}
+                                >
+                                    Посмотреть услуги
+                                </Button> */}
+                                <Button
+                                    stretched
+                                    size='l'
+                                    onClick={openDesignerPage}
+                                >
+                                    Связаться с дизайнером
+                                </Button>
+                            </Div>
+                        )}
                     </Group>
                 </>
-            :
+                :
                 <PanelSpinner size='large' />
             }
 
@@ -144,3 +170,5 @@ const mapDispatchToProps = {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Designer);
+
+//https://stage-app7779919-fcc86a31f9f8.pages.vk-apps.com/index.html

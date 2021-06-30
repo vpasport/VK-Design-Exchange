@@ -1,6 +1,4 @@
-import { parseDateFromServer, parseDatetoString } from "../helpers";
-
-const { REACT_APP_API_URL } = process.env;
+import { getApiLink, parseDateFromServer, parseDatetoString } from "../helpers";
 
 class OrderDefaultProps {
     constructor({id, offer_id, status, status_id, title, preview, price, update_date, create_date}){
@@ -9,7 +7,7 @@ class OrderDefaultProps {
         this.status = status;
         this.statusId = status_id;
         this.title = title;
-        this.preview = `${REACT_APP_API_URL}/${preview}`;
+        this.preview = `${getApiLink(true)}/${preview}`;
         this.price = price;
         this._updateDate = update_date;
         this._createDate = create_date;

@@ -6,7 +6,7 @@ import * as listActions from '../../store/ListBlock/actions';
 const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, loadingCondition = () => {}) => {
 
     const dispatch = useDispatch();
-    const { length, secondLength, fromId, list, filters, activeFilters, listFormat, isFetch } = useSelector(state => state[type]);
+    const { length, secondLength, fromId, list, filters, activeFilters, listFormat, isFetch, posibleListFormats } = useSelector(state => state[type]);
 
     const [ isLoad, setIsLoad ] = useState(Boolean(list && list.length));
     const [ elemOffsetForListFormat, setElemOffsetForListFormat ] = useState(null);
@@ -98,7 +98,7 @@ const useList = (loadList, loadFilters, from, to, loadLength, useAlert, type, lo
 
     return {
         bind: {
-            list, length, secondLength, hasMore, isFetch, filters, activeFilters, listFormat, isLoad
+            list, length, secondLength, hasMore, isFetch, filters, activeFilters, listFormat, isLoad, posibleListFormats
         },
         getList, updateList, changeListFormat
     }

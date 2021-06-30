@@ -8,16 +8,22 @@ import { getUrlByJson } from "../../helpers";
 class Designer extends DesignerDefaultProps {
 
     constructor(item) {
-        super(item.id, item.vk_id, item.rating, item.first_name, item.last_name, item.photo);
+        super(item.id, item.vk_id, item.rating, item.first_name, item.last_name, item.photo, item.engaged, item.specializations, item.reviewsCount);
 
         this._bio = item.bio;
         this._engaged = item.engaged;
         this._engagedDate = item.engaged_date && new Date((item.engaged_date + new Date().getTimezoneOffset() * 60) * 1000).toLocaleDateString("ru-RU");
+        this._offersCount = item.offers_count;
+        this._portfoliosCount = item.portfolios_count;
+        this._reviewsCount = item.reviews_count;
     }
 
     getBio(){ return this._bio }
     getEngaged(){ return this._engaged }
     getEngagedDate(){ return this._engagedDate }
+
+    get offersCount(){ return this._offersCount }
+    get portfoliosCount(){ return this._portfoliosCount }
 
     async getPortfolio(params) {
 
@@ -67,17 +73,6 @@ class Designer extends DesignerDefaultProps {
         }
         else throw new Error('Не удалось загрузить услуги');
     }
-
-    // async getNewPortfolio(){
-    //     await this.setPortfolio();
-    //     return this._portfolio;
-    // }
-
-    // async getPortfolio(){
-    //     return this._portfolio;
-    // }
-
-    //getPortfolio() {return this._portfolio}
 
 }
 

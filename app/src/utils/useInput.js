@@ -12,7 +12,7 @@ const useInput = (defaultValue) => {
     }
 
     return {
-        value, onChange, clear
+        value, onChange, clear, setValue
     }
 }
 

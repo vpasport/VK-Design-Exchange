@@ -1,4 +1,4 @@
-const { REACT_APP_API_URL } = process.env;
+import { getApiLink } from "../../../helpers";
 
 class OfferDefaultProps {
 
@@ -11,7 +11,7 @@ class OfferDefaultProps {
 
     getId(){ return this._id }
     getTitle() { return this._title }
-    getPreview() { return `${REACT_APP_API_URL}/${this._preview}` }
+    getPreview() { return `${getApiLink(true)}/${this._preview}` }
     getPrice() { return this._price }
 
 }

@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Div, FixedLayout, SliderSwitch } from '@vkontakte/vkui';
-import { Icon16GridOfFour, Icon24MoreHorizontal } from '@vkontakte/icons';
-import { Icon16ArticleOutline } from '@vkontakte/icons';
 import { Icon28SlidersOutline } from '@vkontakte/icons';
 import { Icon28RefreshOutline } from '@vkontakte/icons';
+import { Icon24List } from '@vkontakte/icons';
+import { Icon24Square4Outline } from '@vkontakte/icons';
 
 import styles from './style.module.scss';
 import { modalContext, sessionContext } from '../../App';
 
-const FiltersList = ({ filters, size, changeListFormat, isChangeSize, updateList }) => {
+const FiltersList = ({ filters, size, changeListFormat, isChangeSize, updateList, posibleListFormats }) => {
 
     const { setActiveModal } = modalContext();
     const showFilterButton = Boolean(filters && Object.keys(filters).length)
@@ -45,18 +45,18 @@ const FiltersList = ({ filters, size, changeListFormat, isChangeSize, updateList
             }
         }
 
-        changeListFormat(size === 'm' ? 'l' : 'm', first)
+        changeListFormat(posibleListFormats.find(el => el !== size), first)
     }
 
     return (
         <>
             {Boolean(isChangeSize || showFilterButton || isDesktop) &&
                 React.createElement(isDesktop ? 'div' : FixedLayout,
-                    isDesktop ? null : { vertical: 'top'},
+                    isDesktop ? null : { vertical: 'top', filled: true},
                     <Div className={styles.bottom}>
                         {isChangeSize &&
                             <Button
-                                before={size === 'm' ? <Icon16GridOfFour /> : <Icon16ArticleOutline />}
+                                before={size === 'l' ? <Icon24List />  : <Icon24Square4Outline />}
                                 mode='tertiary'
                                 onClick={() => {
                                     test()

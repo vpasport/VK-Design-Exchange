@@ -18,6 +18,8 @@ class Comments {
 
         const { data } = await axios.get(`portfolio/work/${this._id}/comments${allParams}`);
 
+        console.log(data)
+
         if (data.isSuccess){
             let designCards = data.comments.map(el => new CommentsCard(el));
 
@@ -32,14 +34,21 @@ class Comments {
 
     }
 
-    async createComment(text){
+    async createComment(text, choosenComment){
         const { user: {activeUser}, commentsList: {list} } = store.getState();
 
-        const { data } = await axios.post(`portfolio/work/${this.id}/comment`, {
+        const sendData = {
             text,
             url_params: activeUser.getVkUrlParams(),
             vk_id: activeUser.getId()
-        });
+        }
+
+        if(choosenComment){
+            sendData.reply_id = choosenComment.id;
+            sendData.reply_to_vk_id = choosenComment.user.id;
+        }
+
+        const { data } = await axios.post(`portfolio/work/${this.id}/comment`, sendData);
 
         if(!data.isSuccess) throw new Error('Ошибка при отправке комментария');
 
@@ -48,6 +57,12 @@ class Comments {
             first_name: activeUser.getFirstName(),
             last_name: activeUser.getLastName(),
             photo_max: activeUser.getPhoto()
+        }
+
+        if(choosenComment){
+            data.comment.reply_id = choosenComment.id;
+            data.comment.reply_to_vk_id = choosenComment.user.id;
+            data.comment.reply_to = choosenComment.user;
         }
 
         store.dispatch(changeList('COMMENTSLIST')([new CommentsCard(data.comment), ...list]))

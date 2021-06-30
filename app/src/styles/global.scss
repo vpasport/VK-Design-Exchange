@@ -1,3 +1,58 @@
 .vkuiPanel{
     min-height: 100vh;
 }
+
+.outlineCellButtonBlock{
+    .outlineCellButton {
+        border-bottom: 1px solid var(--separator_common);
+        padding: 0;
+        color: var(--text_primary);
+        transition: 0.15s;
+
+        &_active{
+            background-color: var(--background_highlighted);
+        }
+    }
+
+    .outlineCellButton:first-child {
+        border-top: 1px solid var(--separator_common);
+    }
+}
+
+.designersList{
+
+    .designerCardLine:not(:last-child){
+        border-bottom: 1px solid var(--separator_common);
+    }
+
+    .vkuiSimpleCell{
+        padding: 0 !important;
+    }
+}
+
+.avatar__online{
+    .Avatar__in {
+        position: relative;
+
+        &:before {
+            position: absolute;
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 100%;
+            bottom: 0px;
+            right: 0px;
+            background: var(--dynamic_green);
+            z-index: 2;
+            border: 2px solid var(--background_content);
+        }
+    }
+
+    &_big{
+        .Avatar__in:before{
+            width: 14px;
+            height: 14px;
+            border-width: 3px;
+        }
+    }
+}

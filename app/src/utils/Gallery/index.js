@@ -33,6 +33,8 @@ class Gallery {
         const { data } = await axios.get(`tags`);
 
         if(!data.isSuccess) throw new Error ('Ошибка при загрузке тегов');
+
+        console.log(data)
         
         return [
             {
@@ -53,7 +55,7 @@ class Gallery {
             {
                 name: 'Теги',
                 type: 'tags',
-                componentName: 'CellButtonsList',
+                componentName: 'CheckboxList',
                 filters: data.tags
             }
         ];

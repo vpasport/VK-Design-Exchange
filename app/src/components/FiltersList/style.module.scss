@@ -10,10 +10,9 @@ $drobGap: $gap / 2;
 
 .bottom{
     display: grid;
-    grid-template-areas: "left right";
+    grid-template-areas: "left center right";
     grid-auto-columns: min-content;
     justify-content: space-between;
-    background-color: var(--background_content);
 
 
     .right{
@@ -32,5 +31,10 @@ $drobGap: $gap / 2;
         &_format{
             grid-area: left;
         }
+    }
+
+    .center{
+        grid-area: center;
+        width: 100%;
     }
 }

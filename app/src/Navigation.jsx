@@ -10,12 +10,12 @@ import {
     usePlatform,
     VKCOM,
 } from '@vkontakte/vkui';
-import { Icon24Gallery } from '@vkontakte/icons';
-import { Icon24InfoCircleOutline } from '@vkontakte/icons';
+import { Icon24PictureOutline } from '@vkontakte/icons';
+import { Icon24HomeOutline } from '@vkontakte/icons';
 import { Icon16StarCircle } from '@vkontakte/icons';
 import { Icon24Market } from '@vkontakte/icons';
-import { Icon24User } from '@vkontakte/icons';
-import { Icon24CupOutline } from '@vkontakte/icons';
+import { Icon24GearOutline } from '@vkontakte/icons';
+import { Icon24UsersOutline } from '@vkontakte/icons';
 //import '@vkontakte/vkui/dist/vkui.css';
 
 import DesctopSideBar from './components/DesctopSideBar';
@@ -31,7 +31,7 @@ import { Icon24Users } from '@vkontakte/icons';
 import { useDispatch } from 'react-redux';
 import { store } from '.';
 import { changeActiveDesignId } from './store/Design/actions';
-import {useStructure, useLocation, useHistory } from '@unexp/router';
+import {useStructure, useLocation, useHistory, useParams } from '@unexp/router';
 
 const Panels = withAdaptivity(({ viewWidth }) => {
 
@@ -39,6 +39,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
 
     const { isDesktop, setIsDesktop } = sessionContext();
     const dispatch = useDispatch();
+    const history = useHistory();
 
     const {push} = useRouter();
 
@@ -49,25 +50,25 @@ const Panels = withAdaptivity(({ viewWidth }) => {
         {
             story: 'table',
             name: 'О доске',
-            icon: <Icon24InfoCircleOutline />,
+            icon: <Icon24HomeOutline />,
             defaultPanel: 'table'
         },
         {
             story: 'gallery',
             name: 'Галерея',
-            icon: <Icon24Gallery />,
+            icon: <Icon24PictureOutline />,
             defaultPanel: 'gallery'
         },
         {
             story: 'raiting',
-            name: 'Рейтинг',
-            icon: <Icon24CupOutline />,
+            name: 'Исполнители',
+            icon: <Icon24UsersOutline />,
             defaultPanel: 'raiting'
         },
         {
             story: 'orders',
             name: 'Настройки',
-            icon: <Icon24User />,
+            icon: <Icon24GearOutline />,
             defaultPanel: 'user'
         }
     ]
@@ -88,6 +89,9 @@ const Panels = withAdaptivity(({ viewWidth }) => {
     }, []);
 
     const changeStory = (view, panel) => {
+
+        //const lastPanelByView = history.some(el => el.view === view)
+
         if (location.view === view && location.panel === panel)
             window.scrollTo({ top: 0, behavior: 'smooth' });
         else 
@@ -98,7 +102,7 @@ const Panels = withAdaptivity(({ viewWidth }) => {
         <AppRoot>
             <SplitLayout
                 header={!isDesktop && <PanelHeader separator={false} />}
-                style={{ justifyContent: "center" }}
+                style={{ justifyContent: "center", paddingTop: isDesktop && 20 }}
             >
                 {isDesktop && (
                     <DesctopSideBar

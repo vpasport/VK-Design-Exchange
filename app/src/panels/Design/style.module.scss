@@ -4,8 +4,6 @@
         margin-top: 20px;
 
         &_image{
-            margin-top: 28px;
-
             & > img{
                 width: 100%;
                 display: block;
@@ -45,10 +43,14 @@
 
 .commentsBlock{
     padding-bottom: 55px;
+
+    &_spacing{
+        padding-bottom: 50px;
+    }
 }
 
 .imageTitle{
-    margin-bottom: 16px;
+    margin-top: 24px;
 }
 
 .footer{
@@ -68,6 +70,13 @@
 
     h2{
         font-size: 1.15em;
+    }
+
+    a{
+        // &:link, &:visited{
+        //     color: var(--text_primary);
+        // }
+        color: var(--accent);
     }
 
 }

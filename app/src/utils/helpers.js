@@ -4,8 +4,15 @@ import Design from './Gallery/Design';
 import Designer from './Raiting/Designer';
 import Offer from './Raiting/Designer/Offer';
 
+const { REACT_APP_API_URL, REACT_APP_TEST_API_URL } = process.env;
+
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+const getApiLink = (isProduction) => {
+    if(process.env.NODE_ENV === "development" && !isProduction) return REACT_APP_TEST_API_URL;
+    else return REACT_APP_API_URL;
 }
 
 const getCardHeightBySize = (size) => {
@@ -132,5 +139,6 @@ export {
     parseDateFromServer,
     openVkLink,
     parseDatetoString,
-    getOrdersCountWithStatus
+    getOrdersCountWithStatus,
+    getApiLink
 }

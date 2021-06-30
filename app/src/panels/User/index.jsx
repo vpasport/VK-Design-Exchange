@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { CellButton, Group, PanelHeader, Panel, Div, Title, Header } from '@vkontakte/vkui';
-import Button from './Button';
+import { Group, PanelHeader, Panel, Div, Header, Text, Counter } from '@vkontakte/vkui';
+import OutlineCellButtonBlock from '../../components/OutlineCellButtonBlock';
+import OutlineCellButton from '../../components/OutlineCellButton';
 import { useDispatch } from 'react-redux';
 import { useRouter } from '@unexp/router';
 import { changeStatus } from '../../store/OrdersList/actions';
@@ -9,7 +10,16 @@ import { changeStatus } from '../../store/OrdersList/actions';
 import styles from './style.module.scss';
 import { getOrdersCountWithStatus, openVkLink } from '../../utils/helpers';
 import { sessionContext } from '../../App';
-import { Icon28BrushOutline, Icon28More, Icon28RecentOutline, Icon28DoneOutline, Icon28CancelOutline, Icon24FavoriteOutline, Icon28ChatsOutline, Icon24ViewOutline } from '@vkontakte/icons';
+import { Icon28ListCircleFillGray } from '@vkontakte/icons';
+import { Icon28ClockCircleFillGray } from '@vkontakte/icons';
+import { Icon28EditCircleFillBlue } from '@vkontakte/icons';
+import { Icon28CheckCircleFillYellow } from '@vkontakte/icons';
+import { Icon28CancelCircleFillRed } from '@vkontakte/icons';
+import { Icon28CheckCircleFill } from '@vkontakte/icons';
+import { Icon28FavoriteCircleFillYellow } from '@vkontakte/icons';
+import { Icon28DiscussionsCircleFill } from '@vkontakte/icons';
+import { Icon20ViewCircleFillRed } from '@vkontakte/icons';
+import After from './After';
 
 const User = ({ id }) => {
 
@@ -43,75 +53,81 @@ const User = ({ id }) => {
     return (
         <Panel id={id}>
             <PanelHeader>Настройки</PanelHeader>
-            <Group header={(
-                <Header>Ваши заказы</Header>
-            )}>
-                <Div className={styles.buttonsBlock}>
-                    <Button
+            <Group 
+                header={(
+                    <Header>Ваши заказы</Header>
+                )}
+                separator='hide'
+            >
+                <OutlineCellButtonBlock>
+                    <OutlineCellButton
                         onClick={() => showOrders(null)}
-                        before={<Icon28More />}
-                        after={allCounts !== 0 && allCounts}
+                        before={<Icon28ListCircleFillGray />}
+                        indicator={allCounts !== 0 && <After params={allCounts} />}
                     >
                         Все заказы
-                    </Button>
-                    <Button
+                    </OutlineCellButton>
+                    <OutlineCellButton
                         onClick={() => showOrders(4)}
-                        before={<Icon28RecentOutline />}
-                        after={counts && counts.find(el => el.status === 4)?.count}
+                        before={<Icon28ClockCircleFillGray />}
+                        indicator={counts && <After params={counts.find(el => el.status === 4)?.count} />}
                     >
                         Готовые к проверке
-                    </Button>
-                    <Button
+                    </OutlineCellButton>
+                    <OutlineCellButton
                         onClick={() => showOrders(3)}
-                        before={<Icon28BrushOutline />}
-                        after={counts && counts.find(el => el.status === 3)?.count}
+                        before={<Icon28EditCircleFillBlue />}
+                        indicator={counts && <After params={counts.find(el => el.status === 3)?.count} />}
                     >
                         В работе
-                    </Button>
-                    <Button
-                        before={<Icon28RecentOutline />}
+                    </OutlineCellButton>
+                    <OutlineCellButton
+                        before={<Icon28CheckCircleFillYellow />}
                         onClick={() => showOrders(2)}
-                        after={counts && counts.find(el => el.status === 2)?.count}
+                        indicator={counts && <After params={counts.find(el => el.status === 2)?.count} />}
                     >
                         На согласовании
-                    </Button>
-                    <Button
+                    </OutlineCellButton>
+                    <OutlineCellButton
                         onClick={() => showOrders(1)}
-                        before={<Icon28CancelOutline />}
-                        after={counts && counts.find(el => el.status === 1)?.count}
+                        before={<Icon28CancelCircleFillRed />}
+                        indicator={counts && <After params={counts.find(el => el.status === 1)?.count} />}
                     >
                         Отмененные
-                    </Button>
-                    <Button
+                    </OutlineCellButton>
+                    <OutlineCellButton
                         onClick={() => showOrders(5)}
-                        before={<Icon28DoneOutline />}
-                        after={counts && counts.find(el => el.status === 5)?.count}
+                        before={<Icon28CheckCircleFill />}
+                        indicator={counts && <After params={counts.find(el => el.status === 5)?.count} />}
                     >
                         Выполненые
-                    </Button>
-                </Div>
+                    </OutlineCellButton>
+                </OutlineCellButtonBlock>
             </Group>
-            <Group>
-                <Div className={styles.buttonsBlock}>
-                    <Button
+            <Group
+                header={<Header>Общее</Header>}
+                separator='hide'
+            >
+                <OutlineCellButtonBlock>
+                    <OutlineCellButton
                         onClick={() => push({ panel: 'favorites' })}
-                        before={<Icon24FavoriteOutline />}
+                        before={<Icon28FavoriteCircleFillYellow />}
                     >
                         Избранное
-                    </Button>
-                    <Button
+                    </OutlineCellButton>
+                    <OutlineCellButton
                         onClick={() => push({ panel: 'viewed' })}
-                        before={<Icon24ViewOutline />}
+                        before={<Icon20ViewCircleFillRed width={28} height={28}/>}
                     >
                         Просмотренные
-                    </Button>
-                    <Button
+                    </OutlineCellButton>
+                    <OutlineCellButton
                         onClick={handleGroupOpen}
-                        before={<Icon28ChatsOutline />}
+                        before={<Icon28DiscussionsCircleFill />}
                     >
                         Техподдержка
-                    </Button>
-                </Div>
+                    </OutlineCellButton>
+                </OutlineCellButtonBlock>
             </Group>
         </Panel>
     )

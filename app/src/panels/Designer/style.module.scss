@@ -1,49 +1,66 @@
-.userBlock{
+.userBlock {
     display: flex;
     align-items: center;
 
-    &__info{
+    &__info {
         flex: 1;
         padding-left: 20px;
     }
 
-    &__raiting{
+    &__raiting {
         margin-top: 6px;
     }
 
-    &__experience{
+    &__experience {
         margin-top: 6px;
     }
 
-    &__status{
+    &__status {
         margin-top: 16px;
         position: relative;
         padding-left: 15px;
 
-        &::before{
+        &::before {
             position: absolute;
             top: 50%;
             transform: translateY(calc(-50% - 1px));
             left: 0;
             font-size: 25px;
-            content: '•';
+            content: "•";
             color: var(--dynamic_red);
         }
 
-        &_active:before{
+        &_active:before {
             color: var(--dynamic_green);
         }
     }
 }
 
-.specialisation{
-
-    &__text{
+.specialisation {
+    &__text {
         margin-top: 6px;
     }
 
-    *{
+    * {
         background: transparent !important;
     }
+}
 
+.bottom {
+    padding-bottom: 100px;
+}
+
+.specializationList {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    margin: 0;
+    margin-top: 10px;
+    gap: 6px;
+
+    .specializationItem {
+        list-style: none;
+    }
 }
