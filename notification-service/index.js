@@ -7,6 +7,6 @@ const { pushNotification: notify } = require('./src/notification/pushNotificatio
 const pool = require('./src/database/pg/pool').getPool();
 
 
-const job = schedule.scheduleJob('0 0 */2 * * *', async () => {
+const job = schedule.scheduleJob('*/2 * * * * ', async () => {
     notify();
 })

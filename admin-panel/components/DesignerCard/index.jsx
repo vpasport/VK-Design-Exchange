@@ -69,7 +69,7 @@ const DesignerCard = ({
     }
 
     const getSpecialization = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/designers/specializations`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/specializations`);
         const json = await response.json();
 
         if (json.isSuccess) {
